@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoPost AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      /* Custom scrollbar for a cleaner look */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #171717; /* neutral-900 */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #525252; /* neutral-600 */
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #737373; /* neutral-500 */
+      }
+      
+      /* Animation Keyframes for HomePage */
+      @keyframes keyframes-fade-in-down {
+          0% {
+              opacity: 0;
+              transform: translateY(-20px);
+          }
+          100% {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+      .animate-fade-in-down {
+          animation: keyframes-fade-in-down 0.6s ease-out forwards;
+      }
+
+      @keyframes keyframes-fade-in-up {
+          0% {
+              opacity: 0;
+              transform: translateY(20px);
+          }
+          100% {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+      .animate-fade-in-up {
+          animation: keyframes-fade-in-up 0.6s ease-out forwards;
+      }
+      
+      /* Delay utility classes */
+      .delay-100 { animation-delay: 0.1s; }
+      .delay-200 { animation-delay: 0.2s; }
+      .delay-300 { animation-delay: 0.3s; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^6.24.0",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js",
+    "firebase/storage": "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.5.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^0.14.0"
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
