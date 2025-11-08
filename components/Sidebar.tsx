@@ -1,7 +1,7 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
-import { ConnectionsIcon, DashboardIcon, ScheduleIcon, SettingsIcon, SparklesIcon, XIcon, ChevronDoubleLeftIcon } from './icons';
+import { ConnectionsIcon, DashboardIcon, ScheduleIcon, SettingsIcon, SparklesIcon, XIcon, ChevronDoubleLeftIcon, CommandLineIcon } from './icons';
 
 interface SidebarProps {
     onLinkClick: () => void;
@@ -79,6 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                            <span className={isCollapsed ? 'sr-only' : 'inline'}>Configuration</span>
                         </p>
                         <NavLink to="/connections" onClick={onLinkClick} icon={<ConnectionsIcon />} label="Connections" isCollapsed={isCollapsed}/>
+                        <NavLink to="/commands" onClick={onLinkClick} icon={<CommandLineIcon />} label="Commands" isCollapsed={isCollapsed}/>
                         <NavLink to="/persona" onClick={onLinkClick} icon={<SparklesIcon />} label="AI Persona" isCollapsed={isCollapsed}/>
                         <NavLink to="/settings" onClick={onLinkClick} icon={<SettingsIcon />} label="Settings" isCollapsed={isCollapsed}/>
                     </div>

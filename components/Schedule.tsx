@@ -309,9 +309,10 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     }, [isOpen, initialData, initialDate, resetForm]);
 
 
-    // Generate previews when mediaFiles change
+    // ✅ FIX: Refactored media preview generation for stability.
+    // This effect now correctly syncs previews when new files are added.
     React.useEffect(() => {
-        const newFilePreviews = mediaFiles.map(file => {
+        const filePreviews = mediaFiles.map(file => {
             let type: 'image' | 'video' | 'other' = 'other';
             if (file.type.startsWith('image/')) type = 'image';
             else if (file.type.startsWith('video/')) type = 'video';
@@ -323,24 +324,17 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             };
         });
 
-        // Combine existing media with new file previews
-        const existingPreviewsFromInitial = initialData ? initialData.mediaUrls.map(url => ({
-             url, type: url.includes('.mp4') || url.includes('video') ? 'video' : 'image' as any
-        })) : [];
+        // Combine existing http-based previews with new file-based previews
+        setMediaPreviews(currentPreviews => {
+            const existingHttpPreviews = currentPreviews.filter(p => p.url.startsWith('http'));
+            return [...existingHttpPreviews, ...filePreviews];
+        });
 
-        const combinedPreviews = [
-            ...mediaPreviews.filter(p => p.url.startsWith('http') && existingPreviewsFromInitial.some(e => e.url === p.url)), // Keep existing URLs from initialData
-            ...newFilePreviews
-        ];
-
-        setMediaPreviews(combinedPreviews);
-
-        // Cleanup function to revoke object URLs and prevent memory leaks
+        // Cleanup object URLs to prevent memory leaks
         return () => {
-            newFilePreviews.forEach(preview => URL.revokeObjectURL(preview.url));
+            filePreviews.forEach(preview => URL.revokeObjectURL(preview.url));
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mediaFiles, initialData]);
+    }, [mediaFiles]);
 
     const handleClose = () => {
         resetForm();
@@ -353,9 +347,23 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         }
     };
 
+    // ✅ FIX: Reworked removeMedia to correctly update both preview and file states.
     const removeMedia = (urlToRemove: string) => {
-        setMediaPreviews(prev => prev.filter(p => p.url !== urlToRemove));
-        const fileToRemove = mediaFiles.find(f => URL.createObjectURL(f) === urlToRemove);
+        let fileToRemove: File | undefined;
+        
+        // Use functional updates to avoid stale state issues
+        setMediaPreviews(prev => {
+            const newPreviews = [];
+            for (const p of prev) {
+                if (p.url === urlToRemove) {
+                    fileToRemove = p.file;
+                } else {
+                    newPreviews.push(p);
+                }
+            }
+            return newPreviews;
+        });
+    
         if (fileToRemove) {
             setMediaFiles(prev => prev.filter(f => f !== fileToRemove));
         }
@@ -424,7 +432,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                     </div>
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         {mediaPreviews.map((preview, i) => (
-                                            <div key={i} className="relative w-16 h-16 border-2 border-gray-300 rounded-md overflow-hidden cursor-pointer hover:border-blue-500">
+                                            <div key={preview.url} className="relative w-16 h-16 border-2 border-gray-300 rounded-md overflow-hidden cursor-pointer hover:border-blue-500">
                                                 {preview.type === 'image' ? (
                                                     <img src={preview.url} alt="thumbnail" className="w-full h-full object-cover" />
                                                 ) : (

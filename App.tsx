@@ -21,6 +21,7 @@ import Persona from './components/Persona';
 import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
 import PricingPage from './components/PricingPage';
+import Commands from './components/Commands';
 
 // ✅ NEW: React Router
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -170,6 +171,7 @@ const App: React.FC = () => {
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/settings" element={<Settings user={user} />} />
                     <Route path="/connections" element={<Connections />} />
+                    <Route path="/commands" element={<Commands user={user} />} />
                     <Route path="/persona" element={<Persona user={user} />} />
                     {/* Redirect any other authenticated path to the default page */}
                     <Route path="*" element={<Navigate to="/schedule" replace />} />
