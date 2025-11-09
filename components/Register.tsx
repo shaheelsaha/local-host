@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 // FIX: Refactor Firebase calls to v8 compat syntax.
 // import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
-import { UserIcon, EmailIcon, LockIcon, EyeIcon, EyeOffIcon } from './icons';
+import { auth, googleProvider } from '../firebaseConfig';
+import { UserIcon, EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from './icons';
 import ParticleNetwork from './ParticleNetwork';
 
 interface RegisterProps {}
@@ -16,6 +16,7 @@ const Register: React.FC<RegisterProps> = () => {
     const [passwordVisible, setPasswordVisible] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+    const [googleLoading, setGoogleLoading] = React.useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,6 +54,22 @@ const Register: React.FC<RegisterProps> = () => {
             setLoading(false);
         }
     };
+
+    const handleGoogleSignUp = async () => {
+        setError(null);
+        setGoogleLoading(true);
+        try {
+            await auth.signInWithPopup(googleProvider);
+            // onAuthStateChanged will handle the rest, including creating a new user if one doesn't exist
+        } catch (err: any) {
+             if (err.code !== 'auth/popup-closed-by-user') {
+                 setError('Failed to sign up with Google. Please try again.');
+                 console.error(err);
+             }
+        } finally {
+            setGoogleLoading(false);
+        }
+    };
     
     return (
         <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#0D1117] text-gray-200 p-4 font-sans overflow-hidden">
@@ -73,8 +90,29 @@ const Register: React.FC<RegisterProps> = () => {
                         <p className="text-gray-400 text-sm mt-1">It's quick and easy</p>
                     </div>
 
+                    {error && <p className="text-red-400 text-sm text-center bg-red-500/20 p-3 rounded-lg border border-red-500/30">{error}</p>}
+                    
+                     <button type="button" onClick={handleGoogleSignUp} disabled={googleLoading || loading} className="w-full flex items-center justify-center py-3 px-4 rounded-lg bg-white text-gray-800 font-semibold text-base hover:bg-gray-200 transition-all duration-300 border border-gray-300 shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed">
+                        {googleLoading ? (
+                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            <>
+                                <GoogleIcon className="w-5 h-5 mr-3" />
+                                Sign Up with Google
+                            </>
+                        )}
+                    </button>
+
+                     <div className="relative flex items-center py-2">
+                        <div className="flex-grow border-t border-white/20"></div>
+                        <span className="flex-shrink mx-4 text-xs text-gray-400 uppercase">Or continue with</span>
+                        <div className="flex-grow border-t border-white/20"></div>
+                    </div>
+
                     <form className="space-y-6" onSubmit={handleSubmit}>
-                        {error && <p className="text-red-400 text-sm text-center bg-red-500/20 p-3 rounded-lg border border-red-500/30">{error}</p>}
                         <div>
                             <label htmlFor="name" className="text-sm font-medium text-gray-300 sr-only">Full Name</label>
                             <div className="relative">
@@ -118,7 +156,7 @@ const Register: React.FC<RegisterProps> = () => {
                             </div>
                         </div>
                         <div>
-                            <button type="submit" disabled={loading} className="w-full mt-2 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
                                 {loading ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
