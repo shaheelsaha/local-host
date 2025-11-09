@@ -13,10 +13,11 @@ import {
     SpinnerIcon,
     TrashIcon,
     ExternalLinkIcon,
-    WhatsAppIcon
+    WhatsAppIcon,
+    GmailIcon
 } from './icons';
 
-type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads' | 'whatsapp';
+type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads' | 'whatsapp' | 'gmail';
 
 const platforms: {
     id: SocialPlatformKey;
@@ -33,6 +34,7 @@ const platforms: {
     { id: 'tiktok', name: 'TikTok', description: 'Share short-form videos.', icon: TikTokIcon, color: '#000000', iconColorClass: 'text-white' },
     { id: 'threads', name: 'Threads', description: 'Share text updates and join conversations.', icon: ThreadsIcon, color: '#000000', iconColorClass: 'text-white' },
     { id: 'whatsapp', name: 'WhatsApp', description: 'Connect for automated messaging.', icon: WhatsAppIcon, color: '#25D366', iconColorClass: 'text-white' },
+    { id: 'gmail', name: 'Gmail', description: 'Connect for automated email follow-ups.', icon: GmailIcon, color: '#EA4335', iconColorClass: 'text-white' },
 ];
 
 // Configuration for OAuth providers
@@ -54,6 +56,12 @@ const OAUTH_CONFIG: { [key in SocialPlatformKey]?: { url: string, clientId: stri
         clientId: '1892572211603273',
         redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
         scope: 'threads_basic,threads_content_publish,threads_keyword_search,threads_manage_mentions,threads_manage_replies,threads_read_replies'
+    },
+    gmail: {
+        url: 'https://accounts.google.com/o/oauth2/v2/auth',
+        clientId: '846565674927-4k2l198f1t11b5853r22q8c4c7c8c7c.apps.googleusercontent.com',
+        redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
+        scope: 'https://www.googleapis.com/auth/gmail.send'
     }
 };
 
@@ -79,6 +87,10 @@ const PLATFORM_DB_CONFIG: {
     whatsapp: {
         checkField: 'Whatsapp_Access_token',
         fieldsToDelete: ['Whatsapp_Access_token', 'Whatsapp_ID', 'Whatsapp_name']
+    },
+    gmail: {
+        checkField: 'Gmail_Access_token',
+        fieldsToDelete: ['Gmail_Access_token', 'Gmail_refresh_token', 'Gmail_ID', 'Gmail_name']
     }
 };
 
@@ -169,6 +181,13 @@ export const Connections: React.FC = () => {
             scope: config.scope,
             state: safeUserId,
         });
+        
+        // Add access_type=offline for Google services to request a refresh token
+        if (platformId === 'gmail') {
+            params.append('access_type', 'offline');
+            params.append('prompt', 'consent');
+        }
+
         const oauthUrl = `${config.url}?${params.toString()}`;
         
         const popup = window.open(oauthUrl, `${platformId}-auth-popup`, 'width=600,height=700');

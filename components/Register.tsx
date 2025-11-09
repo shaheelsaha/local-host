@@ -63,7 +63,7 @@ const Register: React.FC<RegisterProps> = () => {
             // onAuthStateChanged will handle the rest, including creating a new user if one doesn't exist
         } catch (err: any) {
              if (err.code !== 'auth/popup-closed-by-user') {
-                 setError('Failed to sign up with Google. Please try again.');
+                 setError(`Google sign-up failed: ${err.message}`);
                  console.error(err);
              }
         } finally {

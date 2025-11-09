@@ -53,7 +53,7 @@ const Login: React.FC<LoginProps> = () => {
             // onAuthStateChanged will handle the rest
         } catch (err: any) {
             if (err.code !== 'auth/popup-closed-by-user') {
-                 setError('Failed to sign in with Google. Please try again.');
+                 setError(`Google sign-in failed: ${err.message}`);
                  console.error(err);
             }
         } finally {
