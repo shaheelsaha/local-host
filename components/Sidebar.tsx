@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                            <span className={isCollapsed ? 'sr-only' : 'inline'}>Configuration</span>
                         </p>
                         <NavLink to="/connections" onClick={onLinkClick} icon={<ConnectionsIcon />} label="Connections" isCollapsed={isCollapsed}/>
-                        <NavLink to="/commands" onClick={onLinkClick} icon={<CommandLineIcon />} label="Commands" isCollapsed={isCollapsed}/>
+                        <NavLink to="/command" onClick={onLinkClick} icon={<CommandLineIcon />} label="Command" isCollapsed={isCollapsed}/>
                         <NavLink to="/persona" onClick={onLinkClick} icon={<SparklesIcon />} label="AI Persona" isCollapsed={isCollapsed}/>
                         <NavLink to="/settings" onClick={onLinkClick} icon={<SettingsIcon />} label="Settings" isCollapsed={isCollapsed}/>
                     </div>
@@ -112,14 +112,4 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                             className={`w-full flex items-center text-left py-2 rounded-lg text-sm font-medium text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200 transition-colors ${isCollapsed ? 'justify-center' : 'px-4'}`}
                         >
-                            <ChevronDoubleLeftIcon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
-                            <span className={`ml-3 whitespace-nowrap ${isCollapsed ? 'sr-only' : 'inline-block'}`}>Collapse</span>
-                        </button>
-                    </div>
-                </div>
-            </aside>
-        </>
-    );
-};
-
-export default Sidebar;
+                            <ChevronDoubleLeftIcon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate
