@@ -262,27 +262,38 @@ type PostEditorProps = {
 type ContentType = 'image' | 'reel' | 'video';
 
 const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit, initialData, initialDate, isUploading, connectedPlatforms }) => {
-    const [mediaFiles, setMediaFiles] = React.useState<File[]>([]);
-    const [mediaPreviews, setMediaPreviews] = React.useState<{ file?: File; url: string; type: 'image' | 'video' | 'other' }[]>([]);
+    const [mediaFile, setMediaFile] = React.useState<File | null>(null);
+    const [mediaPreview, setMediaPreview] = React.useState<{ url: string; type: 'image' | 'video' } | null>(null);
     const [caption, setCaption] = React.useState('');
     const [selectedPlatforms, setSelectedPlatforms] = React.useState<SocialPlatform[]>([]);
     const [scheduledAt, setScheduledAt] = React.useState(initialDate || new Date());
     const [publishMode, setPublishMode] = React.useState<'schedule' | 'now'>('schedule');
     const [contentType, setContentType] = React.useState<ContentType>('image');
+    const [isContentTypeLocked, setIsContentTypeLocked] = React.useState(false);
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
 
     const isPublished = initialData?.status === 'published';
 
-    const resetForm = React.useCallback(() => {
-        setMediaFiles([]);
-        setMediaPreviews([]);
+    // Cleanup previous object URLs when the modal closes or media changes.
+    React.useEffect(() => {
+        return () => {
+            if (mediaPreview && mediaPreview.url.startsWith('blob:')) {
+                URL.revokeObjectURL(mediaPreview.url);
+            }
+        };
+    }, [mediaPreview]);
+
+    const resetForm = React.useCallback((baseDate: Date) => {
+        setMediaFile(null);
+        setMediaPreview(null);
         setCaption('');
         setSelectedPlatforms([]);
-        setScheduledAt(initialDate || new Date());
+        setScheduledAt(baseDate);
         setPublishMode('schedule');
         setContentType('image');
+        setIsContentTypeLocked(false);
         setErrors({});
-    }, [initialDate]);
+    }, []);
     
     React.useEffect(() => {
         if (isOpen) {
@@ -290,99 +301,77 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                 // Editing mode
                 setCaption(initialData.caption);
                 setSelectedPlatforms(initialData.platforms);
-                setScheduledAt(new Date(initialData.scheduledAt));
-                if (new Date(initialData.scheduledAt) > new Date(Date.now() + 60000)) {
-                    setPublishMode('schedule');
-                } else {
-                    setPublishMode('now');
-                }
-
-                // Infer content type for existing posts
-                const firstUrl = initialData.mediaUrls[0] || '';
-                if (firstUrl.match(/\.(mp4|mov|webm)$/i)) {
-                    if (initialData.platforms.includes(SocialPlatform.INSTAGRAM) || initialData.platforms.includes(SocialPlatform.TIKTOK)) {
-                        setContentType('reel');
+                const scheduledDate = new Date(initialData.scheduledAt);
+                setScheduledAt(scheduledDate);
+                setPublishMode(scheduledDate > new Date(Date.now() + 60000) ? 'schedule' : 'now');
+                
+                setMediaFile(null); // No new file initially
+                if (initialData.mediaUrls.length > 0) {
+                    const url = initialData.mediaUrls[0];
+                    const type = url.match(/\.(mp4|mov|webm|mkv)$/i) ? 'video' : 'image';
+                    setMediaPreview({ url, type });
+                    // NOTE: Cannot determine aspect ratio from URL, so content type is a best guess for existing posts.
+                    if (type === 'video') {
+                        const hasReelPlatform = initialData.platforms.some(p => [SocialPlatform.INSTAGRAM, SocialPlatform.TIKTOK].includes(p));
+                        setContentType(hasReelPlatform ? 'reel' : 'video');
                     } else {
-                        setContentType('video');
+                        setContentType('image');
                     }
+                    setIsContentTypeLocked(true);
                 } else {
+                    setMediaPreview(null);
+                    setIsContentTypeLocked(false);
                     setContentType('image');
                 }
-
-                const existingPreviews = initialData.mediaUrls.map(url => ({
-                    url,
-                    type: url.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image' as any,
-                }));
-                setMediaPreviews(existingPreviews);
-                setMediaFiles([]);
             } else {
                 // Creating mode
-                resetForm();
+                resetForm(initialDate || new Date());
                 setSelectedPlatforms(connectedPlatforms); // Auto-select connected platforms
-                setScheduledAt(initialDate || new Date());
             }
         }
     }, [isOpen, initialData, initialDate, resetForm, connectedPlatforms]);
-
-
-    // ✅ FIX: Refactored media preview generation for stability.
-    // This effect now correctly syncs previews when new files are added.
-    React.useEffect(() => {
-        const filePreviews = mediaFiles.map(file => {
-            let type: 'image' | 'video' | 'other' = 'other';
-            if (file.type.startsWith('image/')) type = 'image';
-            else if (file.type.startsWith('video/')) type = 'video';
-            
-            return {
-                file,
-                url: URL.createObjectURL(file),
-                type
-            };
-        });
-
-        // Combine existing http-based previews with new file-based previews
-        setMediaPreviews(currentPreviews => {
-            const existingHttpPreviews = currentPreviews.filter(p => p.url.startsWith('http'));
-            return [...existingHttpPreviews, ...filePreviews];
-        });
-
-        // Cleanup object URLs to prevent memory leaks
-        return () => {
-            filePreviews.forEach(preview => URL.revokeObjectURL(preview.url));
-        };
-    }, [mediaFiles]);
-
+    
     const handleClose = () => {
-        resetForm();
+        resetForm(new Date());
         onClose();
     };
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setMediaFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Clean up previous blob URL if it exists
+        if (mediaPreview && mediaPreview.url.startsWith('blob:')) {
+            URL.revokeObjectURL(mediaPreview.url);
+        }
+
+        setMediaFile(file);
+        setIsContentTypeLocked(false); // Unlock while detecting
+
+        const objectUrl = URL.createObjectURL(file);
+
+        if (file.type.startsWith('image/')) {
+            setMediaPreview({ url: objectUrl, type: 'image' });
+            setContentType('image');
+            setIsContentTypeLocked(true);
+        } else if (file.type.startsWith('video/')) {
+            setMediaPreview({ url: objectUrl, type: 'video' });
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                const isVertical = video.videoHeight > video.videoWidth;
+                setContentType(isVertical ? 'reel' : 'video');
+                setIsContentTypeLocked(true);
+            };
+            video.src = objectUrl;
         }
     };
 
-    // ✅ FIX: Reworked removeMedia to correctly update both preview and file states.
-    const removeMedia = (urlToRemove: string) => {
-        let fileToRemove: File | undefined;
-        
-        // Use functional updates to avoid stale state issues
-        setMediaPreviews(prev => {
-            const newPreviews = [];
-            for (const p of prev) {
-                if (p.url === urlToRemove) {
-                    fileToRemove = p.file;
-                } else {
-                    newPreviews.push(p);
-                }
-            }
-            return newPreviews;
-        });
-    
-        if (fileToRemove) {
-            setMediaFiles(prev => prev.filter(f => f !== fileToRemove));
-        }
+    const removeMedia = () => {
+        setMediaFile(null);
+        setMediaPreview(null);
+        setIsContentTypeLocked(false);
+        setContentType('image'); // Reset to default
     };
 
     const togglePlatform = (platform: SocialPlatform) => {
@@ -408,10 +397,11 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             return;
         }
         
-        const finalMediaUrls = mediaPreviews.filter(p => p.url.startsWith('http')).map(p => p.url);
+        const keptExistingUrls = mediaPreview && mediaPreview.url.startsWith('http') ? [mediaPreview.url] : [];
+        const newMediaToUpload = mediaFile ? [mediaFile] : [];
         
-        if (status !== 'draft' && finalMediaUrls.length === 0 && mediaFiles.length === 0) {
-            alert('Please upload at least one file.');
+        if (status !== 'draft' && keptExistingUrls.length === 0 && newMediaToUpload.length === 0) {
+            alert('Please upload a media file.');
             return;
         }
         
@@ -421,8 +411,8 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             tags: [], 
             scheduledAt: publishMode === 'now' ? new Date().toISOString() : scheduledAt.toISOString(),
             status,
-            mediaUrls: finalMediaUrls,
-        }, mediaFiles, finalMediaUrls);
+            mediaUrls: keptExistingUrls, // Pass only existing URLs. The parent component will handle upload and merge.
+        }, newMediaToUpload, keptExistingUrls);
     }
 
     return (
@@ -438,54 +428,34 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmission('scheduled'); }} className="flex-1 overflow-y-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2">
                         <div className="p-6 md:order-2 bg-gray-50/70">
-                            {mediaPreviews.length > 0 ? (
+                            {mediaPreview ? (
                                 <div>
                                     <div className={`relative w-full bg-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 ${contentType === 'reel' ? 'aspect-[9/16] max-w-[280px] mx-auto' : 'aspect-square'}`}>
                                         <div className={`w-full h-full overflow-hidden ${contentType === 'reel' ? 'rounded-xl shadow-inner' : ''}`}>
-                                            {mediaPreviews[0].type === 'video' 
-                                                ? <video src={mediaPreviews[0].url} controls className="w-full h-full object-contain bg-gray-900"></video>
-                                                : <img src={mediaPreviews[0].url} alt="preview" className="w-full h-full object-contain"/>
+                                            {mediaPreview.type === 'video' 
+                                                ? <video src={mediaPreview.url} controls className="w-full h-full object-contain bg-gray-900"></video>
+                                                : <img src={mediaPreview.url} alt="preview" className="w-full h-full object-contain"/>
                                             }
                                         </div>
-                                    </div>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {mediaPreviews.map((preview, i) => (
-                                            <div key={preview.url} className="relative w-16 h-16 border-2 border-gray-300 rounded-md overflow-hidden cursor-pointer hover:border-blue-500">
-                                                {preview.type === 'image' ? (
-                                                    <img src={preview.url} alt="thumbnail" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="relative w-full h-full">
-                                                        <video src={preview.url} muted className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                                                            <PlayIcon className="w-6 h-6 text-white" />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {!isPublished && <button 
-                                                    type="button" 
-                                                    onClick={() => removeMedia(preview.url)}
-                                                    className="absolute top-0.5 right-0.5 bg-black bg-opacity-60 text-white rounded-full p-0.5 hover:bg-red-500 transition-colors"
-                                                    aria-label={`Remove media`}
-                                                >
-                                                    <XIcon className="w-3 h-3" />
-                                                </button>}
-                                            </div>
-                                        ))}
-                                        {!isPublished && <label htmlFor="modal-file-upload-thumb" className="w-16 h-16 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors">
-                                            <PlusIcon className="w-6 h-6 text-gray-400" />
-                                        </label>}
-                                        <input type="file" multiple onChange={handleFileChange} className="hidden" id="modal-file-upload-thumb" disabled={isPublished} />
+                                         {!isPublished && <button 
+                                            type="button" 
+                                            onClick={removeMedia}
+                                            className="absolute top-2 right-2 z-10 bg-black bg-opacity-60 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
+                                            aria-label={`Remove media`}
+                                        >
+                                            <XIcon className="w-4 h-4" />
+                                        </button>}
                                     </div>
                                 </div>
                             ) : (
                                 <label htmlFor="modal-file-upload-main" className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50/30 transition-colors">
                                      <UploadIcon className="w-12 h-12 text-gray-400 mb-4" />
                                      <h3 className="font-semibold text-gray-700">Upload your media</h3>
-                                     <p className="text-sm text-gray-500 mt-1">Drag & drop files or click to browse.</p>
+                                     <p className="text-sm text-gray-500 mt-1">Drag & drop a file or click to browse.</p>
                                      <span className="mt-4 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700">
-                                        Browse files
+                                        Browse file
                                      </span>
-                                     <input type="file" multiple onChange={handleFileChange} className="hidden" id="modal-file-upload-main" disabled={isPublished} />
+                                     <input type="file" onChange={handleFileChange} className="hidden" id="modal-file-upload-main" disabled={isPublished} accept="image/*,video/*"/>
                                 </label>
                             )}
                         </div>
@@ -528,9 +498,9 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
                                 <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
-                                    <button type="button" onClick={() => setContentType('image')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'image' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Image</button>
-                                    <button type="button" onClick={() => setContentType('reel')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'reel' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Reel</button>
-                                    <button type="button" onClick={() => setContentType('video')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'video' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Video</button>
+                                    <button type="button" onClick={() => setContentType('image')} disabled={isPublished || (isContentTypeLocked && contentType !== 'image')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'image' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Image</button>
+                                    <button type="button" onClick={() => setContentType('reel')} disabled={isPublished || (isContentTypeLocked && contentType !== 'reel')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'reel' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Reel</button>
+                                    <button type="button" onClick={() => setContentType('video')} disabled={isPublished || (isContentTypeLocked && contentType !== 'video')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'video' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Video</button>
                                 </div>
                             </div>
 
@@ -713,15 +683,15 @@ const Schedule: React.FC = () => {
         
         try {
             // Delete media from storage
-            const deletePromises = post.mediaUrls.map(url => {
-                // FIX: Refactor Firebase calls to v8 compat syntax.
-                const fileRef = storage.refFromURL(url);
-                return fileRef.delete();
-            });
-            await Promise.all(deletePromises);
+            if (post.mediaUrls.length > 0) {
+                const deletePromises = post.mediaUrls.map(url => {
+                    const fileRef = storage.refFromURL(url);
+                    return fileRef.delete();
+                });
+                await Promise.all(deletePromises);
+            }
 
             // Delete post from firestore
-            // FIX: Refactor Firebase calls to v8 compat syntax.
             await db.collection('posts').doc(post.id).delete();
 
         } catch (error) {
@@ -731,7 +701,7 @@ const Schedule: React.FC = () => {
     };
 
 
-    const handleFormSubmit = async (postData: Omit<Post, 'id' | 'userId'>, newMediaFiles: File[], existingMediaUrls: string[]) => {
+    const handleFormSubmit = async (postData: Omit<Post, 'id' | 'userId'>, newMediaFiles: File[], keptExistingUrls: string[]) => {
         const user = auth.currentUser;
         if (!user) {
             alert("You must be logged in to create a post.");
@@ -741,14 +711,20 @@ const Schedule: React.FC = () => {
         try {
             const newMediaUrls = await Promise.all(
                 newMediaFiles.map(async file => {
-                    // FIX: Refactor Firebase calls to v8 compat syntax.
                     const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${file.name}`);
                     await storageRef.put(file);
                     return await storageRef.getDownloadURL();
                 })
             );
 
-            const finalMediaUrls = [...existingMediaUrls, ...newMediaUrls];
+            if (editingPost) {
+                const urlsToDelete = editingPost.mediaUrls.filter(url => !keptExistingUrls.includes(url));
+                if (urlsToDelete.length > 0) {
+                    await Promise.all(urlsToDelete.map(url => storage.refFromURL(url).delete().catch(err => console.error(`Failed to delete old media ${url}`, err))));
+                }
+            }
+
+            const finalMediaUrls = [...keptExistingUrls, ...newMediaUrls];
             const dataToSave = {
                 ...postData,
                 userId: user.uid,
@@ -759,12 +735,10 @@ const Schedule: React.FC = () => {
 
             if (editingPost) {
                 // Update existing post
-                // FIX: Refactor Firebase calls to v8 compat syntax.
                 const postRef = db.collection('posts').doc(editingPost.id);
                 await postRef.update(dataToSave);
             } else {
                 // Create new post
-                // FIX: Refactor Firebase calls to v8 compat syntax.
                 await db.collection('posts').add(dataToSave);
             }
 
