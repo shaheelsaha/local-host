@@ -138,124 +138,6 @@ const TimePicker: React.FC<{
     );
 };
 
-const DateTimePicker: React.FC<{
-    selectedDate: Date;
-    onChange: (date: Date) => void;
-    disabled?: boolean;
-}> = ({ selectedDate, onChange, disabled }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [displayDate, setDisplayDate] = React.useState(selectedDate || new Date());
-    const datePickerRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        setDisplayDate(selectedDate || new Date());
-    }, [selectedDate]);
-
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
-    const firstDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0);
-    const daysInMonth = lastDayOfMonth.getDate();
-    const startDayOfWeek = firstDayOfMonth.getDay();
-
-    const calendarDays = [];
-    for (let i = 0; i < startDayOfWeek; i++) {
-        const date = new Date(firstDayOfMonth);
-        date.setDate(date.getDate() - (startDayOfWeek - i));
-        calendarDays.push({ date, isCurrentMonth: false });
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(displayDate.getFullYear(), displayDate.getMonth(), i);
-        calendarDays.push({ date, isCurrentMonth: true });
-    }
-    const remainingCells = 42 - calendarDays.length;
-    for (let i = 1; i <= remainingCells; i++) {
-        const date = new Date(lastDayOfMonth);
-        date.setDate(date.getDate() + i);
-        calendarDays.push({ date, isCurrentMonth: false });
-    }
-
-    const handleDateSelect = (date: Date) => {
-        const newDate = new Date(selectedDate);
-        newDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-        onChange(newDate);
-        // Do not close on date select, allow time to be picked.
-    };
-
-    const changeMonth = (amount: number) => {
-        setDisplayDate(prev => {
-            const newDate = new Date(prev);
-            newDate.setMonth(newDate.getMonth() + amount);
-            return newDate;
-        });
-    };
-
-    const formattedDateTime = selectedDate.toLocaleString('en-US', {
-        month: 'short', day: 'numeric', year: 'numeric',
-        hour: 'numeric', minute: '2-digit', hour12: true
-    });
-
-    return (
-        <div className="relative w-full" ref={datePickerRef}>
-             <button
-                type="button"
-                onClick={() => !disabled && setIsOpen(!isOpen)}
-                disabled={disabled}
-                className="pl-3 pr-4 py-2 w-full flex items-center bg-gray-100 border border-gray-300 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200"
-            >
-                <CalendarIcon className="w-5 h-5 text-gray-500 mr-2" />
-                <span className="text-gray-800">{formattedDateTime}</span>
-            </button>
-            <div className={`absolute z-20 mt-2 w-full min-w-[320px] rounded-lg bg-white shadow-xl p-4 border border-gray-200 transition-all duration-200 ease-out origin-top ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="flex justify-between items-center mb-4">
-                    <button type="button" onClick={() => changeMonth(-1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronLeftIcon className="w-5 h-5 text-gray-600" /></button>
-                    <div className="font-semibold text-gray-800">
-                        {displayDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                    </div>
-                    <button type="button" onClick={() => changeMonth(1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronRightIcon className="w-5 h-5 text-gray-600" /></button>
-                </div>
-                <div className="grid grid-cols-7 gap-1 justify-items-center">
-                    {daysOfWeek.map(day => <div key={day} className="text-xs font-medium text-gray-500 w-10 h-10 flex items-center justify-center">{day}</div>)}
-                    {calendarDays.map(({ date, isCurrentMonth }, index) => {
-                        const isSelected = date.toDateString() === selectedDate.toDateString();
-                        const isToday = date.toDateString() === new Date().toDateString();
-                        return (
-                            <button
-                                key={index}
-                                type="button"
-                                onClick={() => handleDateSelect(date)}
-                                className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm transition-colors
-                                    ${!isCurrentMonth ? 'text-gray-300' : 'text-gray-700 hover:bg-blue-100'}
-                                    ${isSelected ? 'bg-gray-900 text-white hover:bg-gray-800 font-semibold' : ''}
-                                    ${!isSelected && isToday ? 'ring-1 ring-blue-500 text-blue-600' : ''}
-                                `}
-                            >
-                                {date.getDate()}
-                            </button>
-                        );
-                    })}
-                </div>
-                 <div className="border-t border-gray-200 mt-4 pt-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Time</span>
-                    <TimePicker selectedTime={selectedDate} onChange={onChange} disabled={disabled} />
-                </div>
-            </div>
-        </div>
-    );
-};
-
 type PostEditorProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -552,9 +434,29 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                     </label>
                                 </div>
                                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${publishMode === 'schedule' ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
-                                    <div className="pt-2">
-                                        <DateTimePicker
-                                            selectedDate={scheduledAt}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                        <div className="relative">
+                                            <label htmlFor="schedule-date" className="sr-only">Date</label>
+                                            <div className="relative">
+                                                <CalendarIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                <input
+                                                    type="date"
+                                                    id="schedule-date"
+                                                    value={scheduledAt.toISOString().split('T')[0]}
+                                                    onChange={(e) => {
+                                                        if (!e.target.value) return;
+                                                        const [year, month, day] = e.target.value.split('-').map(Number);
+                                                        const newDate = new Date(scheduledAt);
+                                                        newDate.setFullYear(year, month - 1, day);
+                                                        setScheduledAt(newDate);
+                                                    }}
+                                                    disabled={isPublished}
+                                                    className="pl-10 pr-3 py-2.5 w-full bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:cursor-not-allowed"
+                                                />
+                                            </div>
+                                        </div>
+                                        <TimePicker
+                                            selectedTime={scheduledAt}
                                             onChange={setScheduledAt}
                                             disabled={isPublished}
                                         />
