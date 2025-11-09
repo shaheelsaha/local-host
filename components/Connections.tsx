@@ -12,10 +12,11 @@ import {
     CheckCircleIcon,
     SpinnerIcon,
     TrashIcon,
-    ExternalLinkIcon
+    ExternalLinkIcon,
+    WhatsAppIcon
 } from './icons';
 
-type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads';
+type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads' | 'whatsapp';
 
 const platforms: {
     id: SocialPlatformKey;
@@ -31,6 +32,7 @@ const platforms: {
     { id: 'youtube', name: 'YouTube Channel', description: 'Schedule and publish videos.', icon: YouTubeIcon, color: '#FF0000', iconColorClass: 'text-white' },
     { id: 'tiktok', name: 'TikTok', description: 'Share short-form videos.', icon: TikTokIcon, color: '#000000', iconColorClass: 'text-white' },
     { id: 'threads', name: 'Threads', description: 'Share text updates and join conversations.', icon: ThreadsIcon, color: '#000000', iconColorClass: 'text-white' },
+    { id: 'whatsapp', name: 'WhatsApp', description: 'Connect for automated messaging.', icon: WhatsAppIcon, color: '#25D366', iconColorClass: 'text-white' },
 ];
 
 // Configuration for OAuth providers
@@ -73,6 +75,10 @@ const PLATFORM_DB_CONFIG: {
     threads: { 
         checkField: 'Thread_Access',
         fieldsToDelete: ['Thread_Access', 'Threads_ID', 'Threads_name']
+    },
+    whatsapp: {
+        checkField: 'Whatsapp_Access_token',
+        fieldsToDelete: ['Whatsapp_Access_token', 'Whatsapp_ID', 'Whatsapp_name']
     }
 };
 

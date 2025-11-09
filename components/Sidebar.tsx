@@ -53,7 +53,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                         <div className="bg-white/10 rounded-lg p-2 mr-3 flex-shrink-0">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
                                 <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-                                <path d="M15.5 12C15.5 13.933 1.3933 15.5 12 15.5C10.067 15.5 8.5 13.933 8.5 12C8.5 10.067 10.067 8.5 12 8.5C13.933 8.5 15.5 10.067 15.5 12Z" stroke="currentColor" strokeWidth="1.5"/>
+                                {/* FIX: Corrected typo in SVG path data for the logo's inner circle. */}
+                                <path d="M15.5 12C15.5 13.933 13.933 15.5 12 15.5C10.067 15.5 8.5 13.933 8.5 12C8.5 10.067 10.067 8.5 12 8.5C13.933 8.5 15.5 10.067 15.5 12Z" stroke="currentColor" strokeWidth="1.5"/>
                                 <path d="M12 4.5V2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                                 <path d="M12 22V19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                                 <path d="M19.5 12H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -112,4 +113,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                             className={`w-full flex items-center text-left py-2 rounded-lg text-sm font-medium text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200 transition-colors ${isCollapsed ? 'justify-center' : 'px-4'}`}
                         >
-                            <ChevronDoubleLeftIcon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate
+                            {/* FIX: Corrected typo in Tailwind CSS class for icon rotation. */}
+                            <ChevronDoubleLeftIcon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+                            <span className={`ml-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>Collapse</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </>
+    );
+};
+
+// FIX: Added default export to make the component available for import in other files.
+export default Sidebar;
