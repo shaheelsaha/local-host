@@ -259,6 +259,8 @@ type PostEditorProps = {
     connectedPlatforms: SocialPlatform[];
 };
 
+type ContentType = 'image' | 'reel' | 'video';
+
 const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit, initialData, initialDate, isUploading, connectedPlatforms }) => {
     const [mediaFiles, setMediaFiles] = React.useState<File[]>([]);
     const [mediaPreviews, setMediaPreviews] = React.useState<{ file?: File; url: string; type: 'image' | 'video' | 'other' }[]>([]);
@@ -266,6 +268,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     const [selectedPlatforms, setSelectedPlatforms] = React.useState<SocialPlatform[]>([]);
     const [scheduledAt, setScheduledAt] = React.useState(initialDate || new Date());
     const [publishMode, setPublishMode] = React.useState<'schedule' | 'now'>('schedule');
+    const [contentType, setContentType] = React.useState<ContentType>('image');
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
 
     const isPublished = initialData?.status === 'published';
@@ -277,6 +280,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         setSelectedPlatforms([]);
         setScheduledAt(initialDate || new Date());
         setPublishMode('schedule');
+        setContentType('image');
         setErrors({});
     }, [initialDate]);
     
@@ -287,26 +291,38 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                 setCaption(initialData.caption);
                 setSelectedPlatforms(initialData.platforms);
                 setScheduledAt(new Date(initialData.scheduledAt));
-                 // Simple check to determine initial publish mode
-                if (initialData.status === 'draft' || new Date(initialData.scheduledAt) < new Date(Date.now() + 60000)) {
-                    setPublishMode('schedule'); // Default to schedule for drafts or past posts
-                } else {
+                if (new Date(initialData.scheduledAt) > new Date(Date.now() + 60000)) {
                     setPublishMode('schedule');
+                } else {
+                    setPublishMode('now');
+                }
+
+                // Infer content type for existing posts
+                const firstUrl = initialData.mediaUrls[0] || '';
+                if (firstUrl.match(/\.(mp4|mov|webm)$/i)) {
+                    if (initialData.platforms.includes(SocialPlatform.INSTAGRAM) || initialData.platforms.includes(SocialPlatform.TIKTOK)) {
+                        setContentType('reel');
+                    } else {
+                        setContentType('video');
+                    }
+                } else {
+                    setContentType('image');
                 }
 
                 const existingPreviews = initialData.mediaUrls.map(url => ({
                     url,
-                    type: url.includes('.mp4') || url.includes('video') ? 'video' : 'image' as any,
+                    type: url.match(/\.(mp4|mov|webm)$/i) ? 'video' : 'image' as any,
                 }));
                 setMediaPreviews(existingPreviews);
                 setMediaFiles([]);
             } else {
                 // Creating mode
                 resetForm();
+                setSelectedPlatforms(connectedPlatforms); // Auto-select connected platforms
                 setScheduledAt(initialDate || new Date());
             }
         }
-    }, [isOpen, initialData, initialDate, resetForm]);
+    }, [isOpen, initialData, initialDate, resetForm, connectedPlatforms]);
 
 
     // ✅ FIX: Refactored media preview generation for stability.
@@ -424,11 +440,13 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                         <div className="p-6 md:order-2 bg-gray-50/70">
                             {mediaPreviews.length > 0 ? (
                                 <div>
-                                    <div className="relative w-full aspect-square bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
-                                        {mediaPreviews[0].type === 'video' 
-                                            ? <video src={mediaPreviews[0].url} controls className="w-full h-full object-contain bg-gray-900"></video>
-                                            : <img src={mediaPreviews[0].url} alt="preview" className="w-full h-full object-contain"/>
-                                        }
+                                    <div className={`relative w-full bg-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 ${contentType === 'reel' ? 'aspect-[9/16] max-w-[280px] mx-auto' : 'aspect-square'}`}>
+                                        <div className={`w-full h-full overflow-hidden ${contentType === 'reel' ? 'rounded-xl shadow-inner' : ''}`}>
+                                            {mediaPreviews[0].type === 'video' 
+                                                ? <video src={mediaPreviews[0].url} controls className="w-full h-full object-contain bg-gray-900"></video>
+                                                : <img src={mediaPreviews[0].url} alt="preview" className="w-full h-full object-contain"/>
+                                            }
+                                        </div>
                                     </div>
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         {mediaPreviews.map((preview, i) => (
@@ -504,6 +522,16 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                     })}
                                 </div>
                                 {errors.platform && <p className="text-red-500 text-xs mt-2">{errors.platform}</p>}
+                            </div>
+
+                            {/* Content Type Selector */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                                <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                                    <button type="button" onClick={() => setContentType('image')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'image' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Image</button>
+                                    <button type="button" onClick={() => setContentType('reel')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'reel' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Reel</button>
+                                    <button type="button" onClick={() => setContentType('video')} disabled={isPublished} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors ${contentType === 'video' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Video</button>
+                                </div>
                             </div>
 
                             {/* Caption */}
