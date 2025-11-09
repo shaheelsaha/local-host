@@ -14,6 +14,7 @@ const fileToGenerativePart = async (file: File) => {
   const base64EncodedDataPromise = new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+    // FIX: Corrected method name from readDataURL to readAsDataURL.
     reader.readAsDataURL(file);
   });
   return {
@@ -22,128 +23,16 @@ const fileToGenerativePart = async (file: File) => {
 };
 
 
-const platformDetails: { [key in SocialPlatform]: { icon: React.FC<{className?: string}>, color: string } } = {
-    [SocialPlatform.FACEBOOK]: { icon: FacebookIcon, color: 'bg-blue-800' },
-    [SocialPlatform.INSTAGRAM]: { icon: InstagramIcon, color: 'bg-pink-600' },
-    [SocialPlatform.LINKEDIN]: { icon: LinkedInIcon, color: 'bg-blue-700' },
-    [SocialPlatform.THREADS]: { icon: ThreadsIcon, color: 'bg-black' },
-    [SocialPlatform.TWITTER]: { icon: TwitterIcon, color: 'bg-sky-500' },
-    [SocialPlatform.TIKTOK]: { icon: TikTokIcon, color: 'bg-black' },
-    [SocialPlatform.YOUTUBE]: { icon: YouTubeIcon, color: 'bg-red-600' },
-    [SocialPlatform.DRIBBBLE]: { icon: DribbbleIcon, color: 'bg-pink-500' },
+const platformDetails: { [key in SocialPlatform]: { icon: React.FC<{className?: string, style?: React.CSSProperties}>, color: string, brandColor: string } } = {
+    [SocialPlatform.FACEBOOK]: { icon: FacebookIcon, color: 'bg-blue-800', brandColor: '#1877F2' },
+    [SocialPlatform.INSTAGRAM]: { icon: InstagramIcon, color: 'bg-pink-600', brandColor: 'transparent' },
+    [SocialPlatform.LINKEDIN]: { icon: LinkedInIcon, color: 'bg-blue-700', brandColor: '#0A66C2' },
+    [SocialPlatform.THREADS]: { icon: ThreadsIcon, color: 'bg-black', brandColor: '#000000' },
+    [SocialPlatform.TWITTER]: { icon: TwitterIcon, color: 'bg-sky-500', brandColor: '#000000' },
+    [SocialPlatform.TIKTOK]: { icon: TikTokIcon, color: 'bg-black', brandColor: '#000000' },
+    [SocialPlatform.YOUTUBE]: { icon: YouTubeIcon, color: 'bg-red-600', brandColor: '#FF0000' },
+    [SocialPlatform.DRIBBBLE]: { icon: DribbbleIcon, color: 'bg-pink-500', brandColor: '#ea4c89' },
 };
-
-const DatePicker: React.FC<{
-    selectedDate: Date;
-    onChange: (date: Date) => void;
-    disabled?: boolean;
-}> = ({ selectedDate, onChange, disabled }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [displayDate, setDisplayDate] = React.useState(selectedDate || new Date());
-    const datePickerRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        setDisplayDate(selectedDate || new Date());
-    }, [selectedDate]);
-
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
-
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
-    const firstDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0);
-    const daysInMonth = lastDayOfMonth.getDate();
-    const startDayOfWeek = firstDayOfMonth.getDay();
-
-    const calendarDays = [];
-    for (let i = 0; i < startDayOfWeek; i++) {
-        const date = new Date(firstDayOfMonth);
-        date.setDate(date.getDate() - (startDayOfWeek - i));
-        calendarDays.push({ date, isCurrentMonth: false });
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(displayDate.getFullYear(), displayDate.getMonth(), i);
-        calendarDays.push({ date, isCurrentMonth: true });
-    }
-    const remainingCells = 42 - calendarDays.length;
-    for (let i = 1; i <= remainingCells; i++) {
-        const date = new Date(lastDayOfMonth);
-        date.setDate(date.getDate() + i);
-        calendarDays.push({ date, isCurrentMonth: false });
-    }
-
-    const handleDateSelect = (date: Date) => {
-        const newDate = new Date(selectedDate);
-        newDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-        onChange(newDate);
-        setIsOpen(false);
-    };
-
-    const changeMonth = (amount: number) => {
-        setDisplayDate(prev => {
-            const newDate = new Date(prev);
-            newDate.setMonth(newDate.getMonth() + amount);
-            return newDate;
-        });
-    };
-
-    const formattedDate = new Intl.DateTimeFormat('en-US').format(selectedDate);
-
-    return (
-        <div className="relative w-full" ref={datePickerRef}>
-             <button
-                type="button"
-                onClick={() => !disabled && setIsOpen(!isOpen)}
-                disabled={disabled}
-                className="pl-3 pr-4 py-2 w-full flex items-center bg-gray-100 border border-gray-300 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200"
-            >
-                <CalendarIcon className="w-5 h-5 text-gray-500 mr-2" />
-                <span className="text-gray-800">{formattedDate}</span>
-            </button>
-            <div className={`absolute z-20 mt-2 w-full min-w-[280px] rounded-lg bg-white shadow-xl p-4 border border-gray-200 transition-all duration-200 ease-out origin-top ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="flex justify-between items-center mb-4">
-                    <button type="button" onClick={() => changeMonth(-1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronLeftIcon className="w-5 h-5 text-gray-600" /></button>
-                    <div className="font-semibold text-gray-800">
-                        {displayDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                    </div>
-                    <button type="button" onClick={() => changeMonth(1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronRightIcon className="w-5 h-5 text-gray-600" /></button>
-                </div>
-                <div className="grid grid-cols-7 gap-y-1 justify-items-center">
-                    {daysOfWeek.map(day => <div key={day} className="text-xs font-medium text-gray-500 w-9 h-9 flex items-center justify-center">{day}</div>)}
-                    {calendarDays.map(({ date, isCurrentMonth }, index) => {
-                        const isSelected = date.toDateString() === selectedDate.toDateString();
-                        const isToday = date.toDateString() === new Date().toDateString();
-                        return (
-                            <button
-                                key={index}
-                                type="button"
-                                onClick={() => handleDateSelect(date)}
-                                className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm transition-colors
-                                    ${!isCurrentMonth ? 'text-gray-300' : 'text-gray-700 hover:bg-blue-100'}
-                                    ${isSelected ? 'bg-blue-600 text-white hover:bg-blue-700 font-semibold' : ''}
-                                    ${!isSelected && isToday ? 'ring-1 ring-blue-500 text-blue-600' : ''}
-                                `}
-                            >
-                                {date.getDate()}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
-};
-
 
 const TimePicker: React.FC<{
     selectedTime: Date;
@@ -244,6 +133,124 @@ const TimePicker: React.FC<{
             <div className="flex items-center bg-gray-200 rounded-lg p-0.5">
                 <button type="button" onClick={() => handlePeriodChange('AM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'AM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-300'}`}>AM</button>
                 <button type="button" onClick={() => handlePeriodChange('PM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'PM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-300'}`}>PM</button>
+            </div>
+        </div>
+    );
+};
+
+const DateTimePicker: React.FC<{
+    selectedDate: Date;
+    onChange: (date: Date) => void;
+    disabled?: boolean;
+}> = ({ selectedDate, onChange, disabled }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [displayDate, setDisplayDate] = React.useState(selectedDate || new Date());
+    const datePickerRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        setDisplayDate(selectedDate || new Date());
+    }, [selectedDate]);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    const firstDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1);
+    const lastDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+    const startDayOfWeek = firstDayOfMonth.getDay();
+
+    const calendarDays = [];
+    for (let i = 0; i < startDayOfWeek; i++) {
+        const date = new Date(firstDayOfMonth);
+        date.setDate(date.getDate() - (startDayOfWeek - i));
+        calendarDays.push({ date, isCurrentMonth: false });
+    }
+    for (let i = 1; i <= daysInMonth; i++) {
+        const date = new Date(displayDate.getFullYear(), displayDate.getMonth(), i);
+        calendarDays.push({ date, isCurrentMonth: true });
+    }
+    const remainingCells = 42 - calendarDays.length;
+    for (let i = 1; i <= remainingCells; i++) {
+        const date = new Date(lastDayOfMonth);
+        date.setDate(date.getDate() + i);
+        calendarDays.push({ date, isCurrentMonth: false });
+    }
+
+    const handleDateSelect = (date: Date) => {
+        const newDate = new Date(selectedDate);
+        newDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+        onChange(newDate);
+        // Do not close on date select, allow time to be picked.
+    };
+
+    const changeMonth = (amount: number) => {
+        setDisplayDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setMonth(newDate.getMonth() + amount);
+            return newDate;
+        });
+    };
+
+    const formattedDateTime = selectedDate.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+    });
+
+    return (
+        <div className="relative w-full" ref={datePickerRef}>
+             <button
+                type="button"
+                onClick={() => !disabled && setIsOpen(!isOpen)}
+                disabled={disabled}
+                className="pl-3 pr-4 py-2 w-full flex items-center bg-gray-100 border border-gray-300 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200"
+            >
+                <CalendarIcon className="w-5 h-5 text-gray-500 mr-2" />
+                <span className="text-gray-800">{formattedDateTime}</span>
+            </button>
+            <div className={`absolute z-20 mt-2 w-full min-w-[320px] rounded-lg bg-white shadow-xl p-4 border border-gray-200 transition-all duration-200 ease-out origin-top ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className="flex justify-between items-center mb-4">
+                    <button type="button" onClick={() => changeMonth(-1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronLeftIcon className="w-5 h-5 text-gray-600" /></button>
+                    <div className="font-semibold text-gray-800">
+                        {displayDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                    </div>
+                    <button type="button" onClick={() => changeMonth(1)} className="p-1 rounded-full hover:bg-gray-100"><ChevronRightIcon className="w-5 h-5 text-gray-600" /></button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 justify-items-center">
+                    {daysOfWeek.map(day => <div key={day} className="text-xs font-medium text-gray-500 w-10 h-10 flex items-center justify-center">{day}</div>)}
+                    {calendarDays.map(({ date, isCurrentMonth }, index) => {
+                        const isSelected = date.toDateString() === selectedDate.toDateString();
+                        const isToday = date.toDateString() === new Date().toDateString();
+                        return (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={() => handleDateSelect(date)}
+                                className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm transition-colors
+                                    ${!isCurrentMonth ? 'text-gray-300' : 'text-gray-700 hover:bg-blue-100'}
+                                    ${isSelected ? 'bg-gray-900 text-white hover:bg-gray-800 font-semibold' : ''}
+                                    ${!isSelected && isToday ? 'ring-1 ring-blue-500 text-blue-600' : ''}
+                                `}
+                            >
+                                {date.getDate()}
+                            </button>
+                        );
+                    })}
+                </div>
+                 <div className="border-t border-gray-200 mt-4 pt-4 flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Time</span>
+                    <TimePicker selectedTime={selectedDate} onChange={onChange} disabled={disabled} />
+                </div>
             </div>
         </div>
     );
@@ -463,10 +470,22 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                             {/* Platform Selector */}
                             <div>
                                 <div className="grid grid-cols-4 gap-3">
-                                    {Object.entries(platformDetails).map(([key, {icon: Icon}]) => {
+                                    {Object.entries(platformDetails).map(([key, {icon: Icon, brandColor}]) => {
                                         const platformKey = key as SocialPlatform;
                                         const isConnected = connectedPlatforms.includes(platformKey);
+                                        const isSelected = selectedPlatforms.includes(platformKey);
                                         
+                                        const iconStyle: React.CSSProperties = {};
+                                        let iconClasses = "w-8 h-8 transition-colors duration-200";
+
+                                        if (isSelected && isConnected) {
+                                            if (platformKey !== SocialPlatform.INSTAGRAM) {
+                                                iconStyle.color = brandColor;
+                                            }
+                                        } else {
+                                            iconClasses += " grayscale";
+                                        }
+
                                         return (
                                             <button
                                                 key={key}
@@ -475,18 +494,18 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                 disabled={!isConnected || isPublished}
                                                 title={!isConnected ? `Connect ${platformKey} on the Connections page` : `Click to publish to ${platformKey}`}
                                                 className={`p-3 border rounded-lg flex items-center justify-center transition-all duration-200 h-16 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                                                    ${selectedPlatforms.includes(platformKey) 
+                                                    ${isSelected 
                                                         ? 'border-blue-500 bg-blue-50/80 shadow-inner' 
                                                         : 'border-gray-200 bg-white'
                                                     }
                                                     ${isConnected 
                                                         ? 'hover:border-blue-400 hover:scale-105 active:scale-100 cursor-pointer' 
-                                                        : 'grayscale opacity-60 cursor-not-allowed'
+                                                        : 'opacity-60 cursor-not-allowed'
                                                     }
                                                     ${isPublished ? 'cursor-not-allowed hover:border-gray-200' : ''}
                                                 `}
                                             >
-                                                <Icon className="w-8 h-8" />
+                                                <Icon className={iconClasses} style={iconStyle} />
                                             </button>
                                         );
                                     })}
@@ -533,14 +552,9 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                     </label>
                                 </div>
                                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${publishMode === 'schedule' ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
-                                    <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 pt-2">
-                                        <DatePicker
+                                    <div className="pt-2">
+                                        <DateTimePicker
                                             selectedDate={scheduledAt}
-                                            onChange={setScheduledAt}
-                                            disabled={isPublished}
-                                        />
-                                        <TimePicker
-                                            selectedTime={scheduledAt}
                                             onChange={setScheduledAt}
                                             disabled={isPublished}
                                         />
