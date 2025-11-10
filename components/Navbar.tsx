@@ -7,7 +7,7 @@ interface NavbarProps {}
 
 const Logo: React.FC = () => (
     <div className="flex items-center">
-        <img src="/logo.png" alt="Logo" className="h-8 w-auto mr-3" />
+        <img src="/assets/logo.png" alt="Logo" className="h-8 w-auto mr-3" />
         <h1 className="text-xl font-semibold tracking-tight text-white">SAHA AI</h1>
     </div>
 );
