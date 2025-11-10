@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 // FIX: Refactor Firebase calls to v8 compat syntax.
 // import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
-import { EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from './icons';
+import { EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon, XIcon } from './icons';
 import ParticleNetwork from './ParticleNetwork';
 
 interface LoginProps {}
@@ -16,6 +16,12 @@ const Login: React.FC<LoginProps> = () => {
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const [googleLoading, setGoogleLoading] = React.useState(false);
+
+    // State for Forgot Password Modal
+    const [isForgotPasswordOpen, setIsForgotPasswordOpen] = React.useState(false);
+    const [resetEmail, setResetEmail] = React.useState('');
+    const [resetMessage, setResetMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [resetLoading, setResetLoading] = React.useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -59,6 +65,31 @@ const Login: React.FC<LoginProps> = () => {
         } finally {
             setGoogleLoading(false);
         }
+    };
+
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setResetMessage(null);
+        setResetLoading(true);
+        try {
+            await auth.sendPasswordResetEmail(resetEmail);
+            setResetMessage({ type: 'success', text: 'Password reset email sent! Please check your inbox (and spam folder).' });
+        } catch (err: any) {
+            if (err.code === 'auth/user-not-found') {
+                setResetMessage({ type: 'error', text: 'No user found with this email address.' });
+            } else {
+                setResetMessage({ type: 'error', text: 'Failed to send reset email. Please try again.' });
+                console.error(err);
+            }
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    const openForgotPasswordModal = () => {
+        setIsForgotPasswordOpen(true);
+        setResetEmail('');
+        setResetMessage(null);
     };
 
     return (
@@ -123,7 +154,7 @@ const Login: React.FC<LoginProps> = () => {
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label htmlFor="password" className="text-sm font-medium text-gray-300 sr-only">Password</label>
-                                <a href="#" className="text-sm text-[#00FFC2] hover:underline">Forgot Password?</a>
+                                <button type="button" onClick={openForgotPasswordModal} className="text-sm text-[#00FFC2] hover:underline">Forgot Password?</button>
                             </div>
                             <div className="relative">
                                 <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -169,6 +200,56 @@ const Login: React.FC<LoginProps> = () => {
                     Copyright © 2025 SAHA AI. All Rights Reserved.
                 </p>
             </div>
+
+            {/* Forgot Password Modal */}
+            {isForgotPasswordOpen && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-opacity">
+                    <div className="bg-gray-900/80 border border-white/10 rounded-2xl w-full max-w-md p-8 relative shadow-2xl shadow-black/40">
+                        <button onClick={() => setIsForgotPasswordOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                            <XIcon className="w-6 h-6" />
+                        </button>
+                        <h3 className="text-xl font-bold text-white mb-2">Reset Password</h3>
+                        <p className="text-gray-400 text-sm mb-6">Enter your email and we'll send you a link to reset your password.</p>
+                        
+                        {resetMessage && (
+                            <p className={`text-sm text-center p-3 rounded-lg border mb-4 ${resetMessage.type === 'success' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                {resetMessage.text}
+                            </p>
+                        )}
+
+                        {resetMessage?.type !== 'success' && (
+                            <form onSubmit={handleForgotPassword}>
+                                <div className="relative">
+                                    <EmailIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                                    <input
+                                        type="email"
+                                        value={resetEmail}
+                                        onChange={(e) => setResetEmail(e.target.value)}
+                                        required
+                                        placeholder="Enter your registered email"
+                                        className="pl-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={resetLoading}
+                                    className="w-full mt-6 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
+                                >
+                                    {resetLoading ? (
+                                        <>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Sending...
+                                        </>
+                                    ) : 'Send Reset Link'}
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
