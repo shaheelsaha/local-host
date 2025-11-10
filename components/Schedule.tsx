@@ -161,6 +161,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     const [autoCommenting, setAutoCommenting] = React.useState(false);
     const [isContentTypeLocked, setIsContentTypeLocked] = React.useState(false);
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
+    const [dateInputType, setDateInputType] = React.useState<'text' | 'date'>('text');
 
     const isPublished = initialData?.status === 'published';
 
@@ -183,6 +184,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         setContentType('image');
         setAutoCommenting(false);
         setIsContentTypeLocked(false);
+        setDateInputType('text');
         setErrors({});
     }, []);
     
@@ -468,15 +470,24 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                             <div className="relative">
                                                 <CalendarIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                 <input
-                                                    type="date"
+                                                    type={dateInputType}
+                                                    onFocus={() => setDateInputType('date')}
+                                                    onBlur={() => setDateInputType('text')}
                                                     id="schedule-date"
-                                                    value={scheduledAt.toISOString().split('T')[0]}
+                                                    value={
+                                                        dateInputType === 'date' 
+                                                        ? scheduledAt.toISOString().split('T')[0] 
+                                                        : new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(scheduledAt)
+                                                    }
                                                     onChange={(e) => {
                                                         if (!e.target.value) return;
-                                                        const [year, month, day] = e.target.value.split('-').map(Number);
-                                                        const newDate = new Date(scheduledAt);
-                                                        newDate.setFullYear(year, month - 1, day);
-                                                        setScheduledAt(newDate);
+                                                        const parts = e.target.value.split('-').map(Number);
+                                                        if (parts.length === 3 && parts.every(p => !isNaN(p))) {
+                                                            const [year, month, day] = parts;
+                                                            const newDate = new Date(scheduledAt);
+                                                            newDate.setFullYear(year, month - 1, day);
+                                                            setScheduledAt(newDate);
+                                                        }
                                                     }}
                                                     disabled={isPublished}
                                                     className="pl-10 pr-3 py-2.5 w-full bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:cursor-not-allowed"
