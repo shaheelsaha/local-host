@@ -22,6 +22,7 @@ import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
 import PricingPage from './components/PricingPage';
 import Command from './components/Commands';
+import CookieConsentBanner from './components/CookieConsentBanner';
 
 // ✅ NEW: React Router
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -184,6 +185,7 @@ const App: React.FC = () => {
     return (
         <BrowserRouter>
             <AppRoutes />
+            <CookieConsentBanner />
         </BrowserRouter>
     );
 };
