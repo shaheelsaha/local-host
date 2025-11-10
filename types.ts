@@ -20,6 +20,7 @@ export interface Post {
     mediaUrls: string[];
     scheduledAt: string; // Stored as ISO string in state
     status: 'scheduled' | 'published' | 'failed' | 'draft';
+    autoCommenting?: boolean;
 }
 
 export interface Persona {

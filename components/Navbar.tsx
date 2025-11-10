@@ -2,13 +2,12 @@
     import * as React from 'react';
     import { MenuIcon, XIcon } from './icons';
     import { Link } from 'react-router-dom';
-    import logo from '../assets/logo.png';
 
     interface NavbarProps {}
 
     const Logo: React.FC = () => (
         <div className="flex items-center">
-            <img src={logo} alt="Logo" className="h-8 w-auto mr-3" />
+            <img src="https://i.imgur.com/bQ1t3u6.png" alt="Logo" className="h-8 w-auto mr-3" />
             <h1 className="text-xl font-semibold tracking-tight text-white">SAHA AI</h1>
         </div>
     );

@@ -81,6 +81,7 @@ const App: React.FC = () => {
                     formData.append('platforms', JSON.stringify(post.platforms));
                     formData.append('tags', JSON.stringify(post.tags));
                     formData.append('scheduledAt', post.scheduledAt);
+                    formData.append('autoCommenting', String(post.autoCommenting || false));
 
                     const mediaUploads = await Promise.all(post.mediaUrls.map(async (url) => {
                         const response = await fetch(url);

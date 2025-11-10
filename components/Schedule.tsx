@@ -158,6 +158,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     const [scheduledAt, setScheduledAt] = React.useState(initialDate || new Date());
     const [publishMode, setPublishMode] = React.useState<'schedule' | 'now'>('schedule');
     const [contentType, setContentType] = React.useState<ContentType>('image');
+    const [autoCommenting, setAutoCommenting] = React.useState(false);
     const [isContentTypeLocked, setIsContentTypeLocked] = React.useState(false);
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
 
@@ -180,6 +181,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         setScheduledAt(baseDate);
         setPublishMode('schedule');
         setContentType('image');
+        setAutoCommenting(false);
         setIsContentTypeLocked(false);
         setErrors({});
     }, []);
@@ -193,6 +195,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                 const scheduledDate = new Date(initialData.scheduledAt);
                 setScheduledAt(scheduledDate);
                 setPublishMode(scheduledDate > new Date(Date.now() + 60000) ? 'schedule' : 'now');
+                setAutoCommenting(initialData.autoCommenting || false);
                 
                 setMediaFile(null); // No new file initially
                 if (initialData.mediaUrls.length > 0) {
@@ -301,6 +304,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             scheduledAt: publishMode === 'now' ? new Date().toISOString() : scheduledAt.toISOString(),
             status,
             mediaUrls: keptExistingUrls, // Pass only existing URLs. The parent component will handle upload and merge.
+            autoCommenting,
         }, newMediaToUpload, keptExistingUrls);
     }
 
@@ -412,6 +416,30 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                 {errors.caption && <p className="text-red-500 text-xs mt-1">{errors.caption}</p>}
                             </div>
                             
+                            {/* Auto Commenting Toggle */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Automation</label>
+                                <div className="flex items-center justify-between bg-gray-50 border border-gray-300 rounded-lg p-3">
+                                    <div>
+                                        <h4 className="font-semibold text-gray-800">Auto Commenting</h4>
+                                        <p className="text-xs text-gray-500">Automatically reply to comments using AI.</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAutoCommenting(prev => !prev)}
+                                        disabled={isPublished}
+                                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-200'}`}
+                                        role="switch"
+                                        aria-checked={autoCommenting}
+                                    >
+                                        <span
+                                            aria-hidden="true"
+                                            className={`inline-block h-5 w-5 rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200 ${autoCommenting ? 'translate-x-5' : 'translate-x-0'}`}
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+
                              {/* Scheduling */}
                              <div>
                                 <div className="flex items-center space-x-4">
@@ -647,6 +675,7 @@ const Schedule: React.FC = () => {
                 mediaUrls: finalMediaUrls,
                 status: postData.status,
                 scheduledAt: firebase.firestore.Timestamp.fromDate(new Date(postData.scheduledAt)),
+                autoCommenting: postData.autoCommenting || false,
             };
 
             if (editingPost) {
