@@ -3,8 +3,8 @@ import * as React from 'react';
 
 const Logo: React.FC = () => (
     <div className="flex items-center">
-        <img src="https://i.ibb.co/3kC6r74/8-L3j-P5-A.png" alt="SAHA AI Logo" className="h-9 w-9 mr-3" />
-        <h1 className="text-xl font-bold tracking-tight text-gray-800">SAHA AI</h1>
+        <img src="/logo.png" alt="Logo" className="h-8 w-auto mr-3" />
+        <h1 className="text-xl font-semibold tracking-tight text-gray-800">SAHA AI</h1>
     </div>
 );
 
