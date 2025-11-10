@@ -50,17 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
             <aside className={`fixed inset-y-0 left-0 bg-zinc-900 text-white p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className="flex items-center justify-between mb-10 px-2">
                      <div className="flex items-center overflow-hidden">
-                        <div className="bg-white/10 rounded-lg p-2 mr-3 flex-shrink-0">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                                <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-                                {/* FIX: Corrected typo in SVG path data for the logo's inner circle. */}
-                                <path d="M15.5 12C15.5 13.933 13.933 15.5 12 15.5C10.067 15.5 8.5 13.933 8.5 12C8.5 10.067 10.067 8.5 12 8.5C13.933 8.5 15.5 10.067 15.5 12Z" stroke="currentColor" strokeWidth="1.5"/>
-                                <path d="M12 4.5V2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                                <path d="M12 22V19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                                <path d="M19.5 12H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                                <path d="M2 12H4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                            </svg>
-                        </div>
+                        <img src="https://storage.googleapis.com/aistudio-hosting/workspace-assets/7638670629/versions/2/cells/2/outputs/by-id/a51187c3-3760-449e-b56e-827c1cd3460f" alt="SAHA AI Logo" className="h-10 w-10 mr-3 flex-shrink-0" />
                         <h1 className={`text-xl font-bold tracking-tight whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>SAHA AI</h1>
                     </div>
                     <button onClick={toggle} className="md:hidden p-1 text-gray-400 hover:text-white" aria-label="Close sidebar">
