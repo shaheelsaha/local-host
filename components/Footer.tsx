@@ -7,7 +7,7 @@ const Footer: React.FC = () => (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
                 <div className="col-span-2 sm:col-span-3 md:col-span-2">
                     <div className="flex items-center">
-                        <img src="https://storage.googleapis.com/aistudio-hosting/workspace-assets/7638670629/versions/2/cells/2/outputs/by-id/a51187c3-3760-449e-b56e-827c1cd3460f" alt="SAHA AI Logo" className="h-10 w-10 mr-3" />
+                        <img src="https://i.imgur.com/8L3jP5A.png" alt="SAHA AI Logo" className="h-8 w-8 mr-3" />
                         <h1 className="text-xl font-bold tracking-tight text-white">SAHA AI</h1>
                     </div>
                 </div>
