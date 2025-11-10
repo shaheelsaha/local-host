@@ -4,21 +4,88 @@ import LegalPageLayout from './LegalPageLayout';
 
 const TermsPage: React.FC = () => (
     <LegalPageLayout title="Terms of Service">
-        <h2>1. Introduction</h2>
-        <p>Welcome to SAHA AI ("Company", "we", "our", "us")! These Terms of Service ("Terms"), govern your use of our website and services (together or individually "Service") operated by SAHA AI.</p>
-        <p>Our Privacy Policy also governs your use of our Service and explains how we collect, safeguard and disclose information that results from your use of our web pages. Please read it here <a href="/privacy" className="text-blue-600 hover:underline">/privacy</a>.</p>
-        
-        <h2>2. Using Our Services</h2>
-        <p>You must follow any policies made available to you within the Services. Don’t misuse our Services. For example, don’t interfere with our Services or try to access them using a method other than the interface and the instructions that we provide.</p>
+        <p>Welcome to SAHA AI (“Company”, “we”, “our”, “us”).</p>
+        <p>These Terms of Service (“Terms”) govern your access to and use of our website, platform, products, and services (collectively, the “Service”).</p>
+        <p>By accessing or using the Service, you agree to these Terms. If you do not agree, do not use the Service.</p>
 
-        <h2>3. Your SAHA AI Account</h2>
-        <p>You may need a SAHA AI Account in order to use some of our Services. You may create your own SAHA AI Account, or your SAHA AI Account may be assigned to you by an administrator, such as your employer or educational institution. If you are using a SAHA AI Account assigned to you by an administrator, different or additional terms may apply and your administrator may be able to access or disable your account.</p>
+        <h2>1. Use of the Service</h2>
+        <p>You may use the Service only in compliance with these Terms and all applicable laws. You agree not to:</p>
+        <ul>
+            <li>Use the Service for unlawful activities.</li>
+            <li>Try to gain unauthorized access to systems or accounts.</li>
+            <li>Copy, reverse engineer, or attempt to extract the source code of our software.</li>
+            <li>Use our Service to create or distribute harmful, misleading, or illegal content.</li>
+        </ul>
 
-        <h2>4. Content in Our Services</h2>
-        <p>Our Services display some content that is not SAHA AI's. This content is the sole responsibility of the entity that makes it available. We may review content to determine whether it is illegal or violates our policies, and we may remove or refuse to display content that we reasonably believe violates our policies or the law. But that does not necessarily mean that we review content, so please don’t assume that we do.</p>
+        <h2>2. Accounts</h2>
+        <p>To access some features, you may need to create a SAHA AI Account. You are responsible for:</p>
+        <ul>
+            <li>Keeping your login credentials secure.</li>
+            <li>All activity that occurs under your account.</li>
+        </ul>
+        <p>We may suspend or terminate accounts used in violation of these Terms.</p>
+
+        <h2>3. Data & Privacy</h2>
+        <p>Your use of the Service is also governed by our Privacy Policy and Cookie Policy, which describe how we collect, use, and store data.</p>
+        <ul>
+            <li>Privacy Policy: <a href="/privacy" className="text-blue-600 hover:underline">https://sahaai.io/privacy</a></li>
+            <li>Cookie Policy: <a href="/cookies" className="text-blue-600 hover:underline">https://sahaai.io/cookie-policy</a></li>
+        </ul>
         
-        <h2>5. Modifying and Terminating our Services</h2>
-        <p>We are constantly changing and improving our Services. We may add or remove functionalities or features, and we may suspend or stop a Service altogether. You can stop using our Services at any time, although we’ll be sorry to see you go. SAHA AI may also stop providing Services to you, or add or create new limits to our Services at any time.</p>
+        <h2>4. Content Ownership</h2>
+        <p>All content, software, branding, logos, and features in the Service are owned by SAHA AI or our partners and are protected by intellectual property laws.</p>
+        <p>You may not copy, resell, or redistribute any part of the Service without written permission.</p>
+
+        <h2>5. AI-Generated Output</h2>
+        <p>Our platform may generate texts, predictions, images, or recommendations using AI. You understand and agree that:</p>
+        <ul>
+            <li>AI output may contain errors.</li>
+            <li>You are responsible for verifying any information before using it.</li>
+            <li>We are not liable for decisions made based on AI outputs.</li>
+        </ul>
+
+        <h2>6. Payments & Subscriptions (If applicable)</h2>
+        <p>If paid features are offered:</p>
+        <ul>
+            <li>Fees will be displayed before purchase.</li>
+            <li>Payments are final unless otherwise stated.</li>
+            <li>We may change pricing with notice.</li>
+        </ul>
+        <p>If you are not offering paid plans yet, this section still protects future updates.</p>
+
+        <h2>7. Service Changes & Availability</h2>
+        <p>We may modify, update, suspend, or discontinue any Service at any time. We are not liable if the Service becomes unavailable.</p>
+
+        <h2>8. Disclaimer of Warranties</h2>
+        <p>The Service is provided “AS IS” and “AS AVAILABLE.” We make no guarantees regarding:</p>
+        <ul>
+            <li>Accuracy of information</li>
+            <li>Performance</li>
+            <li>Reliability</li>
+            <li>Availability</li>
+        </ul>
+        <p>You use the Service at your own risk.</p>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law: SAHA AI is not liable for:</p>
+        <ul>
+            <li>Loss of profits</li>
+            <li>Loss of data</li>
+            <li>Business interruption</li>
+            <li>Indirect, incidental, special, or consequential damages</li>
+        </ul>
+        <p>Even if we have been advised of the possibility of such damages.</p>
+
+        <h2>10. Indemnification</h2>
+        <p>You agree to defend, indemnify, and hold harmless SAHA AI from any claims arising from your use of the Service or violation of these Terms.</p>
+        
+        <h2>11. Governing Law</h2>
+        <p>These Terms are governed worldwide, but any disputes will be handled under the legal jurisdiction where SAHA AI is operating.</p>
+
+        <h2>12. Contact</h2>
+        <p>For questions or concerns:</p>
+        <p>Email: <a href="mailto:shaheel@sahaai.io" className="text-blue-600 hover:underline">shaheel@sahaai.io</a></p>
+        <p>Website: <a href="https://sahaai.io" className="text-blue-600 hover:underline">https://sahaai.io</a></p>
     </LegalPageLayout>
 );
 export default TermsPage;
