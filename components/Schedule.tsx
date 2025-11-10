@@ -418,33 +418,9 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                 {errors.caption && <p className="text-red-500 text-xs mt-1">{errors.caption}</p>}
                             </div>
                             
-                            {/* Auto Commenting Toggle */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Automation</label>
-                                <div className="flex items-center justify-between bg-gray-50 border border-gray-300 rounded-lg p-3">
-                                    <div>
-                                        <h4 className="font-semibold text-gray-800">Auto Commenting</h4>
-                                        <p className="text-xs text-gray-500">Automatically reply to comments using AI.</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setAutoCommenting(prev => !prev)}
-                                        disabled={isPublished}
-                                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-200'}`}
-                                        role="switch"
-                                        aria-checked={autoCommenting}
-                                    >
-                                        <span
-                                            aria-hidden="true"
-                                            className={`inline-block h-5 w-5 rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200 ${autoCommenting ? 'translate-x-5' : 'translate-x-0'}`}
-                                        />
-                                    </button>
-                                </div>
-                            </div>
-
                              {/* Scheduling */}
                              <div>
-                                <div className="flex items-center space-x-4">
+                                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                                     <label className="flex items-center text-sm cursor-pointer">
                                         <input type="radio" name="publishMode" value="schedule"
                                                checked={publishMode === 'schedule'}
@@ -462,6 +438,23 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                         <span className="ml-2 text-gray-700 font-medium">Publish now</span>
                                          <InfoIcon className="w-4 h-4 text-gray-400 ml-1" title="Post will be published within the next minute."/>
                                     </label>
+                                    <div className="flex items-center space-x-2">
+                                        <label htmlFor="autoCommentingToggle" className="text-sm font-medium text-gray-700">Auto Commenting</label>
+                                        <button
+                                            type="button"
+                                            id="autoCommentingToggle"
+                                            onClick={() => setAutoCommenting(prev => !prev)}
+                                            disabled={isPublished}
+                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-200'}`}
+                                            role="switch"
+                                            aria-checked={autoCommenting}
+                                        >
+                                            <span
+                                                aria-hidden="true"
+                                                className={`inline-block h-5 w-5 rounded-full bg-white shadow-lg transform ring-0 transition ease-in-out duration-200 ${autoCommenting ? 'translate-x-5' : 'translate-x-0'}`}
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${publishMode === 'schedule' ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
