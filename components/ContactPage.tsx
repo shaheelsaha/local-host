@@ -22,19 +22,38 @@ const ContactInfoItem: React.FC<{ icon: React.ReactElement; title: string; child
 const ContactPage: React.FC = () => {
     const [formState, setFormState] = React.useState({ name: '', email: '', message: '' });
     const [submissionStatus, setSubmissionStatus] = React.useState<'idle' | 'submitting' | 'success'>('idle');
+    const [error, setError] = React.useState<string | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormState(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmissionStatus('submitting');
-        // Simulate API call
-        setTimeout(() => {
+        setError(null);
+
+        try {
+            const response = await fetch('https://n8n.sahaai.online/webhook/support-meg', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formState),
+            });
+
+            if (!response.ok) {
+                throw new Error('Something went wrong. Please try again.');
+            }
+
             setSubmissionStatus('success');
-        }, 2000);
+            setFormState({ name: '', email: '', message: '' }); // Clear form on success
+        } catch (err: any) {
+            console.error('Failed to send message:', err);
+            setError(err.message || 'An unexpected error occurred.');
+            setSubmissionStatus('idle'); // Reset to allow another attempt
+        }
     };
     
     return (
@@ -64,6 +83,11 @@ const ContactPage: React.FC = () => {
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSubmit} className="space-y-6">
+                                            {error && (
+                                                <div className="p-3 text-sm text-red-400 bg-red-500/20 border border-red-500/30 rounded-lg">
+                                                    {error}
+                                                </div>
+                                            )}
                                             <div>
                                                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Name</label>
                                                 <input
@@ -124,18 +148,13 @@ const ContactPage: React.FC = () => {
                                 {/* Contact Information */}
                                 <div className="space-y-8 animate-fade-in-up delay-100 mt-8 md:mt-0">
                                     <ContactInfoItem icon={<EmailIcon />} title="Email Us">
-                                        <a href="mailto:support@sahaai.com" className="hover:text-[#00FFC2] transition-colors">support@sahaai.com</a>
+                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-[#00FFC2] transition-colors">shaheel@sahaai.io</a>
                                         <p className="text-sm text-gray-500">General inquiries & support</p>
                                     </ContactInfoItem>
                                      <ContactInfoItem icon={<PhoneIcon />} title="Call Us">
-                                        <a href="tel:+15551234567" className="hover:text-[#00FFC2] transition-colors">+1 (555) 123-4567</a>
-                                        <p className="text-sm text-gray-500">Mon-Fri, 9am - 5pm EST</p>
+                                        <a href="tel:+971544575282" className="hover:text-[#00FFC2] transition-colors">+971 54 457 5282</a>
                                     </ContactInfoItem>
-                                    <ContactInfoItem icon={<LocationIcon />} title="Our Office">
-                                        <p>123 AI Avenue, Tech City, 12345</p>
-                                        <p className="text-sm text-gray-500">Visits by appointment only</p>
-                                    </ContactInfoItem>
-
+                                    
                                     <div>
                                         <h4 className="text-lg font-semibold text-white mb-4">Follow Us</h4>
                                         <div className="flex space-x-4">
