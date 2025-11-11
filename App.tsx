@@ -93,6 +93,7 @@ const App: React.FC = () => {
                     // Now, we can safely send the webhook without duplicates.
                     try {
                         const formData = new FormData();
+                        formData.append('user_id', user.uid);
                         formData.append('caption', post.caption);
                         formData.append('platforms', JSON.stringify(post.platforms));
                         formData.append('tags', JSON.stringify(post.tags));
