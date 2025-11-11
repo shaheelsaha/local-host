@@ -9,7 +9,6 @@ export enum SocialPlatform {
     THREADS = 'Threads',
     YOUTUBE = 'YouTube',
     TIKTOK = 'TikTok',
-    PINTEREST = 'Pinterest',
 }
 
 export interface Post {
