@@ -71,56 +71,73 @@ const App: React.FC = () => {
             if (duePosts.length === 0) return;
 
             for (const post of duePosts) {
-                 const currentPostState = scheduledPostsRef.current.find(p => p.id === post.id);
-                 if (!currentPostState || currentPostState.status !== 'scheduled') {
-                    continue; 
-                }
+                const postRef = db.collection('posts').doc(post.id);
+                let canProcess = false;
+                
                 try {
-                    const formData = new FormData();
-                    formData.append('caption', post.caption);
-                    formData.append('platforms', JSON.stringify(post.platforms));
-                    formData.append('tags', JSON.stringify(post.tags));
-                    formData.append('scheduledAt', post.scheduledAt);
-                    formData.append('autoCommenting', String(post.autoCommenting || false));
-                    formData.append('status', 'published');
-
-                    let webhookContentType = 'image'; // Default to image
-                    if (post.contentType) {
-                        if (post.contentType === 'video' || post.contentType === 'reel') {
-                            webhookContentType = 'video';
+                    await db.runTransaction(async (transaction) => {
+                        const postDoc = await transaction.get(postRef);
+                        if (postDoc.exists && postDoc.data()?.status === 'scheduled') {
+                            // This post is available. Claim it by updating its status.
+                            transaction.update(postRef, { status: 'publishing' });
+                            canProcess = true;
                         }
-                    } else if (post.mediaUrls && post.mediaUrls.length > 0) {
-                        // Fallback for older posts without contentType
-                        const firstUrl = post.mediaUrls[0];
-                        const isVideo = firstUrl.match(/\.(mp4|mov|webm|mkv|avi|flv|wmv)$/i);
-                        if (isVideo) {
-                            webhookContentType = 'video';
+                    });
+                } catch (error) {
+                    console.error(`Transaction failed for post ${post.id}:`, error);
+                    continue; // Skip this post on transaction failure, will be retried if status is still 'scheduled'
+                }
+
+                if (canProcess) {
+                    // This client has successfully "claimed" the post.
+                    // Now, we can safely send the webhook without duplicates.
+                    try {
+                        const formData = new FormData();
+                        formData.append('caption', post.caption);
+                        formData.append('platforms', JSON.stringify(post.platforms));
+                        formData.append('tags', JSON.stringify(post.tags));
+                        formData.append('scheduledAt', post.scheduledAt);
+                        formData.append('autoCommenting', String(post.autoCommenting || false));
+                        formData.append('status', 'published');
+
+                        let webhookContentType = 'image'; // Default to image
+                        if (post.contentType) {
+                            if (post.contentType === 'video' || post.contentType === 'reel') {
+                                webhookContentType = 'video';
+                            }
+                        } else if (post.mediaUrls && post.mediaUrls.length > 0) {
+                            // Fallback for older posts without contentType
+                            const firstUrl = post.mediaUrls[0];
+                            const isVideo = firstUrl.match(/\.(mp4|mov|webm|mkv|avi|flv|wmv)$/i);
+                            if (isVideo) {
+                                webhookContentType = 'video';
+                            }
                         }
+                        formData.append('contentType', webhookContentType);
+
+                        const mediaUploads = await Promise.all(post.mediaUrls.map(async (url) => {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error(`Failed to fetch media from ${url}`);
+                            const blob = await response.blob();
+                            const fileName = url.split('/').pop()?.split('?')[0].split('%2F').pop() || 'media';
+                            return { blob, fileName };
+                        }));
+
+                        mediaUploads.forEach(({ blob, fileName }, index) =>
+                            formData.append(`media[${index}]`, blob, fileName)
+                        );
+
+                        const response = await fetch('https://n8n.sahaai.online/webhook/sheet-status', { method: 'POST', body: formData });
+                         if (!response.ok) {
+                            throw new Error(`Webhook failed with status ${response.status}`);
+                        }
+
+                        await postRef.update({ status: 'published' });
+
+                    } catch(error) {
+                        console.error(`Failed to publish post ${post.id}:`, error);
+                        await postRef.update({ status: 'failed' });
                     }
-                    formData.append('contentType', webhookContentType);
-
-                    const mediaUploads = await Promise.all(post.mediaUrls.map(async (url) => {
-                        const response = await fetch(url);
-                        if (!response.ok) throw new Error(`Failed to fetch media from ${url}`);
-                        const blob = await response.blob();
-                        const fileName = url.split('/').pop()?.split('?')[0].split('%2F').pop() || 'media';
-                        return { blob, fileName };
-                    }));
-
-                    mediaUploads.forEach(({ blob, fileName }, index) =>
-                        formData.append(`media[${index}]`, blob, fileName)
-                    );
-
-                    const response = await fetch('https://n8n.sahaai.online/webhook/sheet-status', { method: 'POST', body: formData });
-                     if (!response.ok) {
-                        throw new Error(`Webhook failed with status ${response.status}`);
-                    }
-
-                    await db.collection('posts').doc(post.id).update({ status: 'published' });
-
-                } catch(error) {
-                    console.error(`Failed to publish post ${post.id}:`, error);
-                    await db.collection('posts').doc(post.id).update({ status: 'failed' });
                 }
             }
         }, 60000);

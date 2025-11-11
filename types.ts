@@ -20,7 +20,7 @@ export interface Post {
     tags: string[];
     mediaUrls: string[];
     scheduledAt: string; // Stored as ISO string in state
-    status: 'scheduled' | 'published' | 'failed' | 'draft';
+    status: 'scheduled' | 'published' | 'failed' | 'draft' | 'publishing';
     autoCommenting?: boolean;
     contentType?: 'image' | 'reel' | 'video';
 }
