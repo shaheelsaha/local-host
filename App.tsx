@@ -101,20 +101,22 @@ const App: React.FC = () => {
                         formData.append('autoCommenting', String(post.autoCommenting || false));
                         formData.append('status', 'published');
 
-                        let webhookContentType = 'image'; // Default to image
+                        // Determine postType for webhook, ensuring reels and videos are distinct
+                        let postType: 'image' | 'reel' | 'video' = 'image'; // Default to image
                         if (post.contentType) {
-                            if (post.contentType === 'video' || post.contentType === 'reel') {
-                                webhookContentType = 'video';
-                            }
+                            // If contentType is present, use it directly
+                            postType = post.contentType;
                         } else if (post.mediaUrls && post.mediaUrls.length > 0) {
-                            // Fallback for older posts without contentType
+                            // Fallback for older posts that don't have contentType saved
                             const firstUrl = post.mediaUrls[0];
                             const isVideo = firstUrl.match(/\.(mp4|mov|webm|mkv|avi|flv|wmv)$/i);
                             if (isVideo) {
-                                webhookContentType = 'video';
+                                // We can't know for sure if it was a reel or a video,
+                                // so 'video' is a sensible default for video files.
+                                postType = 'video';
                             }
                         }
-                        formData.append('contentType', webhookContentType);
+                        formData.append('postType', postType);
 
                         const mediaUploads = await Promise.all(post.mediaUrls.map(async (url) => {
                             const response = await fetch(url);
