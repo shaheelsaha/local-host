@@ -84,6 +84,21 @@ const App: React.FC = () => {
                     formData.append('autoCommenting', String(post.autoCommenting || false));
                     formData.append('status', 'published');
 
+                    let webhookContentType = 'image'; // Default to image
+                    if (post.contentType) {
+                        if (post.contentType === 'video' || post.contentType === 'reel') {
+                            webhookContentType = 'video';
+                        }
+                    } else if (post.mediaUrls && post.mediaUrls.length > 0) {
+                        // Fallback for older posts without contentType
+                        const firstUrl = post.mediaUrls[0];
+                        const isVideo = firstUrl.match(/\.(mp4|mov|webm|mkv|avi|flv|wmv)$/i);
+                        if (isVideo) {
+                            webhookContentType = 'video';
+                        }
+                    }
+                    formData.append('contentType', webhookContentType);
+
                     const mediaUploads = await Promise.all(post.mediaUrls.map(async (url) => {
                         const response = await fetch(url);
                         if (!response.ok) throw new Error(`Failed to fetch media from ${url}`);

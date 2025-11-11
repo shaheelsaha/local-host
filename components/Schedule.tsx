@@ -217,12 +217,17 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                     const url = initialData.mediaUrls[0];
                     const type = url.match(/\.(mp4|mov|webm|mkv)$/i) ? 'video' : 'image';
                     setMediaPreview({ url, type });
-                    // NOTE: Cannot determine aspect ratio from URL, so content type is a best guess for existing posts.
-                    if (type === 'video') {
-                        const hasReelPlatform = initialData.platforms.some(p => [SocialPlatform.INSTAGRAM, SocialPlatform.TIKTOK].includes(p));
-                        setContentType(hasReelPlatform ? 'reel' : 'video');
+                    
+                    if (initialData.contentType) {
+                        setContentType(initialData.contentType);
                     } else {
-                        setContentType('image');
+                        // Fallback for older posts without contentType
+                        if (type === 'video') {
+                            const hasReelPlatform = initialData.platforms.some(p => [SocialPlatform.INSTAGRAM, SocialPlatform.TIKTOK].includes(p));
+                            setContentType(hasReelPlatform ? 'reel' : 'video');
+                        } else {
+                            setContentType('image');
+                        }
                     }
                     setIsContentTypeLocked(true);
                 } else {
@@ -320,6 +325,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             status,
             mediaUrls: keptExistingUrls, // Pass only existing URLs. The parent component will handle upload and merge.
             autoCommenting,
+            contentType,
         }, newMediaToUpload, keptExistingUrls);
     }
 
@@ -694,6 +700,7 @@ const Schedule: React.FC = () => {
                 status: postData.status,
                 scheduledAt: firebase.firestore.Timestamp.fromDate(new Date(postData.scheduledAt)),
                 autoCommenting: postData.autoCommenting || false,
+                contentType: postData.contentType,
             };
 
             if (editingPost) {
