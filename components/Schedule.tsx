@@ -261,6 +261,7 @@ const Schedule: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [editingPost, setEditingPost] = React.useState<Post | null>(null);
     const [error, setError] = React.useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     // AI States
     const [isGenerating, setIsGenerating] = React.useState(false);
@@ -333,7 +334,7 @@ const Schedule: React.FC = () => {
         setMediaFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    const resetForm = () => {
+    const resetForm = (shouldCloseModal = true) => {
         setSelectedPlatforms([]);
         setCaption('');
         mediaFiles.forEach(mf => URL.revokeObjectURL(mf.preview));
@@ -344,6 +345,31 @@ const Schedule: React.FC = () => {
         setAutoCommenting(false);
         setEditingPost(null);
         setError(null);
+        if (shouldCloseModal) {
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleCreatePostClick = async () => {
+        resetForm(false);
+        if (user) {
+            try {
+                const connRef = db.collection('users').doc(user.uid).collection('connection').doc('connection');
+                const doc = await connRef.get();
+                if (doc.exists) {
+                    const data = doc.data()!;
+                    const platforms: SocialPlatform[] = [];
+                    if (data.Fb_ID) { platforms.push(SocialPlatform.FACEBOOK); }
+                    if (data.Insta_ID) { platforms.push(SocialPlatform.INSTAGRAM); }
+                    if (data.LinkedIn_Access_token) { platforms.push(SocialPlatform.LINKEDIN); }
+                    if (data.Thread_Access) { platforms.push(SocialPlatform.THREADS); }
+                    setSelectedPlatforms(platforms);
+                }
+            } catch (err) {
+                console.error("Error fetching connections for defaults:", err);
+            }
+        }
+        setIsModalOpen(true);
     };
 
     const handleSchedulePost = async (status: 'scheduled' | 'draft') => {
@@ -458,7 +484,7 @@ const Schedule: React.FC = () => {
             setIsScheduling(false);
             setScheduledAt(new Date()); // Set to now for drafts, though it won't be shown
         }
-        window.scrollTo(0, 0); // Scroll to top to see the form
+        setIsModalOpen(true);
     };
 
     const handleGenerateCaption = async () => {
@@ -511,138 +537,134 @@ const Schedule: React.FC = () => {
 
 
     const CreatePostForm = (
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">{editingPost ? "Edit Post" : "Create a new post"}</h2>
-            
-            <div className="space-y-6">
-                {/* Platform Selector */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Share to</label>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                        {Object.values(SocialPlatform).map(platform => (
-                            <button
-                                key={platform}
-                                type="button"
-                                onClick={() => togglePlatform(platform)}
-                                className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 ${selectedPlatforms.includes(platform) ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
-                            >
-                                {React.createElement(platformDetails[platform].icon, { className: 'w-6 h-6 mb-1.5' })}
-                                <span className="text-xs font-semibold text-gray-700">{platform}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Caption */}
-                <div>
-                    <label htmlFor="caption" className="block text-sm font-medium text-gray-700">Caption</label>
-                    <div className="relative mt-1">
-                        <textarea
-                            id="caption"
-                            rows={5}
-                            value={caption}
-                            onChange={(e) => setCaption(e.target.value)}
-                            className="w-full p-3 pr-28 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
-                            placeholder="What's on your mind?"
-                        />
-                        <button 
-                            type="button"
-                            onClick={handleGenerateCaption}
-                            disabled={isGenerating}
-                            className="absolute top-2.5 right-2.5 flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md text-xs font-semibold hover:bg-blue-200 disabled:bg-gray-200 disabled:text-gray-500 transition-colors"
-                        >
-                            {isGenerating ? (
-                                <>
-                                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                 Generating...
-                                </>
-                            ) : (
-                                <>
-                                <SparklesIcon className="w-4 h-4 mr-1.5"/>
-                                AI Assist
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Scheduling Options */}
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <div className="flex items-center space-x-4">
-                            <label className="flex items-center cursor-pointer">
-                                <input type="radio" name="publishOption" checked={isScheduling} onChange={() => setIsScheduling(true)} className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out" />
-                                <span className="ml-2 text-sm text-gray-700">Schedule</span>
-                            </label>
-                            <label className="flex items-center cursor-pointer">
-                                <input type="radio" name="publishOption" checked={!isScheduling} onChange={() => setIsScheduling(false)} className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out" />
-                                <span className="ml-2 text-sm text-gray-700">Publish now</span>
-                                <span className="ml-1.5 group relative">
-                                    <InfoIcon className="w-4 h-4 text-gray-400" />
-                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-800 text-white text-xs rounded-md p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                        Your post will be published within a few minutes.
-                                    </span>
-                                </span>
-                            </label>
-                        </div>
-                        {isScheduling && (
-                            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-gray-100 p-2 rounded-lg">
-                                <Calendar selectedDate={scheduledAt} onDateChange={setScheduledAt} />
-                                <TimePicker selectedTime={scheduledAt} onChange={setScheduledAt} />
-                            </div>
-                        )}
-                    </div>
-                     {/* Auto Commenting Toggle */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                        <label htmlFor="autoCommentingToggle" className="flex flex-col cursor-pointer pr-4">
-                            <span className="font-medium text-gray-700">Auto Commenting</span>
-                            <span className="text-sm text-gray-500">Enable AI to automatically comment on this post.</span>
-                        </label>
+        <div className="space-y-6">
+            {/* Platform Selector */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Share to</label>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {Object.values(SocialPlatform).map(platform => (
                         <button
+                            key={platform}
                             type="button"
-                            id="autoCommentingToggle"
-                            onClick={() => setAutoCommenting(!autoCommenting)}
-                            className={`relative inline-flex flex-shrink-0 items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                                autoCommenting ? 'bg-blue-600' : 'bg-gray-300'
-                            }`}
+                            onClick={() => togglePlatform(platform)}
+                            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 ${selectedPlatforms.includes(platform) ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
                         >
-                            <span
-                                className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${
-                                    autoCommenting ? 'translate-x-6' : 'translate-x-1'
-                                }`}
-                            />
+                            {React.createElement(platformDetails[platform].icon, { className: 'w-6 h-6 mb-1.5' })}
+                            <span className="text-xs font-semibold text-gray-700">{platform}</span>
                         </button>
-                    </div>
+                    ))}
                 </div>
+            </div>
 
-                {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
-                
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
-                    <button type="button" onClick={resetForm} className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
-                    <button
+            {/* Caption */}
+            <div>
+                <label htmlFor="caption" className="block text-sm font-medium text-gray-700">Caption</label>
+                <div className="relative mt-1">
+                    <textarea
+                        id="caption"
+                        rows={5}
+                        value={caption}
+                        onChange={(e) => setCaption(e.target.value)}
+                        className="w-full p-3 pr-28 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+                        placeholder="What's on your mind?"
+                    />
+                    <button 
                         type="button"
-                        onClick={() => handleSchedulePost('draft')}
-                        disabled={isSubmitting}
-                        className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
+                        onClick={handleGenerateCaption}
+                        disabled={isGenerating}
+                        className="absolute top-2.5 right-2.5 flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md text-xs font-semibold hover:bg-blue-200 disabled:bg-gray-200 disabled:text-gray-500 transition-colors"
                     >
-                         {isSubmitting ? 'Saving...' : 'Save as Draft'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleSchedulePost('scheduled')}
-                        disabled={isSubmitting}
-                        className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30 disabled:bg-gray-400 disabled:shadow-none"
-                    >
-                         {isSubmitting ? 'Saving...' : (editingPost ? 'Update Post' : 'Schedule Post')}
+                        {isGenerating ? (
+                            <>
+                             <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                             Generating...
+                            </>
+                        ) : (
+                            <>
+                            <SparklesIcon className="w-4 h-4 mr-1.5"/>
+                            AI Assist
+                            </>
+                        )}
                     </button>
                 </div>
+            </div>
+
+            {/* Scheduling Options */}
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <div className="flex items-center space-x-4">
+                        <label className="flex items-center cursor-pointer">
+                            <input type="radio" name="publishOption" checked={isScheduling} onChange={() => setIsScheduling(true)} className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out" />
+                            <span className="ml-2 text-sm text-gray-700">Schedule</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                            <input type="radio" name="publishOption" checked={!isScheduling} onChange={() => setIsScheduling(false)} className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out" />
+                            <span className="ml-2 text-sm text-gray-700">Publish now</span>
+                            <span className="ml-1.5 group relative">
+                                <InfoIcon className="w-4 h-4 text-gray-400" />
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-800 text-white text-xs rounded-md p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                    Your post will be published within a few minutes.
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    {isScheduling && (
+                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-gray-100 p-2 rounded-lg">
+                            <Calendar selectedDate={scheduledAt} onDateChange={setScheduledAt} />
+                            <TimePicker selectedTime={scheduledAt} onChange={setScheduledAt} />
+                        </div>
+                    )}
+                </div>
+                 {/* Auto Commenting Toggle */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <label htmlFor="autoCommentingToggle" className="flex flex-col cursor-pointer pr-4">
+                        <span className="font-medium text-gray-700">Auto Commenting</span>
+                        <span className="text-sm text-gray-500">Enable AI to automatically comment on this post.</span>
+                    </label>
+                    <button
+                        type="button"
+                        id="autoCommentingToggle"
+                        onClick={() => setAutoCommenting(!autoCommenting)}
+                        className={`relative inline-flex flex-shrink-0 items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                            autoCommenting ? 'bg-blue-600' : 'bg-gray-300'
+                        }`}
+                    >
+                        <span
+                            className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${
+                                autoCommenting ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                        />
+                    </button>
+                </div>
+            </div>
+
+            {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
+                <button type="button" onClick={() => resetForm()} className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">Cancel</button>
+                <button
+                    type="button"
+                    onClick={() => handleSchedulePost('draft')}
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
+                >
+                     {isSubmitting ? 'Saving...' : 'Save as Draft'}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => handleSchedulePost('scheduled')}
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30 disabled:bg-gray-400 disabled:shadow-none"
+                >
+                     {isSubmitting ? 'Saving...' : (editingPost ? 'Update Post' : 'Schedule Post')}
+                </button>
             </div>
         </div>
     );
 
     const UploadArea = (
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm h-full flex flex-col">
+        <div className="h-full flex flex-col">
             <div className="flex-1 flex flex-col justify-center items-center text-center p-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
                 <div className="space-y-2">
                     <UploadIcon className="w-10 h-10 text-gray-400 mx-auto" />
@@ -658,7 +680,7 @@ const Schedule: React.FC = () => {
             {mediaFiles.length > 0 && (
                 <div className="mt-4">
                     <h4 className="text-sm font-medium text-gray-600 mb-2">Uploaded Files ({mediaFiles.length})</h4>
-                    <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto pr-2">
                         {mediaFiles.map((media, index) => (
                             <div key={index} className="relative group aspect-square">
                                 {media.type === 'image' ? (
@@ -688,17 +710,47 @@ const Schedule: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                <div className="lg:col-span-1 space-y-8">
-                    {CreatePostForm}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+                <div className="mb-4 sm:mb-0">
+                    <h1 className="text-3xl font-bold text-gray-800">Schedule</h1>
+                    <p className="mt-1 text-gray-500">Manage your content calendar and create new posts.</p>
                 </div>
-                <div className="lg:col-span-1 lg:sticky lg:top-28">
-                    {UploadArea}
-                </div>
+                <button 
+                    onClick={handleCreatePostClick}
+                    className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30"
+                >
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                    Create Post
+                </button>
             </div>
 
+             {/* Modal for Creating/Editing Posts */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-start z-50 p-4 transition-opacity overflow-y-auto">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl relative my-8 flex flex-col">
+                        <header className="flex items-center justify-between p-5 border-b border-gray-200 flex-shrink-0">
+                            <h2 className="text-xl font-bold text-gray-800">{editingPost ? "Edit Post" : "Create a new post"}</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-1 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-600">
+                                <XIcon className="w-6 h-6" />
+                            </button>
+                        </header>
+                        
+                        <div className="overflow-y-auto p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                                <div className="lg:col-span-1">
+                                    {CreatePostForm}
+                                </div>
+                                <div className="lg:col-span-1 lg:sticky lg:top-0">
+                                    {UploadArea}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Scheduled Posts List */}
-            <div className="mt-12">
+            <div className="mt-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Scheduled & Drafts</h2>
                 {isLoading ? (
                     <div className="text-center p-8 text-gray-500">Loading posts...</div>
