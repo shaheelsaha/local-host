@@ -626,7 +626,7 @@ const Schedule: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <label htmlFor="autoCommentingToggle" className="flex flex-col cursor-pointer pr-4"><span className="font-medium text-gray-700">Auto Commenting</span><span className="text-sm text-gray-500">Enable AI to automatically comment on this post.</span></label>
-                    <button type="button" id="autoCommentingToggle" onClick={() => setAutoCommenting(!autoCommenting)} className={`relative inline-flex flex-shrink-0 items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-300'}`}><span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${autoCommenting ? 'translate-x-6' : 'translate-x-1'}`} /></button>
+                    <button type="button" role="switch" aria-checked={autoCommenting} id="autoCommentingToggle" onClick={() => setAutoCommenting(!autoCommenting)} className={`relative inline-flex flex-shrink-0 items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-300'}`}><span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${autoCommenting ? 'translate-x-6' : 'translate-x-1'}`} /></button>
                 </div>
             </div>
             {error && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>}
