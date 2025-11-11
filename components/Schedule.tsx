@@ -1,7 +1,7 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, DribbbleIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon } from './icons';
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, DribbbleIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
 import { Post, SocialPlatform, Persona } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
 // FIX: Refactor Firebase calls to v8 compat syntax.
@@ -32,7 +32,22 @@ const platformDetails: { [key in SocialPlatform]: { icon: React.FC<{className?: 
     [SocialPlatform.TIKTOK]: { icon: TikTokIcon, color: 'bg-black', brandColor: '#000000' },
     [SocialPlatform.YOUTUBE]: { icon: YouTubeIcon, color: 'bg-red-600', brandColor: '#FF0000' },
     [SocialPlatform.DRIBBBLE]: { icon: DribbbleIcon, color: 'bg-pink-500', brandColor: '#ea4c89' },
+    [SocialPlatform.PINTEREST]: { icon: PinterestIcon, color: 'bg-red-700', brandColor: '#E60023' },
 };
+
+// Ensures a consistent order for platforms in the UI
+const platformOrder: SocialPlatform[] = [
+    SocialPlatform.TWITTER,
+    SocialPlatform.LINKEDIN,
+    SocialPlatform.DRIBBBLE,
+    SocialPlatform.INSTAGRAM,
+    SocialPlatform.FACEBOOK,
+    SocialPlatform.THREADS,
+    SocialPlatform.YOUTUBE,
+    SocialPlatform.TIKTOK,
+    SocialPlatform.PINTEREST,
+];
+
 
 const TimePicker: React.FC<{
     selectedTime: Date;
@@ -356,8 +371,11 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                             {/* Platform Selector */}
                             <div>
                                 <div className="grid grid-cols-4 gap-3">
-                                    {Object.entries(platformDetails).map(([key, {icon: Icon, brandColor}]) => {
-                                        const platformKey = key as SocialPlatform;
+                                     {platformOrder.map(platformKey => {
+                                        const details = platformDetails[platformKey];
+                                        if (!details) return null;
+                                        const { icon: Icon, brandColor } = details;
+
                                         const isConnected = connectedPlatforms.includes(platformKey);
                                         const isSelected = selectedPlatforms.includes(platformKey);
                                         
@@ -374,7 +392,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
 
                                         return (
                                             <button
-                                                key={key}
+                                                key={platformKey}
                                                 type="button"
                                                 onClick={() => isConnected && togglePlatform(platformKey)}
                                                 disabled={!isConnected || isPublished}
