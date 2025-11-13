@@ -1,7 +1,9 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import firebase from 'firebase/compat/app';
-import { PlusIcon, CommandLineIcon, XIcon } from './icons';
+import { db } from '../firebaseConfig';
+import { Command as CommandType } from '../types';
+import { CommandLineIcon } from './icons';
 
 interface CommandsProps {
     user: firebase.User;
@@ -162,105 +164,138 @@ Each reply should feel **personal, professional, and purposeful**. You're not ju
 
 
 const Commands: React.FC<CommandsProps> = ({ user }) => {
-    // State for managing commands would go here in the future
-    const [commands, setCommands] = React.useState([]);
-    const [isModalOpen, setIsModalOpen] = React.useState(false);
-    
-    const [commandName, setCommandName] = React.useState('');
-    const [systemPrompt, setSystemPrompt] = React.useState('');
+    const [command, setCommand] = React.useState<Partial<CommandType>>({ name: '', systemPrompt: '' });
+    const [commandId, setCommandId] = React.useState<string | null>(null);
+    const [loading, setLoading] = React.useState(true);
+    const [saving, setSaving] = React.useState(false);
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    const handleCreateNew = () => {
-        setCommandName('');
-        setSystemPrompt(DEFAULT_SYSTEM_PROMPT);
-        setIsModalOpen(true);
+    React.useEffect(() => {
+        const fetchCommand = async () => {
+            try {
+                const q = db.collection('commands').where('userId', '==', user.uid).limit(1);
+                const querySnapshot = await q.get();
+                if (!querySnapshot.empty) {
+                    const commandDoc = querySnapshot.docs[0];
+                    setCommand(commandDoc.data() as CommandType);
+                    setCommandId(commandDoc.id);
+                } else {
+                    // If no command is found, set the default prompt
+                    setCommand({ name: '', systemPrompt: DEFAULT_SYSTEM_PROMPT });
+                }
+            } catch (error) {
+                console.error("Error fetching command:", error);
+                setMessage({ type: 'error', text: 'Failed to load command data.' });
+                // Still provide default prompt on error
+                setCommand({ name: '', systemPrompt: DEFAULT_SYSTEM_PROMPT });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCommand();
+    }, [user.uid]);
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        setMessage(null);
+
+        if (!command.name || !command.systemPrompt) {
+             setMessage({ type: 'error', text: 'Command Name and System Prompt are required.' });
+             setSaving(false);
+             return;
+        }
+
+        try {
+            const commandData = {
+                userId: user.uid,
+                name: command.name,
+                systemPrompt: command.systemPrompt,
+            };
+
+            if (commandId) {
+                const commandRef = db.collection('commands').doc(commandId);
+                await commandRef.update(commandData);
+            } else {
+                const docRef = await db.collection('commands').add(commandData);
+                setCommandId(docRef.id);
+            }
+            setMessage({ type: 'success', text: 'Command saved successfully!' });
+        } catch (error) {
+            console.error("Error saving command:", error);
+            setMessage({ type: 'error', text: 'Failed to save command.' });
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(null), 5000);
+        }
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setCommandName('');
-        setSystemPrompt('');
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setCommand(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSaveCommand = () => {
-        // Logic to save to Firebase would go here
-        console.log("Saving command:", { name: commandName, prompt: systemPrompt });
-        handleCloseModal();
-    };
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full p-8">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-                <div className="mb-4 sm:mb-0">
-                    <h1 className="text-3xl font-bold text-gray-800">Commands</h1>
-                    <p className="mt-1 text-gray-500">Create and manage custom command prompts for AI-powered actions.</p>
-                </div>
-                <button 
-                    onClick={handleCreateNew}
-                    className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30"
-                >
-                    <PlusIcon className="w-4 h-4 mr-2" />
-                    Create Command
-                </button>
-            </div>
-
-            {/* Command List / Empty State */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 text-center text-gray-500 flex flex-col items-center justify-center min-h-[400px]">
-                <CommandLineIcon className="w-16 h-16 text-gray-300 mb-4" />
-                <h2 className="text-xl font-semibold text-gray-700">No Commands Created Yet</h2>
-                <p className="mt-2 max-w-sm">
-                    Get started by creating your first command to automate responses or generate content.
-                </p>
-                <button
-                    onClick={handleCreateNew} 
-                    className="mt-6 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors"
-                >
-                    Create Your First Command
-                </button>
-            </div>
-
-            {/* Modal for creating/editing */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4 transition-opacity duration-300">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg transition-all duration-300 flex flex-col max-h-[90vh]">
-                        <header className="flex items-center justify-between p-5 border-b border-gray-200 flex-shrink-0">
-                            <h2 className="text-xl font-semibold text-gray-800">Create New Command</h2>
-                            <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition-colors">
-                                <XIcon className="w-6 h-6" />
-                            </button>
-                        </header>
-                        <div className="p-6 space-y-4 overflow-y-auto">
-                            <div>
-                                <label htmlFor="commandName" className="block text-sm font-medium text-gray-700 mb-1">Command Name</label>
-                                <input 
-                                    type="text"
-                                    id="commandName"
-                                    placeholder="e.g., !summarize"
-                                    value={commandName}
-                                    onChange={(e) => setCommandName(e.target.value)}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">A unique name for your command, starting with '!' is recommended.</p>
-                            </div>
-                            <div>
-                                <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-700 mb-1">System Prompt</label>
-                                <textarea 
-                                    id="systemPrompt"
-                                    rows={10}
-                                    value={systemPrompt}
-                                    onChange={(e) => setSystemPrompt(e.target.value)}
-                                    placeholder="e.g., You are a helpful assistant. Summarize the provided text in three key bullet points."
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
-                                ></textarea>
-                                <p className="text-xs text-gray-500 mt-1">Define the task and personality for the AI. This will be the core instruction for the command.</p>
-                            </div>
-                        </div>
-                        <footer className="flex justify-end p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl space-x-2 flex-shrink-0">
-                            <button onClick={handleCloseModal} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</button>
-                            <button onClick={handleSaveCommand} className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700">Save Command</button>
-                        </footer>
+            <h1 className="text-3xl font-bold mb-2 text-gray-900">Commands</h1>
+            <p className="text-gray-500 mb-6">Create and manage a custom command prompt for AI-powered actions. This command will be used for auto-commenting.</p>
+            
+            <div className="max-w-4xl mx-auto">
+                <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-8 space-y-6">
+                    <div>
+                        <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 mb-1">
+                            <CommandLineIcon className="w-4 h-4 mr-2 text-gray-400" />
+                            Command Name
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            value={command.name} 
+                            onChange={handleChange} 
+                            placeholder="e.g., !reply"
+                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+                        />
+                         <p className="text-xs text-gray-500 mt-1">A unique name for your command. Using '!' as a prefix is recommended.</p>
                     </div>
-                </div>
-            )}
+
+                     <div>
+                        <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-700 mb-1">
+                            System Prompt
+                        </label>
+                        <textarea 
+                            id="systemPrompt" 
+                            name="systemPrompt"
+                            rows={20}
+                            value={command.systemPrompt} 
+                            onChange={handleChange}
+                            placeholder="Describe the task and personality for the AI..."
+                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition font-mono text-xs leading-relaxed"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">This is the main instruction for the AI. You can edit or replace this default prompt.</p>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-gray-200">
+                        <button type="submit" disabled={saving} className="px-6 py-2 rounded-lg text-white bg-blue-600 font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed">
+                            {saving ? 'Saving...' : 'Save Command'}
+                        </button>
+                    </div>
+
+                    {message && (
+                        <div className={`mt-4 p-4 border rounded-md text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                           {message.text}
+                        </div>
+                    )}
+                </form>
+            </div>
         </div>
     );
 };
