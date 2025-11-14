@@ -316,63 +316,65 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     <h2 className="text-xl font-semibold text-gray-800">{property ? 'Edit Property' : 'Add New Property'}</h2>
                     <button onClick={onClose}><XIcon className="w-6 h-6 text-gray-400 hover:text-gray-700"/></button>
                 </header>
-                <form onSubmit={handleSave} id="property-editor-form" className="flex-1 overflow-y-auto p-6 space-y-4">
-                    <div>
-                        <label className="text-sm font-medium">Title</label>
-                        <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                <form onSubmit={handleSave} className="flex-1 flex flex-col overflow-hidden">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        <div>
+                            <label className="text-sm font-medium">Title</label>
+                            <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium">Location</label>
+                            <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="text-sm font-medium">Price (USD)</label>
+                                <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium">Area (sqft)</label>
+                                <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium">Status</label>
+                                <select name="status" value={formData.status} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                                    {PROPERTY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium">Property Type</label>
+                                <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                                    {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium">Plan</label>
+                                <select name="plan" value={formData.plan} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                                    {PROPERTY_PLANS.map(p => <option key={p} value={p}>{p}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium">Bedrooms</label>
+                                <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium">Bathrooms</label>
+                                <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label className="text-sm font-medium">Location</label>
-                        <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="text-sm font-medium">Price (USD)</label>
-                            <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium">Area (sqft)</label>
-                            <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium">Status</label>
-                            <select name="status" value={formData.status} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                                {PROPERTY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         <div>
-                            <label className="text-sm font-medium">Property Type</label>
-                            <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                                {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium">Plan</label>
-                            <select name="plan" value={formData.plan} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                                {PROPERTY_PLANS.map(p => <option key={p} value={p}>{p}</option>)}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-sm font-medium">Bedrooms</label>
-                            <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium">Bathrooms</label>
-                            <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
-                        </div>
-                    </div>
+                    <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2 flex-shrink-0">
+                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
+                        <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
+                            {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
+                            {saving ? 'Saving...' : 'Save Property'}
+                        </button>
+                    </footer>
                 </form>
-                <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2">
-                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
-                    <button type="submit" form="property-editor-form" disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
-                        {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
-                        {saving ? 'Saving...' : 'Save Property'}
-                    </button>
-                </footer>
             </div>
         </div>
     );
