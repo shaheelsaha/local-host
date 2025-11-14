@@ -281,7 +281,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     <h2 className="text-xl font-semibold text-gray-800">{property ? 'Edit Property' : 'Add New Property'}</h2>
                     <button onClick={onClose}><XIcon className="w-6 h-6 text-gray-400 hover:text-gray-700"/></button>
                 </header>
-                <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-4">
+                <form onSubmit={handleSave} id="property-editor-form" className="flex-1 overflow-y-auto p-6 space-y-4">
                     <div>
                         <label className="text-sm font-medium">Title</label>
                         <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
@@ -333,7 +333,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 </form>
                 <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2">
                     <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
-                    <button type="button" onClick={(e) => { if(e.currentTarget.form) { e.currentTarget.form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })) } handleSave(e); }} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
+                    <button type="submit" form="property-editor-form" disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
                         {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
                         {saving ? 'Saving...' : 'Save Property'}
                     </button>
