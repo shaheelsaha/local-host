@@ -1,5 +1,14 @@
 
 
+
+
+
+
+// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+// FIX: Use Firebase v8 compat imports to resolve type errors for `firestore`.
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+
 export enum SocialPlatform {
     TWITTER = 'Twitter',
     LINKEDIN = 'LinkedIn',
@@ -31,4 +40,24 @@ export interface Persona {
     name: string;
     characteristics: string;
     avoid: string;
+}
+
+// NEW TYPES
+export type PropertyType = 'Apartment' | 'Villa' | 'Townhouse' | 'Penthouse' | 'Duplex';
+export type PropertyStatus = 'For Sale' | 'For Rent' | 'Sold' | 'Rented';
+export type PropertyPlan = 'Studio' | '1 BHK' | '2 BHK' | '3 BHK' | '4+ BHK';
+
+export interface Property {
+    id: string;
+    userId: string;
+    title: string;
+    location: string;
+    price: number;
+    bedrooms: number;
+    bathrooms: number;
+    area: number; // in sqft
+    propertyType: PropertyType;
+    status: PropertyStatus;
+    plan: PropertyPlan;
+    createdAt: firebase.firestore.Timestamp;
 }

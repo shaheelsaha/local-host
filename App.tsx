@@ -1,7 +1,15 @@
 
+
+
+
+
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors.
 import * as React from 'react';
-import firebase from 'firebase/app';
+// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+// FIX: Use Firebase v8 compat imports to resolve type errors for `User` and `firestore`.
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { auth, db } from './firebaseConfig';
 
 import Login from './components/Login';
@@ -24,6 +32,7 @@ import ContactPage from './components/ContactPage';
 import PricingPage from './components/PricingPage';
 import Command from './components/Commands';
 import CookieConsentBanner from './components/CookieConsentBanner';
+import Knowledge from './components/Knowledge';
 
 // ✅ NEW: React Router
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -208,6 +217,7 @@ const App: React.FC = () => {
                     <Route index element={<Navigate to="/schedule" replace />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/schedule" element={<Schedule />} />
+                    <Route path="/knowledge" element={<Knowledge user={user} />} />
                     <Route path="/settings" element={<Settings user={user} />} />
                     <Route path="/connections" element={<Connections />} />
                     <Route path="/command" element={<Command user={user} />} />

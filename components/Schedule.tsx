@@ -1,4 +1,9 @@
 
+
+
+
+
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { GoogleGenAI } from '@google/genai';
@@ -6,7 +11,11 @@ import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, Twi
 import { Post, SocialPlatform, Persona } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
 // FIX: Refactor Firebase calls to v8 compat syntax.
-import firebase from 'firebase/app';
+// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+// FIX: Use Firebase v8 compat imports to resolve type errors for `firestore` and `storage`.
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 // import { collection, addDoc, query, where, onSnapshot, Timestamp, doc, updateDoc, deleteDoc, getDocs, limit } from 'firebase/firestore';
 // import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 

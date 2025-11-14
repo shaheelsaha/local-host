@@ -1,11 +1,14 @@
 
 
-// FIX: Refactor to Firebase v8 compat syntax to address module resolution error.
-// FIX: Update Firebase compat imports to match the import map, resolving the `firebase.auth is not a function` error by changing `firebase/compat/*` to `firebase/*`.
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/storage';
+
+
+
+
+// FIX: Switched to Firebase compat imports to resolve type errors. This is necessary when using the v8 syntax with the v9+ Firebase SDK.
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 
 
 // Your web app's Firebase configuration

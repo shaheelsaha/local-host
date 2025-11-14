@@ -1,8 +1,15 @@
 
+
+
+
+
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/app';
+// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+// FIX: Use Firebase v8 compat import to resolve type error for `User`.
+import firebase from 'firebase/compat/app';
 import { LogoutIcon, SearchIcon, BellIcon, MessageIcon, ChevronDownIcon, SettingsIcon, UserIcon, MenuIcon } from './icons';
 
 interface HeaderProps {

@@ -1,7 +1,14 @@
 
+
+
+
+
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import firebase from 'firebase/app';
+// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+// FIX: Use Firebase v8 compat import to resolve type error for `User`.
+import firebase from 'firebase/compat/app';
 import { db } from '../firebaseConfig';
 // FIX: Refactor Firebase calls to v8 compat syntax.
 // import { collection, query, where, getDocs, addDoc, updateDoc, doc, limit } from 'firebase/firestore';
