@@ -1,6 +1,7 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import firebase from 'firebase/app';
 import { auth, db } from '../firebaseConfig';
 import { 
     FacebookIcon, 

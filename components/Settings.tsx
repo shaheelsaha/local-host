@@ -1,7 +1,8 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 // FIX: Refactor Firebase calls to v8 compat syntax.
-import firebase from 'firebase/compat/app';
+import firebase from 'firebase/app';
 import { SpinnerIcon } from './icons';
 
 interface SettingsProps {

@@ -1,7 +1,8 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/compat/app';
+import firebase from 'firebase/app';
 import { LogoutIcon, SearchIcon, BellIcon, MessageIcon, ChevronDownIcon, SettingsIcon, UserIcon, MenuIcon } from './icons';
 
 interface HeaderProps {
