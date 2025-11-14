@@ -5,7 +5,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import { db } from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
-import { PlusIcon, FilterIcon, SearchIcon, EditIcon, TrashIcon, XIcon, SpinnerIcon, BuildingOfficeIcon, TagIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
+import { PlusIcon, FilterIcon, SearchIcon, EditIcon, TrashIcon, XIcon, SpinnerIcon, BuildingOfficeIcon, TagIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon } from './icons';
 
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Duplex'];
 const PROPERTY_STATUSES: PropertyStatus[] = ['For Sale', 'For Rent', 'Sold', 'Rented'];
@@ -23,6 +23,15 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     const [filters, setFilters] = React.useState({ search: '', status: '', type: '', plan: '' });
     const [currentPage, setCurrentPage] = React.useState(1);
     const propertiesPerPage = 10;
+    const [toasts, setToasts] = React.useState<{ id: number; message: string; type: 'success' }[]>([]);
+
+    const addToast = (message: string, type: 'success' = 'success') => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => {
+            setToasts(prev => prev.filter(toast => toast.id !== id));
+        }, 3000); // Toast disappears after 3 seconds
+    };
 
     React.useEffect(() => {
         const propertiesRef = db.collection('users').doc(user.uid).collection('property_details');
@@ -85,6 +94,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     const handleDeleteProperty = async (propertyId: string) => {
         if (window.confirm('Are you sure you want to delete this property?')) {
             await db.collection('users').doc(user.uid).collection('property_details').doc(propertyId).delete();
+            addToast('Property deleted successfully.');
         }
     };
 
@@ -197,7 +207,30 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 onClose={() => setIsModalOpen(false)}
                 user={user}
                 property={editingProperty}
+                onSaveSuccess={addToast}
             />
+
+            {/* Toast Container */}
+            <div aria-live="assertive" className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-[100]">
+                <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
+                    {toasts.map(toast => (
+                        <div key={toast.id} className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+                            <div className="p-4">
+                                <div className="flex items-start">
+                                    <div className="flex-shrink-0">
+                                        <CheckCircleIcon className="h-6 w-6 text-green-400" aria-hidden="true" />
+                                    </div>
+                                    <div className="ml-3 w-0 flex-1 pt-0.5">
+                                        <p className="text-sm font-medium text-gray-900">
+                                            {toast.message}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
@@ -207,9 +240,10 @@ interface PropertyEditorModalProps {
     onClose: () => void;
     user: firebase.User;
     property: Property | null;
+    onSaveSuccess: (message: string) => void;
 }
 
-const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClose, user, property }) => {
+const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClose, user, property, onSaveSuccess }) => {
     const [formData, setFormData] = React.useState<Partial<Property>>({});
     const [saving, setSaving] = React.useState(false);
 
@@ -245,9 +279,9 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 // Update an existing property
                 const { id, userId, createdAt, ...updateData } = { ...formData } as Property;
                 await db.collection('users').doc(user.uid).collection('property_details').doc(property.id).update(updateData);
+                onSaveSuccess('Property updated successfully!');
             } else {
                 // Add a new property
-                // Explicitly build the object to ensure type safety and prevent extra fields
                 const dataToSave = {
                     title: formData.title || '',
                     location: formData.location || '',
@@ -262,6 +296,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 await db.collection('users').doc(user.uid).collection('property_details').add(dataToSave);
+                onSaveSuccess('Property added successfully!');
             }
             onClose();
         } catch (error) {
