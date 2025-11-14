@@ -2,7 +2,6 @@
 import * as React from 'react';
 import firebase from 'firebase/compat/app';
 import { db } from '../firebaseConfig';
-import { Command as CommandType } from '../types';
 import { CommandLineIcon } from './icons';
 
 interface CommandsProps {
@@ -164,8 +163,7 @@ Each reply should feel **personal, professional, and purposeful**. You're not ju
 
 
 const Commands: React.FC<CommandsProps> = ({ user }) => {
-    const [command, setCommand] = React.useState<Partial<CommandType>>({ name: '', systemPrompt: '' });
-    const [commandId, setCommandId] = React.useState<string | null>(null);
+    const [systemPrompt, setSystemPrompt] = React.useState('');
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -173,21 +171,19 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
     React.useEffect(() => {
         const fetchCommand = async () => {
             try {
-                const q = db.collection('commands').where('userId', '==', user.uid).limit(1);
-                const querySnapshot = await q.get();
-                if (!querySnapshot.empty) {
-                    const commandDoc = querySnapshot.docs[0];
-                    setCommand(commandDoc.data() as CommandType);
-                    setCommandId(commandDoc.id);
+                const connectionRef = db.collection('users').doc(user.uid).collection('connection').doc('connection');
+                const docSnap = await connectionRef.get();
+                if (docSnap.exists && docSnap.data()?.command_prompt) {
+                    setSystemPrompt(docSnap.data()!.command_prompt);
                 } else {
                     // If no command is found, set the default prompt
-                    setCommand({ name: '', systemPrompt: DEFAULT_SYSTEM_PROMPT });
+                    setSystemPrompt(DEFAULT_SYSTEM_PROMPT);
                 }
             } catch (error) {
-                console.error("Error fetching command:", error);
-                setMessage({ type: 'error', text: 'Failed to load command data.' });
+                console.error("Error fetching command prompt:", error);
+                setMessage({ type: 'error', text: 'Failed to load command prompt data.' });
                 // Still provide default prompt on error
-                setCommand({ name: '', systemPrompt: DEFAULT_SYSTEM_PROMPT });
+                setSystemPrompt(DEFAULT_SYSTEM_PROMPT);
             } finally {
                 setLoading(false);
             }
@@ -200,39 +196,24 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
         setSaving(true);
         setMessage(null);
 
-        if (!command.name || !command.systemPrompt) {
-             setMessage({ type: 'error', text: 'Command Name and System Prompt are required.' });
+        if (!systemPrompt) {
+             setMessage({ type: 'error', text: 'System Prompt is required.' });
              setSaving(false);
              return;
         }
 
         try {
-            const commandData = {
-                userId: user.uid,
-                name: command.name,
-                systemPrompt: command.systemPrompt,
-            };
+            const connectionRef = db.collection('users').doc(user.uid).collection('connection').doc('connection');
+            await connectionRef.set({ command_prompt: systemPrompt }, { merge: true });
 
-            if (commandId) {
-                const commandRef = db.collection('commands').doc(commandId);
-                await commandRef.update(commandData);
-            } else {
-                const docRef = await db.collection('commands').add(commandData);
-                setCommandId(docRef.id);
-            }
-            setMessage({ type: 'success', text: 'Command saved successfully!' });
+            setMessage({ type: 'success', text: 'Command prompt saved successfully!' });
         } catch (error) {
-            console.error("Error saving command:", error);
-            setMessage({ type: 'error', text: 'Failed to save command.' });
+            console.error("Error saving command prompt:", error);
+            setMessage({ type: 'error', text: 'Failed to save command prompt.' });
         } finally {
             setSaving(false);
             setTimeout(() => setMessage(null), 5000);
         }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setCommand(prev => ({ ...prev, [name]: value }));
     };
 
     if (loading) {
@@ -250,23 +231,6 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
             
             <div className="max-w-4xl mx-auto">
                 <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-8 space-y-6">
-                    <div>
-                        <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                            <CommandLineIcon className="w-4 h-4 mr-2 text-gray-400" />
-                            Command Name
-                        </label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            name="name" 
-                            value={command.name} 
-                            onChange={handleChange} 
-                            placeholder="e.g., !reply"
-                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
-                        />
-                         <p className="text-xs text-gray-500 mt-1">A unique name for your command. Using '!' as a prefix is recommended.</p>
-                    </div>
-
                      <div>
                         <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-700 mb-1">
                             System Prompt
@@ -275,8 +239,8 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
                             id="systemPrompt" 
                             name="systemPrompt"
                             rows={20}
-                            value={command.systemPrompt} 
-                            onChange={handleChange}
+                            value={systemPrompt} 
+                            onChange={(e) => setSystemPrompt(e.target.value)}
                             placeholder="Describe the task and personality for the AI..."
                             className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition font-mono text-xs leading-relaxed"
                         />

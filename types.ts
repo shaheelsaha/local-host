@@ -32,10 +32,3 @@ export interface Persona {
     characteristics: string;
     avoid: string;
 }
-
-export interface Command {
-    id?: string;
-    userId: string;
-    name: string;
-    systemPrompt: string;
-}
