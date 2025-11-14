@@ -246,6 +246,7 @@ interface PropertyEditorModalProps {
 const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClose, user, property, onSaveSuccess }) => {
     const [formData, setFormData] = React.useState<Partial<Property>>({});
     const [saving, setSaving] = React.useState(false);
+    const formRef = React.useRef<HTMLFormElement>(null);
 
     React.useEffect(() => {
         if (property) {
@@ -271,8 +272,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         setFormData(prev => ({ ...prev, [name]: isNumber ? Number(value) : value }));
     };
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSave = async () => {
         setSaving(true);
         try {
             if (property) {
@@ -307,6 +307,15 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         }
     };
 
+    const handleSaveClick = () => {
+        if (formRef.current && formRef.current.checkValidity()) {
+            handleSave();
+        } else {
+            // This will trigger the browser's native validation UI
+            formRef.current?.reportValidity();
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -316,7 +325,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     <h2 className="text-xl font-semibold text-gray-800">{property ? 'Edit Property' : 'Add New Property'}</h2>
                     <button onClick={onClose}><XIcon className="w-6 h-6 text-gray-400 hover:text-gray-700"/></button>
                 </header>
-                <form onSubmit={handleSave} className="flex-1 flex flex-col overflow-hidden">
+                <form ref={formRef} className="flex-1 flex flex-col overflow-hidden">
                     <div className="flex-1 overflow-y-auto p-6 space-y-4">
                         <div>
                             <label className="text-sm font-medium">Title</label>
@@ -369,7 +378,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     </div>
                     <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2 flex-shrink-0">
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
-                        <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
+                        <button type="button" onClick={handleSaveClick} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
                             {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
                             {saving ? 'Saving...' : 'Save Property'}
                         </button>
