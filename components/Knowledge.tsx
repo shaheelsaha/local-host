@@ -241,14 +241,26 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         e.preventDefault();
         setSaving(true);
         try {
-            const dataToSave = {
-                ...formData,
-                userId: user.uid,
-                createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
-            };
             if (property) {
-                await db.collection('properties').doc(property.id).update(dataToSave);
+                // Update an existing property
+                const { id, userId, createdAt, ...updateData } = { ...formData } as Property;
+                await db.collection('properties').doc(property.id).update(updateData);
             } else {
+                // Add a new property
+                // Explicitly build the object to ensure type safety and prevent extra fields
+                const dataToSave = {
+                    title: formData.title || '',
+                    location: formData.location || '',
+                    price: Number(formData.price) || 0,
+                    bedrooms: Number(formData.bedrooms) || 0,
+                    bathrooms: Number(formData.bathrooms) || 0,
+                    area: Number(formData.area) || 0,
+                    propertyType: formData.propertyType || 'Apartment',
+                    status: formData.status || 'For Sale',
+                    plan: formData.plan || 'Studio',
+                    userId: user.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                };
                 await db.collection('properties').add(dataToSave);
             }
             onClose();
@@ -281,11 +293,11 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="text-sm font-medium">Price (USD)</label>
-                            <input type="number" name="price" value={formData.price || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                            <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
                         </div>
                         <div>
                             <label className="text-sm font-medium">Area (sqft)</label>
-                            <input type="number" name="area" value={formData.area || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                            <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
                         </div>
                         <div>
                             <label className="text-sm font-medium">Status</label>
@@ -311,17 +323,17 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="text-sm font-medium">Bedrooms</label>
-                            <input type="number" name="bedrooms" value={formData.bedrooms || ''} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
+                            <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
                         </div>
                         <div>
                             <label className="text-sm font-medium">Bathrooms</label>
-                            <input type="number" name="bathrooms" value={formData.bathrooms || ''} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
+                            <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" className="w-full mt-1 p-2 border rounded-md"/>
                         </div>
                     </div>
                 </form>
                 <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2">
-                    <button onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
-                    <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
+                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
+                    <button type="button" onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
                         {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
                         {saving ? 'Saving...' : 'Save Property'}
                     </button>
