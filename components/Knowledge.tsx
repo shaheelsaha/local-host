@@ -47,7 +47,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   };
 
   React.useEffect(() => {
-    const propertiesRef = db.collection('users').doc(user.uid).collection('property_details');
+    const propertiesRef = db.collection('users').doc(user.uid).collection('Property_details');
     const q = propertiesRef.orderBy('createdAt', 'desc');
 
     const unsubscribe = q.onSnapshot(
@@ -112,7 +112,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   const handleDeleteProperty = async (propertyId: string) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
-        await db.collection('users').doc(user.uid).collection('property_details').doc(propertyId).delete();
+        await db.collection('users').doc(user.uid).collection('Property_details').doc(propertyId).delete();
         addToast('Property deleted successfully.');
       } catch (err) {
         console.error('Delete failed:', err);
@@ -123,7 +123,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
 
   const handleStatusChange = async (propertyId: string, newStatus: PropertyStatus) => {
     try {
-      const propertyRef = db.collection('users').doc(user.uid).collection('property_details').doc(propertyId);
+      const propertyRef = db.collection('users').doc(user.uid).collection('Property_details').doc(propertyId);
       await propertyRef.update({ status: newStatus });
       addToast('Status updated.');
     } catch (err) {
@@ -370,7 +370,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         // Update an existing property
         // Remove readonly/unwanted fields
         const { id, userId, createdAt, ...updateData } = formData as Property;
-        await db.collection('users').doc(user.uid).collection('property_details').doc(property.id).update(updateData);
+        await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update(updateData);
         onSaveSuccess('Property updated successfully!');
       } else {
         // Add a new property
@@ -387,7 +387,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
           userId: user.uid,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
-        await db.collection('users').doc(user.uid).collection('property_details').add(dataToSave);
+        await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
         onSaveSuccess('Property added successfully!');
       }
       onClose();
