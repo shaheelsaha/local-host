@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
 // FIX: Use Firebase v8 compat imports to resolve type errors for `firestore`.
 import firebase from 'firebase/compat/app';
@@ -60,4 +54,15 @@ export interface Property {
     status: PropertyStatus;
     plan: PropertyPlan;
     createdAt: firebase.firestore.Timestamp;
+}
+
+// NEW TYPE: Analytics Data
+export interface AnalyticsData {
+  id?: string;
+  userId: string;
+  totalPosts: number;
+  totalEngagement: number;
+  followerGrowthPercentage: number;
+  postsByPlatform: { name: SocialPlatform; value: number }[];
+  engagementOverTime: { date: string; value: number }[];
 }

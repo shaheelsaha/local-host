@@ -25,8 +25,8 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     const propertiesPerPage = 10;
 
     React.useEffect(() => {
-        const propertiesRef = db.collection('properties');
-        const q = propertiesRef.where('userId', '==', user.uid).orderBy('createdAt', 'desc');
+        const propertiesRef = db.collection('users').doc(user.uid).collection('property_details');
+        const q = propertiesRef.orderBy('createdAt', 'desc');
 
         const unsubscribe = q.onSnapshot(querySnapshot => {
             const propsData: Property[] = [];
@@ -84,12 +84,12 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     
     const handleDeleteProperty = async (propertyId: string) => {
         if (window.confirm('Are you sure you want to delete this property?')) {
-            await db.collection('properties').doc(propertyId).delete();
+            await db.collection('users').doc(user.uid).collection('property_details').doc(propertyId).delete();
         }
     };
 
     const handleStatusChange = async (propertyId: string, newStatus: PropertyStatus) => {
-        const propertyRef = db.collection('properties').doc(propertyId);
+        const propertyRef = db.collection('users').doc(user.uid).collection('property_details').doc(propertyId);
         await propertyRef.update({ status: newStatus });
     };
 
@@ -244,7 +244,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             if (property) {
                 // Update an existing property
                 const { id, userId, createdAt, ...updateData } = { ...formData } as Property;
-                await db.collection('properties').doc(property.id).update(updateData);
+                await db.collection('users').doc(user.uid).collection('property_details').doc(property.id).update(updateData);
             } else {
                 // Add a new property
                 // Explicitly build the object to ensure type safety and prevent extra fields
@@ -261,7 +261,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                     userId: user.uid,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 };
-                await db.collection('properties').add(dataToSave);
+                await db.collection('users').doc(user.uid).collection('property_details').add(dataToSave);
             }
             onClose();
         } catch (error) {
@@ -333,7 +333,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 </form>
                 <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2">
                     <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">Cancel</button>
-                    <button type="button" onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
+                    <button type="button" onClick={(e) => { if(e.currentTarget.form) { e.currentTarget.form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })) } handleSave(e); }} disabled={saving} className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
                         {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin"/>}
                         {saving ? 'Saving...' : 'Save Property'}
                     </button>
