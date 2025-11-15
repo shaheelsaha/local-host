@@ -477,7 +477,8 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             if (property?.imageUrl) { // Delete old image if it exists
                 try { await storage.refFromURL(property.imageUrl).delete(); } catch (e) { console.warn("Old image deletion failed:", e); }
             }
-            const storageRef = storage.ref(`properties/${user.uid}/${Date.now()}_${imageFile.name}`);
+            // FIX: Corrected storage path to 'posts/' to match security rules.
+            const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${imageFile.name}`);
             await storageRef.put(imageFile);
             finalImageUrl = await storageRef.getDownloadURL();
         } else if (!imagePreviewUrl && property?.imageUrl) { // Image was removed
