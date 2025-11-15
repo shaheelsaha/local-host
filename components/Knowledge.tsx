@@ -31,6 +31,41 @@ const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Pent
 const PROPERTY_STATUSES: PropertyStatus[] = ['For Sale', 'For Rent', 'Sold', 'Rented'];
 const PROPERTY_PLANS: PropertyPlan[] = ['Studio', '1 BHK', '2 BHK', '3 BHK', '4+ BHK'];
 
+// Helper function to send webhook
+const sendPropertyWebhook = async (propertyData: Property) => {
+  const { id, createdAt, ...restOfData } = propertyData;
+
+  let createdAtISO: string | null = null;
+  if (createdAt && typeof (createdAt as any).toDate === 'function') {
+    createdAtISO = (createdAt as any).toDate().toISOString();
+  } else if (createdAt) {
+    createdAtISO = new Date(createdAt as any).toISOString();
+  }
+
+  const payload = {
+    ...restOfData,
+    createdAt: createdAtISO,
+    documentId: id,
+  };
+
+  try {
+    const response = await fetch('https://n8n.sahaai.online/webhook/property_details', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      console.error('Webhook failed with status:', response.status, await response.text());
+    }
+  } catch (error) {
+    console.error('Failed to send property webhook:', error);
+  }
+};
+
+
 interface KnowledgeProps {
   user: firebase.User;
 }
@@ -132,6 +167,14 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     try {
       const propertyRef = db.collection('users').doc(user.uid).collection('Property_details').doc(propertyId);
       await propertyRef.update({ status: newStatus });
+      
+      // Send webhook with updated data
+      const updatedDoc = await propertyRef.get();
+      if (updatedDoc.exists) {
+        const updatedPropertyData = { id: updatedDoc.id, ...updatedDoc.data() } as Property;
+        await sendPropertyWebhook(updatedPropertyData);
+      }
+
       addToast('Status updated.');
     } catch (err) {
       console.error('Status update failed:', err);
@@ -477,7 +520,6 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             if (property?.imageUrl) { // Delete old image if it exists
                 try { await storage.refFromURL(property.imageUrl).delete(); } catch (e) { console.warn("Old image deletion failed:", e); }
             }
-            // FIX: Corrected storage path to 'posts/' to match security rules.
             const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${imageFile.name}`);
             await storageRef.put(imageFile);
             finalImageUrl = await storageRef.getDownloadURL();
@@ -486,8 +528,6 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             finalImageUrl = '';
         }
 
-        // FIX: Sanitize numeric fields to prevent saving NaN and ensure data integrity.
-        // Also, continue to exclude the 'id' field from the data payload for Firestore updates.
         const { id, ...dataForFirestore } = formData;
 
         const dataToSave = {
@@ -502,10 +542,25 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         };
 
       if (property) {
-        await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update(dataToSave);
+        const propertyRef = db.collection('users').doc(user.uid).collection('Property_details').doc(property.id);
+        await propertyRef.update(dataToSave);
+
+        // Send webhook for update
+        // FIX: Explicitly set createdAt to satisfy the 'Property' type.
+        // The type of dataToSave.createdAt is inferred as a union type, but inside this block,
+        // we know it's a Timestamp from the existing `property`.
+        const updatedPropertyData: Property = { ...property, ...dataToSave, createdAt: property.createdAt };
+        await sendPropertyWebhook(updatedPropertyData);
+
         onSaveSuccess('Property updated successfully!');
       } else {
-        await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
+        const docRef = await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
+        
+        // Send webhook for creation
+        const newDoc = await docRef.get();
+        const newPropertyData = { id: newDoc.id, ...newDoc.data() } as Property;
+        await sendPropertyWebhook(newPropertyData);
+
         onSaveSuccess('Property added successfully!');
       }
       onClose();
