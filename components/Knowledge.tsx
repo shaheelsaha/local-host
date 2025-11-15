@@ -485,6 +485,8 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             finalImageUrl = '';
         }
 
+        // FIX: Sanitize numeric fields to prevent saving NaN and ensure data integrity.
+        // Also, continue to exclude the 'id' field from the data payload for Firestore updates.
         const { id, ...dataForFirestore } = formData;
 
         const dataToSave = {
@@ -492,6 +494,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             userId: user.uid,
             createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
             imageUrl: finalImageUrl,
+            price: Number(formData.price) || 0,
+            area: Number(formData.area) || 0,
+            bedrooms: Number(formData.bedrooms) || 0,
+            bathrooms: Number(formData.bathrooms) || 0,
         };
 
       if (property) {
