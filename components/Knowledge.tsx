@@ -18,6 +18,12 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CheckCircleIcon,
+  LocationIcon,
+  BedIcon,
+  BathIcon,
+  CurrencyDollarIcon,
+  AreaIcon,
+  LinkIcon
 } from './icons';
 
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Duplex'];
@@ -316,6 +322,74 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   );
 };
 
+// Helper for details list in preview card
+const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: string }> = ({ icon, label, value }) => (
+    <li className="flex items-center text-gray-800">
+        {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
+        {React.cloneElement<{ className?: string }>(icon, { className: 'w-5 h-5 text-gray-400 mr-3 flex-shrink-0' })}
+        <span className="font-medium">{label}</span>
+        {value && <span className="ml-2 text-gray-600">{value}</span>}
+    </li>
+);
+
+const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ property }) => {
+    const formattedPrice = new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Number(property.price) || 0);
+  
+    const {
+        title = 'Sale in Jumeirah Living Business Bay: Panoramic Views',
+        location = 'Jumeirah Living, Business Bay',
+        bedrooms = 0,
+        bathrooms = 0,
+        area = 0,
+        imageUrl,
+      } = property;
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-sm mx-auto font-sans">
+        <img
+            src={imageUrl || 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'}
+            alt={title}
+            className="w-full h-48 object-cover rounded-t-xl"
+            onError={(e) => { e.currentTarget.src = 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'; }}
+        />
+        <div className="p-4">
+            <h3 className="text-base font-semibold text-gray-800 leading-tight">
+                {title || 'Property Title'}
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">propertyfinder.ae</p>
+        </div>
+        <div className="mx-4 mb-4 p-4 bg-gray-50 border border-gray-200/80 rounded-lg">
+            <ul className="space-y-3 text-sm">
+                <DetailItem icon={<TagIcon />} label="ID Property" value="PROP24289" />
+                <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
+                <li className="flex items-center text-gray-800 font-medium flex-wrap">
+                    <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                    <span>{formattedPrice}</span>
+                    <span className="text-gray-300 mx-2.5">|</span>
+                    <BedIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                    <span>{bedrooms} bed</span>
+                    <span className="text-gray-300 mx-2.5">|</span>
+                    <BathIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                    <span>{bathrooms} bath</span>
+                </li>
+                <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
+                <li className="flex items-center text-gray-800">
+                    <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                    <a href="#" className="text-blue-600 hover:underline text-xs truncate">
+                        https://www.propertyfinder.ae/en/plp/buy/...
+                    </a>
+                </li>
+            </ul>
+        </div>
+      </div>
+    );
+};
+
 interface PropertyEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -338,6 +412,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         bedrooms: Number(property.bedrooms) || 1,
         bathrooms: Number(property.bathrooms) || 1,
         area: Number(property.area) || 0,
+        imageUrl: property.imageUrl || '',
       });
     } else {
       setFormData({
@@ -350,6 +425,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         propertyType: 'Apartment',
         status: 'For Sale',
         plan: '1 BHK',
+        imageUrl: '',
       });
     }
   }, [property, isOpen]);
@@ -361,32 +437,29 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   };
 
   const handleSaveClick = async () => {
-    // Trigger browser native validation; if invalid, stop.
     if (!formRef.current?.reportValidity()) return;
 
     setSaving(true);
     try {
+        const dataToSave = {
+            title: formData.title || '',
+            location: formData.location || '',
+            price: Number(formData.price) || 0,
+            bedrooms: Number(formData.bedrooms) || 0,
+            bathrooms: Number(formData.bathrooms) || 0,
+            area: Number(formData.area) || 0,
+            propertyType: formData.propertyType || 'Apartment',
+            status: formData.status || 'For Sale',
+            plan: formData.plan || 'Studio',
+            userId: user.uid,
+            createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
+            imageUrl: formData.imageUrl || '',
+        };
+
       if (property) {
-        // Update an existing property
-        // Remove readonly/unwanted fields
-        const { id, userId, createdAt, ...updateData } = formData as Property;
-        await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update(updateData);
+        await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update(dataToSave);
         onSaveSuccess('Property updated successfully!');
       } else {
-        // Add a new property
-        const dataToSave = {
-          title: formData.title || '',
-          location: formData.location || '',
-          price: Number(formData.price) || 0,
-          bedrooms: Number(formData.bedrooms) || 0,
-          bathrooms: Number(formData.bathrooms) || 0,
-          area: Number(formData.area) || 0,
-          propertyType: formData.propertyType || 'Apartment',
-          status: formData.status || 'For Sale',
-          plan: formData.plan || 'Studio',
-          userId: user.uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
         await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
         onSaveSuccess('Property added successfully!');
       }
@@ -403,7 +476,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col">
         <header className="flex items-center justify-between p-5 border-b">
           <h2 className="text-xl font-semibold text-gray-800">{property ? 'Edit Property' : 'Add New Property'}</h2>
           <button onClick={onClose}>
@@ -411,136 +484,84 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
           </button>
         </header>
 
-        {/* No form onSubmit - using manual save via button + formRef.reportValidity() */}
-        <form ref={formRef} className="flex-1 flex flex-col overflow-hidden" noValidate>
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            <div>
-              <label className="text-sm font-medium">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title || ''}
-                onChange={handleChange}
-                required
-                className="w-full mt-1 p-2 border rounded-md"
-              />
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+            <form ref={formRef} className="flex-1 flex flex-col overflow-hidden" noValidate>
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Title</label>
+                  <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Location</label>
+                  <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Image URL</label>
+                  <input type="text" name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://example.com/image.jpg" className="w-full mt-1 p-2 border rounded-md"/>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Price (USD)</label>
+                    <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Area (sqft)</label>
+                    <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Status</label>
+                    <select name="status" value={formData.status} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                      {PROPERTY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Property Type</label>
+                    <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                      {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Plan</label>
+                    <select name="plan" value={formData.plan} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                      {PROPERTY_PLANS.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Bedrooms</label>
+                    <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Bathrooms</label>
+                    <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div className="bg-gray-50/70 p-6 hidden md:flex items-center justify-center border-l overflow-hidden">
+                <div className="transform scale-90">
+                    <PropertyPreviewCard property={formData} />
+                </div>
             </div>
-            <div>
-              <label className="text-sm font-medium">Location</label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location || ''}
-                onChange={handleChange}
-                required
-                className="w-full mt-1 p-2 border rounded-md"
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium">Price (USD)</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price ?? 0}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full mt-1 p-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Area (sqft)</label>
-                <input
-                  type="number"
-                  name="area"
-                  value={formData.area ?? 0}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full mt-1 p-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Status</label>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                  {PROPERTY_STATUSES.map(s => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Property Type</label>
-                <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                  {PROPERTY_TYPES.map(t => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Plan</label>
-                <select name="plan" value={formData.plan} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
-                  {PROPERTY_PLANS.map(p => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Bedrooms</label>
-                <input
-                  type="number"
-                  name="bedrooms"
-                  value={formData.bedrooms ?? 1}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full mt-1 p-2 border rounded-md"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Bathrooms</label>
-                <input
-                  type="number"
-                  name="bathrooms"
-                  value={formData.bathrooms ?? 1}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full mt-1 p-2 border rounded-md"
-                />
-              </div>
-            </div>
-          </div>
+        </div>
 
-          <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2 flex-shrink-0">
+        <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2 flex-shrink-0">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">
-              Cancel
+                Cancel
             </button>
             <button
-              type="button"
-              onClick={handleSaveClick}
-              disabled={saving}
-              className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center"
+                type="button"
+                onClick={handleSaveClick}
+                disabled={saving}
+                className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center"
             >
-              {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
-              {saving ? 'Saving...' : 'Save Property'}
+                {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
+                {saving ? 'Saving...' : 'Save Property'}
             </button>
-          </footer>
-        </form>
+        </footer>
       </div>
     </div>
   );

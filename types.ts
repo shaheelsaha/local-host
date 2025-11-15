@@ -54,6 +54,7 @@ export interface Property {
     status: PropertyStatus;
     plan: PropertyPlan;
     createdAt: firebase.firestore.Timestamp;
+    imageUrl?: string;
 }
 
 // NEW TYPE: Analytics Data
