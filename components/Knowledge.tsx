@@ -3,7 +3,7 @@ import * as React from 'react';
 // FIX: Use Firebase v8 compat imports to resolve type errors for `User` and `firestore`.
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import { db } from '../firebaseConfig';
+import { db, storage } from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
 import {
   PlusIcon,
@@ -23,7 +23,8 @@ import {
   BathIcon,
   CurrencyDollarIcon,
   AreaIcon,
-  LinkIcon
+  LinkIcon,
+  UploadIcon
 } from './icons';
 
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Duplex'];
@@ -233,7 +234,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                     <div className="text-xs text-gray-500">{prop.location}</div>
                   </td>
                   <td className="px-6 py-4">
-                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(
+                    {new Intl.NumberFormat(prop.currency === 'USD' ? 'en-US' : 'en-AE', { style: 'currency', currency: prop.currency || 'USD', minimumFractionDigits: 0 }).format(
                       Number(prop.price) || 0
                     )}
                   </td>
@@ -333,9 +334,9 @@ const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: st
 );
 
 const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ property }) => {
-    const formattedPrice = new Intl.NumberFormat('en-AE', {
+    const formattedPrice = new Intl.NumberFormat(property.currency === 'USD' ? 'en-US' : 'en-AE', {
       style: 'currency',
-      currency: 'AED',
+      currency: property.currency || 'AED',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(Number(property.price) || 0);
@@ -347,6 +348,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         bathrooms = 0,
         area = 0,
         imageUrl,
+        propertyLink,
       } = property;
 
     return (
@@ -365,7 +367,6 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         </div>
         <div className="mx-4 mb-4 p-4 bg-gray-50 border border-gray-200/80 rounded-lg">
             <ul className="space-y-3 text-sm">
-                <DetailItem icon={<TagIcon />} label="ID Property" value="PROP24289" />
                 <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
                 <li className="flex items-center text-gray-800 font-medium flex-wrap">
                     <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
@@ -380,8 +381,8 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
                 <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
                 <li className="flex items-center text-gray-800">
                     <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                    <a href="#" className="text-blue-600 hover:underline text-xs truncate">
-                        https://www.propertyfinder.ae/en/plp/buy/...
+                    <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs truncate">
+                        {propertyLink || 'No link provided'}
                     </a>
                 </li>
             </ul>
@@ -401,24 +402,21 @@ interface PropertyEditorModalProps {
 const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClose, user, property, onSaveSuccess }) => {
   const [formData, setFormData] = React.useState<Partial<Property>>({});
   const [saving, setSaving] = React.useState(false);
+  const [imageFile, setImageFile] = React.useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     if (property) {
-      // copy property; ensure numbers remain numbers
-      setFormData({
-        ...property,
-        price: Number(property.price) || 0,
-        bedrooms: Number(property.bedrooms) || 1,
-        bathrooms: Number(property.bathrooms) || 1,
-        area: Number(property.area) || 0,
-        imageUrl: property.imageUrl || '',
-      });
+      setFormData({ ...property });
+      setImagePreviewUrl(property.imageUrl || null);
     } else {
       setFormData({
         title: '',
         location: '',
         price: 0,
+        currency: 'AED',
         bedrooms: 1,
         bathrooms: 1,
         area: 0,
@@ -426,9 +424,21 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         status: 'For Sale',
         plan: '1 BHK',
         imageUrl: '',
+        propertyLink: '',
       });
+      setImagePreviewUrl(null);
     }
+    setImageFile(null); // Reset file on open
   }, [property, isOpen]);
+
+  React.useEffect(() => {
+    // Cleanup blob URL
+    return () => {
+        if (imagePreviewUrl && imagePreviewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreviewUrl);
+        }
+    };
+  }, [imagePreviewUrl]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -436,24 +446,50 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     setFormData(prev => ({ ...prev, [name]: isNumber ? Number(value) : value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        setImageFile(file);
+        if (imagePreviewUrl && imagePreviewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreviewUrl);
+        }
+        const newPreviewUrl = URL.createObjectURL(file);
+        setImagePreviewUrl(newPreviewUrl);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreviewUrl(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  };
+
   const handleSaveClick = async () => {
     if (!formRef.current?.reportValidity()) return;
 
     setSaving(true);
     try {
+        let finalImageUrl = property?.imageUrl || '';
+        
+        if (imageFile) { // New image uploaded
+            if (property?.imageUrl) { // Delete old image if it exists
+                try { await storage.refFromURL(property.imageUrl).delete(); } catch (e) { console.warn("Old image deletion failed:", e); }
+            }
+            const storageRef = storage.ref(`properties/${user.uid}/${Date.now()}_${imageFile.name}`);
+            await storageRef.put(imageFile);
+            finalImageUrl = await storageRef.getDownloadURL();
+        } else if (!imagePreviewUrl && property?.imageUrl) { // Image was removed
+             try { await storage.refFromURL(property.imageUrl).delete(); } catch (e) { console.warn("Old image deletion failed:", e); }
+            finalImageUrl = '';
+        }
+
         const dataToSave = {
-            title: formData.title || '',
-            location: formData.location || '',
-            price: Number(formData.price) || 0,
-            bedrooms: Number(formData.bedrooms) || 0,
-            bathrooms: Number(formData.bathrooms) || 0,
-            area: Number(formData.area) || 0,
-            propertyType: formData.propertyType || 'Apartment',
-            status: formData.status || 'For Sale',
-            plan: formData.plan || 'Studio',
+            ...formData,
             userId: user.uid,
             createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
-            imageUrl: formData.imageUrl || '',
+            imageUrl: finalImageUrl,
         };
 
       if (property) {
@@ -473,6 +509,8 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   };
 
   if (!isOpen) return null;
+
+  const livePreviewData = { ...formData, imageUrl: imagePreviewUrl || formData.imageUrl };
 
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
@@ -496,13 +534,48 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                   <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Image URL</label>
-                  <input type="text" name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://example.com/image.jpg" className="w-full mt-1 p-2 border rounded-md"/>
+                    <label className="text-sm font-medium">Property Image</label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div className="space-y-1 text-center">
+                            {imagePreviewUrl ? (
+                                <div className="relative group">
+                                    <img src={imagePreviewUrl} alt="Preview" className="mx-auto h-32 w-auto rounded-md shadow-sm"/>
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button type="button" onClick={removeImage} className="text-white bg-red-600 rounded-full p-2 hover:bg-red-700">
+                                            <TrashIcon className="w-5 h-5"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <UploadIcon className="mx-auto h-12 w-12 text-gray-400"/>
+                                    <div className="flex text-sm text-gray-600">
+                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                            <span>Upload a file</span>
+                                            <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                 <div>
+                  <label className="text-sm font-medium">Property Link</label>
+                  <input type="url" name="propertyLink" value={formData.propertyLink || ''} onChange={handleChange} placeholder="https://www.propertyfinder.ae/..." className="w-full mt-1 p-2 border rounded-md"/>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Price (USD)</label>
-                    <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                    <label className="text-sm font-medium">Price</label>
+                    <div className="flex items-center mt-1">
+                        <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required min="0" className="w-full p-2 border rounded-l-md" />
+                        <select name="currency" value={formData.currency || 'AED'} onChange={handleChange} className="p-2 border-t border-b border-r rounded-r-md bg-gray-50">
+                            <option>AED</option>
+                            <option>USD</option>
+                        </select>
+                    </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Area (sqft)</label>
@@ -543,7 +616,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             </form>
             <div className="bg-gray-50/70 p-6 hidden md:flex items-center justify-center border-l overflow-hidden">
                 <div className="transform scale-90">
-                    <PropertyPreviewCard property={formData} />
+                    <PropertyPreviewCard property={livePreviewData} />
                 </div>
             </div>
         </div>

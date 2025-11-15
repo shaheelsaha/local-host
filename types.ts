@@ -47,6 +47,7 @@ export interface Property {
     title: string;
     location: string;
     price: number;
+    currency: 'USD' | 'AED';
     bedrooms: number;
     bathrooms: number;
     area: number; // in sqft
@@ -55,6 +56,7 @@ export interface Property {
     plan: PropertyPlan;
     createdAt: firebase.firestore.Timestamp;
     imageUrl?: string;
+    propertyLink?: string;
 }
 
 // NEW TYPE: Analytics Data
