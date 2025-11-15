@@ -32,7 +32,7 @@ const PROPERTY_STATUSES: PropertyStatus[] = ['For Sale', 'For Rent', 'Sold', 'Re
 const PROPERTY_PLANS: PropertyPlan[] = ['Studio', '1 BHK', '2 BHK', '3 BHK', '4+ BHK'];
 
 // Helper function to send webhook
-const sendPropertyWebhook = async (propertyData: Property) => {
+const sendPropertyWebhook = async (propertyData: Property, action: 'create' | 'update' | 'delete') => {
   const { id, createdAt, ...restOfData } = propertyData;
 
   let createdAtISO: string | null = null;
@@ -46,6 +46,7 @@ const sendPropertyWebhook = async (propertyData: Property) => {
     ...restOfData,
     createdAt: createdAtISO,
     documentId: id,
+    action,
   };
 
   try {
@@ -154,7 +155,20 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   const handleDeleteProperty = async (propertyId: string) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
       try {
-        await db.collection('users').doc(user.uid).collection('Property_details').doc(propertyId).delete();
+        const propertyRef = db.collection('users').doc(user.uid).collection('Property_details').doc(propertyId);
+        
+        // Fetch the property data before deleting to send with the webhook
+        const docSnap = await propertyRef.get();
+        if (docSnap.exists) {
+            const propertyToDelete = { id: docSnap.id, ...docSnap.data() } as Property;
+            // Send webhook with full data and 'delete' action
+            await sendPropertyWebhook(propertyToDelete, 'delete');
+        } else {
+            console.warn(`Property with id ${propertyId} not found, cannot send delete webhook.`);
+        }
+        
+        // Then delete from Firestore
+        await propertyRef.delete();
         addToast('Property deleted successfully.');
       } catch (err) {
         console.error('Delete failed:', err);
@@ -172,7 +186,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
       const updatedDoc = await propertyRef.get();
       if (updatedDoc.exists) {
         const updatedPropertyData = { id: updatedDoc.id, ...updatedDoc.data() } as Property;
-        await sendPropertyWebhook(updatedPropertyData);
+        await sendPropertyWebhook(updatedPropertyData, 'update');
       }
 
       addToast('Status updated.');
@@ -550,7 +564,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         // The type of dataToSave.createdAt is inferred as a union type, but inside this block,
         // we know it's a Timestamp from the existing `property`.
         const updatedPropertyData: Property = { ...property, ...dataToSave, createdAt: property.createdAt };
-        await sendPropertyWebhook(updatedPropertyData);
+        await sendPropertyWebhook(updatedPropertyData, 'update');
 
         onSaveSuccess('Property updated successfully!');
       } else {
@@ -559,7 +573,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         // Send webhook for creation
         const newDoc = await docRef.get();
         const newPropertyData = { id: newDoc.id, ...newDoc.data() } as Property;
-        await sendPropertyWebhook(newPropertyData);
+        await sendPropertyWebhook(newPropertyData, 'create');
 
         onSaveSuccess('Property added successfully!');
       }
