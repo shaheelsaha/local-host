@@ -485,8 +485,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             finalImageUrl = '';
         }
 
+        const { id, ...dataForFirestore } = formData;
+
         const dataToSave = {
-            ...formData,
+            ...dataForFirestore,
             userId: user.uid,
             createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
             imageUrl: finalImageUrl,
