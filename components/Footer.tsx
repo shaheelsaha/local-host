@@ -1,5 +1,6 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
+import logo from '../assets/logo.png';
 
 const Footer: React.FC = () => (
     <footer className="py-10 border-t border-white/10">
@@ -7,7 +8,7 @@ const Footer: React.FC = () => (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
                 <div className="col-span-2 sm:col-span-3 md:col-span-2">
                     <div className="flex items-center">
-                        <img src="https://i.imgur.com/832ov6L.png" alt="Logo" className="h-8 w-auto mr-3" />
+                        <img src={logo} alt="Logo" className="h-8 w-auto mr-3" />
                         <h1 className="text-xl font-semibold tracking-tight text-white">SAHA AI</h1>
                     </div>
                 </div>
