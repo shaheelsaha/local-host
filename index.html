@@ -61,6 +61,62 @@
       .delay-100 { animation-delay: 0.1s; }
       .delay-200 { animation-delay: 0.2s; }
       .delay-300 { animation-delay: 0.3s; }
+
+      /* --- Leads Board Animations --- */
+
+      /* Panel slide-in animation */
+      @keyframes slide-in-right {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+      @keyframes slide-out-right {
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
+      }
+      .animate-slide-in-right { animation: slide-in-right 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+      .animate-slide-out-right { animation: slide-out-right 0.3s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+
+      /* Backdrop fade-in animation */
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+      .animate-fade-out { animation: fade-out 0.3s ease-in forwards; }
+
+      /* Card entrance animation */
+      @keyframes card-pop-in {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      .lead-card-enter {
+        animation: card-pop-in 0.4s ease-out forwards;
+        opacity: 0; /* Start hidden */
+      }
+      
+      /* Drag and Drop styles */
+      .dragging-card {
+        opacity: 0.5;
+        transform: rotate(3deg) scale(1.05) !important;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        cursor: grabbing;
+      }
+
+      .drag-over-column {
+        background-color: rgba(63, 63, 70, 0.3) !important; /* zinc-600 with opacity */
+        border-style: dashed;
+        border-color: #3b82f6; /* blue-500 */
+      }
     </style>
 <script type="importmap">
 {

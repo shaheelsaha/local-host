@@ -16,41 +16,55 @@ const STAGES: { title: LeadStatus; color: string }[] = [
 ];
 
 const formatDate = (timestamp: firebase.firestore.Timestamp | undefined) => {
-    if (!timestamp) return '';
+    if (!timestamp) return '...';
     return timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const LeadCard: React.FC<{ lead: Lead, onCardClick: (lead: Lead) => void }> = ({ lead, onCardClick }) => (
+const getInitials = (name: string | null | undefined): string => {
+    if (!name) return '??';
+    const nameParts = name.split(' ');
+    if (nameParts.length > 1) {
+        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+};
+
+const LeadCard: React.FC<{ lead: Lead; onCardClick: (lead: Lead) => void; index: number }> = ({ lead, onCardClick, index }) => (
     <div
         draggable
         onDragStart={(e) => {
             e.dataTransfer.setData('leadId', lead.id);
+            e.currentTarget.classList.add('dragging-card');
+        }}
+        onDragEnd={(e) => {
+            e.currentTarget.classList.remove('dragging-card');
         }}
         onClick={() => onCardClick(lead)}
-        className="bg-zinc-800 p-4 rounded-lg shadow-md cursor-pointer border border-zinc-700 hover:border-blue-500 transition-colors"
+        className="lead-card-enter bg-zinc-800 p-4 rounded-lg shadow-md cursor-pointer border border-zinc-700 hover:border-blue-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
+        style={{ animationDelay: `${index * 50}ms` }}
     >
         <div className="flex justify-between items-start">
-            <h4 className="font-bold text-sm text-gray-200 break-words">Name: {lead.name || 'Unnamed Lead'}</h4>
-            <button className="text-gray-500 hover:text-white">
-                <MenuIcon className="w-4 h-4" />
-            </button>
-        </div>
-        <div className="mt-4 flex flex-col space-y-2 text-xs text-gray-400">
-            <div className="flex items-center">
-                <ClockIcon className="w-4 h-4 mr-2" />
-                <span>Started {formatDate(lead.createdAt)}</span>
+            <h4 className="font-bold text-sm text-gray-200 break-words pr-2">{lead.name || 'Unnamed Lead'}</h4>
+            <div className="w-8 h-8 rounded-full bg-zinc-700 border border-zinc-600 flex items-center justify-center text-blue-300 font-bold text-xs flex-shrink-0 ml-2">
+                {getInitials(lead.name)}
             </div>
-            {lead.phone && (
-                 <div className="flex items-center">
-                     <div className="bg-yellow-900/50 text-yellow-300 px-2 py-0.5 rounded-full flex items-center">
-                        <TagIcon className="w-3 h-3 mr-1" />
-                        <span>{lead.phone}</span>
-                     </div>
-                 </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-1 truncate">{lead.phone || 'No phone number'}</p>
+        <div className="mt-4 flex justify-between items-center text-xs text-gray-400">
+            <div className="flex items-center">
+                <ClockIcon className="w-4 h-4 mr-1.5 text-gray-500" />
+                <span>{formatDate(lead.createdAt)}</span>
+            </div>
+            {lead.budget && (
+                <div className="bg-green-900/50 text-green-300 px-2 py-0.5 rounded-full flex items-center">
+                    <TagIcon className="w-3 h-3 mr-1" />
+                    <span>${(lead.budget / 1000).toFixed(0)}k</span>
+                </div>
             )}
         </div>
     </div>
 );
+
 
 interface LeadsBoardProps {
     user: firebase.User;
@@ -60,6 +74,8 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
     const [leads, setLeads] = React.useState<Lead[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
+    const [isPanelClosing, setIsPanelClosing] = React.useState(false);
+
 
     React.useEffect(() => {
         setLoading(true);
@@ -81,29 +97,49 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
 
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>, newStatus: LeadStatus) => {
         e.preventDefault();
-        e.currentTarget.classList.remove('bg-zinc-700/50');
+        e.currentTarget.classList.remove('drag-over-column');
         const leadId = e.dataTransfer.getData('leadId');
         if (!leadId) return;
+
+        const originalStatus = leads.find(l => l.id === leadId)?.status;
+        if (originalStatus === newStatus) return;
+
+        // Optimistic UI update
+        setLeads(prevLeads => prevLeads.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
 
         try {
             const leadRef = db.collection('users').doc(user.uid).collection('Leads').doc(leadId);
             await leadRef.update({ status: newStatus });
         } catch (error) {
             console.error("Failed to update lead status:", error);
+            // Revert on failure
+            setLeads(prevLeads => prevLeads.map(l => l.id === leadId ? { ...l, status: originalStatus! } : l));
         }
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        e.currentTarget.classList.add('bg-zinc-700/50');
+        e.currentTarget.classList.add('drag-over-column');
     };
 
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-        e.currentTarget.classList.remove('bg-zinc-700/50');
+        e.currentTarget.classList.remove('drag-over-column');
     };
     
     const handleAddNewLead = (status: LeadStatus) => {
-        setSelectedLead({ status } as Lead); // Open with a new lead object with pre-filled status
+        openPanel({ status } as Lead);
+    };
+
+    const openPanel = (lead: Lead) => {
+        setSelectedLead(lead);
+        setIsPanelClosing(false);
+    };
+    
+    const closePanel = () => {
+        setIsPanelClosing(true);
+        setTimeout(() => {
+            setSelectedLead(null);
+        }, 300); // Animation duration
     };
     
     if (loading) {
@@ -115,16 +151,11 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
     }
 
     return (
-        <div className="h-full flex flex-col p-4 text-white">
+        <div className="h-full flex flex-col p-4 text-white bg-zinc-950">
             <header className="flex-shrink-0 flex items-center justify-between mb-4">
-                 <h1 className="text-2xl font-bold">Board</h1>
-                 {/* Placeholder for future view controls */}
-                 <div className="flex items-center space-x-2">
-                    {/* <button>List</button>
-                    <button>View</button> */}
-                 </div>
+                 <h1 className="text-2xl font-bold">Leads Board</h1>
             </header>
-            <div className="flex-1 flex gap-4 overflow-x-auto pb-4">
+            <div className="flex-1 flex gap-6 overflow-x-auto pb-4">
                 {STAGES.map(stage => {
                     const stageLeads = leads.filter(lead => lead.status === stage.title);
                     return (
@@ -133,26 +164,26 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
                             onDrop={(e) => handleDrop(e, stage.title)}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
-                            className="w-72 flex-shrink-0 flex flex-col bg-zinc-900 rounded-lg transition-colors duration-200"
+                            className="w-80 flex-shrink-0 flex flex-col bg-zinc-900/80 rounded-xl border border-zinc-800 transition-all duration-300"
                         >
-                            <div className="flex items-center justify-between p-3 flex-shrink-0">
+                            <div className="flex items-center justify-between p-4 flex-shrink-0 border-b border-zinc-800">
                                 <div className="flex items-center">
-                                    <span className={`w-3 h-3 rounded-full mr-2 ${stage.color}`}></span>
-                                    <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-400">{stage.title}</h3>
-                                    <span className="ml-2 text-xs bg-zinc-700 text-gray-300 rounded-full px-2 py-0.5">{stageLeads.length}</span>
+                                    <span className={`w-3 h-3 rounded-full mr-3 ${stage.color}`}></span>
+                                    <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-300">{stage.title}</h3>
                                 </div>
+                                <span className="text-sm font-bold bg-zinc-700 text-gray-200 rounded-full w-6 h-6 flex items-center justify-center">{stageLeads.length}</span>
                             </div>
                             <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                                {stageLeads.map(lead => (
-                                    <LeadCard key={lead.id} lead={lead} onCardClick={setSelectedLead} />
+                                {stageLeads.map((lead, index) => (
+                                    <LeadCard key={lead.id} lead={lead} onCardClick={openPanel} index={index} />
                                 ))}
                             </div>
-                             <div className="p-3 mt-auto">
+                             <div className="p-3 mt-auto flex-shrink-0">
                                 <button 
                                     onClick={() => handleAddNewLead(stage.title)}
-                                    className="w-full text-gray-400 hover:bg-zinc-800 hover:text-white p-2 rounded-md text-sm flex items-center justify-center transition-colors"
+                                    className="w-full text-gray-400 hover:bg-zinc-800 hover:text-white p-2 rounded-lg text-sm flex items-center justify-center transition-colors"
                                 >
-                                    <PlusIcon className="w-4 h-4 mr-1"/> Add Task
+                                    <PlusIcon className="w-4 h-4 mr-2"/> Add New Lead
                                 </button>
                             </div>
                         </div>
@@ -161,10 +192,11 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
             </div>
             {selectedLead && (
                 <LeadDetailPanel 
-                    leadId={selectedLead.id} // Pass id to fetch fresh data
+                    leadId={selectedLead.id}
                     initialStatus={selectedLead.status}
                     user={user} 
-                    onClose={() => setSelectedLead(null)} 
+                    onClose={closePanel}
+                    isClosing={isPanelClosing}
                 />
             )}
         </div>
@@ -173,20 +205,22 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
 
 const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value: React.ReactNode }> = ({ icon, label, value }) => (
     <div>
-        <dt className="text-xs text-gray-500 font-medium flex items-center">
-            {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
+        <dt className="text-xs text-gray-400 font-medium flex items-center">
             {React.cloneElement<{ className?: string }>(icon, { className: "w-4 h-4 mr-2" })}
             {label}
         </dt>
-        <dd className="mt-1 text-sm text-gray-200">{value || <span className="text-gray-500 italic">Not set</span>}</dd>
+        <dd className="mt-1 text-sm text-gray-100">{value || <span className="text-gray-500 italic">Not set</span>}</dd>
     </div>
 );
 
-const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: LeadStatus, user: firebase.User; onClose: () => void; }> = ({ leadId, initialStatus, user, onClose }) => {
+const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: LeadStatus, user: firebase.User; onClose: () => void; isClosing: boolean; }> = ({ leadId, initialStatus, user, onClose, isClosing }) => {
     const [leadData, setLeadData] = React.useState<Partial<Lead>>({ status: initialStatus });
-    const [isEditing, setIsEditing] = React.useState(!leadId); // Start in edit mode for new leads
+    const [isEditing, setIsEditing] = React.useState(!leadId);
     const [loading, setLoading] = React.useState(!!leadId);
     const [saving, setSaving] = React.useState(false);
+    
+    const inputClasses = "w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2 mt-1 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors";
+    const selectClasses = `${inputClasses} appearance-none`;
 
     React.useEffect(() => {
         if (!leadId) {
@@ -207,7 +241,7 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
         setSaving(true);
         try {
             const dataToSave = { ...leadData, userId: user.uid };
-            delete dataToSave.id; // Don't save id field in document
+            delete dataToSave.id;
 
             if (leadId) {
                  const leadRef = db.collection('users').doc(user.uid).collection('Leads').doc(leadId);
@@ -217,7 +251,7 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                      ...dataToSave,
                      createdAt: firebase.firestore.FieldValue.serverTimestamp()
                  });
-                 onClose(); // Close after creating
+                 onClose();
             }
             setIsEditing(false);
         } catch(err) {
@@ -242,12 +276,12 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        setLeadData(prev => ({...prev, [name]: type === 'number' ? Number(value) : value }));
+        setLeadData(prev => ({...prev, [name]: type === 'number' ? (value === '' ? null : Number(value)) : value }));
     }
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-40" onClick={onClose}>
-            <div className="fixed top-0 right-0 h-full w-full max-w-md bg-zinc-900 shadow-2xl flex flex-col border-l border-zinc-700" onClick={e => e.stopPropagation()}>
+        <div className={`fixed inset-0 bg-black/60 z-40 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`} style={{ animationDuration: '300ms' }} onClick={onClose}>
+            <div className={`fixed top-0 right-0 h-full w-full max-w-lg bg-zinc-900 shadow-2xl flex flex-col border-l border-zinc-700 ${isClosing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`} style={{ animationDuration: '300ms' }} onClick={e => e.stopPropagation()}>
                 <header className="p-4 flex items-center justify-between border-b border-zinc-700 flex-shrink-0">
                     <h2 className="text-lg font-bold text-white">Lead Details</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-white"><XIcon className="w-6 h-6"/></button>
@@ -256,41 +290,43 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                 : (
                 <div className="flex-1 overflow-y-auto p-6">
                     {isEditing ? (
-                        <div className="space-y-4 text-sm">
-                            <div><label>Name</label><input type="text" name="name" value={leadData.name || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Phone</label><input type="text" name="phone" value={leadData.phone || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Email</label><input type="email" name="email" value={leadData.email || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Status</label><select name="status" value={leadData.status} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1 appearance-none"><option>NEW LEAD</option><option>QUALIFYING</option><option>SEND A PROPERTY</option><option>APPOINTMENT BOOKED</option></select></div>
-                            <div><label>Budget</label><input type="number" name="budget" value={leadData.budget || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Location</label><input type="text" name="Location" value={leadData.Location || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Bedrooms</label><input type="number" name="bedrooms" value={leadData.bedrooms || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Intent</label><select name="intent" value={leadData.intent || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1 appearance-none"><option value="">Not set</option><option value="buying">Buying</option><option value="renting">Renting</option></select></div>
-                            <div><label>Property Type</label><input type="text" name="property_type" value={leadData.property_type || ''} onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
-                            <div><label>Notes</label><textarea name="notes" value={leadData.notes || ''} onChange={handleChange} rows={4} className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 mt-1" /></div>
+                        <div className="space-y-4 text-sm text-gray-300">
+                            <div><label>Name</label><input type="text" name="name" value={leadData.name || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Phone</label><input type="text" name="phone" value={leadData.phone || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Email</label><input type="email" name="email" value={leadData.email || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Status</label><select name="status" value={leadData.status} onChange={handleChange} className={selectClasses}>{STAGES.map(s => <option key={s.title}>{s.title}</option>)}</select></div>
+                            <div><label>Budget</label><input type="number" name="budget" value={leadData.budget || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Location</label><input type="text" name="Location" value={leadData.Location || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Bedrooms</label><input type="number" name="bedrooms" value={leadData.bedrooms || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Intent</label><select name="intent" value={leadData.intent || ''} onChange={handleChange} className={selectClasses}><option value="">Not set</option><option value="buying">Buying</option><option value="renting">Renting</option></select></div>
+                            <div><label>Property Type</label><input type="text" name="property_type" value={leadData.property_type || ''} onChange={handleChange} className={inputClasses} /></div>
+                            <div><label>Notes</label><textarea name="notes" value={leadData.notes || ''} onChange={handleChange} rows={4} className={inputClasses} /></div>
                         </div>
                     ) : (
-                    <dl className="grid grid-cols-2 gap-x-4 gap-y-6">
+                    <dl className="space-y-6">
                         <DetailItem icon={<UserIcon />} label="Name" value={leadData.name} />
                         <DetailItem icon={<PhoneIcon />} label="Phone" value={leadData.phone} />
-                        <div className="col-span-2"><DetailItem icon={<EmailIcon />} label="Email" value={leadData.email} /></div>
-                        <DetailItem icon={<TagIcon />} label="Status" value={<span className="font-semibold">{leadData.status}</span>} />
-                        <DetailItem icon={<CurrencyDollarIcon />} label="Budget" value={leadData.budget ? `$${leadData.budget.toLocaleString()}` : null} />
-                        <DetailItem icon={<LocationIcon />} label="Location" value={leadData.Location} />
-                        <DetailItem icon={<BedIcon />} label="Bedrooms" value={leadData.bedrooms?.toString()} />
+                        <DetailItem icon={<EmailIcon />} label="Email" value={leadData.email} />
+                        <div className="grid grid-cols-2 gap-6">
+                            <DetailItem icon={<TagIcon />} label="Status" value={<span className="font-semibold">{leadData.status}</span>} />
+                            <DetailItem icon={<CurrencyDollarIcon />} label="Budget" value={leadData.budget ? `$${leadData.budget.toLocaleString()}` : null} />
+                            <DetailItem icon={<LocationIcon />} label="Location" value={leadData.Location} />
+                            <DetailItem icon={<BedIcon />} label="Bedrooms" value={leadData.bedrooms?.toString()} />
+                        </div>
                         <DetailItem icon={<TagIcon />} label="Intent" value={<span className="capitalize">{leadData.intent}</span>} />
                         <DetailItem icon={<BuildingOfficeIcon />} label="Property Type" value={leadData.property_type} />
-                        <div className="col-span-2">
-                             <dt className="text-xs text-gray-500 font-medium">Notes</dt>
-                             <dd className="mt-1 text-sm text-gray-300 whitespace-pre-wrap">{leadData.notes || <span className="text-gray-500 italic">No notes added.</span>}</dd>
+                        <div>
+                             <dt className="text-xs text-gray-400 font-medium">Notes</dt>
+                             <dd className="mt-2 text-sm text-gray-300 whitespace-pre-wrap p-3 bg-zinc-800 rounded-md border border-zinc-700 min-h-[60px]">{leadData.notes || <span className="text-gray-500 italic">No notes added.</span>}</dd>
                         </div>
                     </dl>
                     )}
                 </div>
                 )}
-                <footer className="p-4 flex items-center justify-between border-t border-zinc-700 flex-shrink-0">
+                <footer className="p-4 flex items-center justify-between border-t border-zinc-700 flex-shrink-0 bg-zinc-900/50">
                     <div>
-                        {leadId && (
-                            <button onClick={handleDelete} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-full">
+                        {leadId && !isEditing && (
+                            <button onClick={handleDelete} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors">
                                 <TrashIcon className="w-5 h-5"/>
                             </button>
                         )}
@@ -298,14 +334,14 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                     <div className="flex items-center space-x-2">
                         {isEditing ? (
                              <>
-                                <button onClick={() => { setIsEditing(false); if (!leadId) onClose(); }} className="px-4 py-2 text-sm rounded-md bg-zinc-700 hover:bg-zinc-600">Cancel</button>
-                                <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 flex items-center">
+                                <button onClick={() => { setIsEditing(false); if (!leadId) onClose(); }} className="px-4 py-2 text-sm rounded-md bg-zinc-700 hover:bg-zinc-600 font-semibold">Cancel</button>
+                                <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 flex items-center font-semibold">
                                      {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
                                     Save Changes
                                 </button>
                              </>
                         ) : (
-                             <button onClick={() => setIsEditing(true)} className="px-4 py-2 text-sm rounded-md bg-zinc-700 hover:bg-zinc-600">Edit Lead</button>
+                             <button onClick={() => setIsEditing(true)} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 font-semibold">Edit Lead</button>
                         )}
                     </div>
                 </footer>
