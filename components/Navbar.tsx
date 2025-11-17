@@ -1,14 +1,13 @@
     // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
     import * as React from 'react';
-    import { MenuIcon, XIcon } from './icons';
+    import { MenuIcon, XIcon, LogoIcon } from './icons';
     import { Link } from 'react-router-dom';
-    import logo from '../assets/logo.png';
 
     interface NavbarProps {}
 
     const Logo: React.FC = () => (
         <div className="flex items-center">
-            <img src={logo} alt="Logo" className="h-8 w-auto mr-3" />
+            <LogoIcon className="h-8 w-8 mr-2" />
             <h1 className="text-xl font-semibold tracking-tight text-white">SAHA AI</h1>
         </div>
     );

@@ -16,7 +16,7 @@ export const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const EmailIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25-2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
     </svg>
 );
 
@@ -392,5 +392,20 @@ export const LinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const ClockIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+);
+
+// NEW ICON
+export const LogoIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <rect width="40" height="40" rx="8" fill="url(#paint0_linear_logo_icon)"/>
+        <path d="M13 30C13 25.5817 16.5817 22 21 22C25.4183 22 29 18.4183 29 14" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M27 10C27 14.4183 23.4183 18 19 18C14.5817 18 11 21.5817 11 26" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <defs>
+            <linearGradient id="paint0_linear_logo_icon" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#00FFC2"/>
+                <stop offset="1" stopColor="#0EA5E9"/>
+            </linearGradient>
+        </defs>
     </svg>
 );
