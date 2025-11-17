@@ -1,3 +1,4 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
@@ -50,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
             <aside className={`fixed inset-y-0 left-0 bg-zinc-900 text-white p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className="flex items-center justify-between mb-10 px-2">
                      <div className="flex items-center overflow-hidden">
-                        <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-10 w-auto mr-2 flex-shrink-0" />
+                        <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-20 w-auto mr-2 flex-shrink-0" />
                         <h1 className={`text-xl font-semibold tracking-tight whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>SAHA AI</h1>
                     </div>
                     <button onClick={toggle} className="md:hidden p-1 text-gray-400 hover:text-white" aria-label="Close sidebar">

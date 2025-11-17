@@ -1,10 +1,11 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { CheckCircleIcon } from './icons';
 
 const Logo: React.FC = () => (
     <div className="flex items-center">
-        <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-12 w-auto mr-3" />
+        <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-20 w-auto mr-3" />
         <h1 className="text-xl font-semibold tracking-tight text-gray-800">SAHA AI</h1>
     </div>
 );
