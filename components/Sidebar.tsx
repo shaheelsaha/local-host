@@ -1,7 +1,7 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
-import { ConnectionsIcon, DashboardIcon, ScheduleIcon, SettingsIcon, SparklesIcon, XIcon, ChevronDoubleLeftIcon, CommandLineIcon, BookOpenIcon } from './icons';
+import { ConnectionsIcon, DashboardIcon, ScheduleIcon, SettingsIcon, SparklesIcon, XIcon, ChevronDoubleLeftIcon, CommandLineIcon, BookOpenIcon, AnalyticsIcon } from './icons';
 
 interface SidebarProps {
     onLinkClick: () => void;
@@ -62,9 +62,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                     <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
                         <span className={isCollapsed ? 'sr-only' : 'inline'}>Menu</span>
                     </p>
-                    <NavLink to="/dashboard" onClick={onLinkClick} icon={<DashboardIcon />} label="Dashboard" isCollapsed={isCollapsed} />
-                    <NavLink to="/schedule" onClick={onLinkClick} icon={<ScheduleIcon />} label="Schedule" isCollapsed={isCollapsed}/>
-                    <NavLink to="/knowledge" onClick={onLinkClick} icon={<BookOpenIcon />} label="Knowledge" isCollapsed={isCollapsed}/>
+                    <NavLink to="/leads" onClick={onLinkClick} icon={<DashboardIcon />} label="Leads Board" isCollapsed={isCollapsed} />
+                    <NavLink to="/schedule" onClick={onLinkClick} icon={<ScheduleIcon />} label="Scheduler" isCollapsed={isCollapsed}/>
+                    <NavLink to="/dashboard" onClick={onLinkClick} icon={<AnalyticsIcon />} label="Analytics" isCollapsed={isCollapsed} />
+                    <NavLink to="/knowledge" onClick={onLinkClick} icon={<BookOpenIcon />} label="Knowledge Base" isCollapsed={isCollapsed}/>
                     
                     <div className="pt-6 space-y-2">
                         <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>

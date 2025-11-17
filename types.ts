@@ -69,3 +69,24 @@ export interface AnalyticsData {
   postsByPlatform: { name: SocialPlatform; value: number }[];
   engagementOverTime: { date: string; value: number }[];
 }
+
+// NEW TYPES: Leads CRM
+export type LeadStatus = 'NEW LEAD' | 'QUALIFYING' | 'SEND A PROPERTY' | 'APPOINTMENT BOOKED';
+
+export interface Lead {
+    id: string; // Document ID
+    userId: string;
+    
+    name: string | null;
+    phone: string | null;
+    status: LeadStatus;
+    createdAt: firebase.firestore.Timestamp;
+
+    email?: string | null;
+    budget?: number | null;
+    Location?: string | null;
+    bedrooms?: number | null;
+    intent?: 'buying' | 'renting' | null;
+    property_type?: string | null;
+    notes?: string;
+}

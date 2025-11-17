@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors.
 import * as React from 'react';
 // FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
@@ -33,6 +27,7 @@ import PricingPage from './components/PricingPage';
 import Command from './components/Commands';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import Knowledge from './components/Knowledge';
+import LeadsBoard from './components/LeadsBoard';
 
 // ✅ NEW: React Router
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
@@ -172,7 +167,7 @@ const App: React.FC = () => {
     }
 
     const LoggedInLayout = () => (
-        <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden">
+        <div className="flex h-screen bg-zinc-900 text-gray-900 overflow-hidden">
             <Sidebar
                 onLinkClick={handleSidebarNavigate}
                 isOpen={isSidebarOpen}
@@ -182,7 +177,7 @@ const App: React.FC = () => {
             />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header user={user!} onLogout={handleLogout} toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-zinc-900">
                     <Outlet />
                 </main>
             </div>
@@ -214,8 +209,9 @@ const App: React.FC = () => {
         return (
             <Routes>
                 <Route element={<LoggedInLayout />}>
-                    <Route index element={<Navigate to="/schedule" replace />} />
+                    <Route index element={<Navigate to="/leads" replace />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/leads" element={<LeadsBoard user={user} />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/knowledge" element={<Knowledge user={user} />} />
                     <Route path="/settings" element={<Settings user={user} />} />
@@ -223,7 +219,7 @@ const App: React.FC = () => {
                     <Route path="/command" element={<Command user={user} />} />
                     <Route path="/persona" element={<Persona user={user} />} />
                     {/* Redirect any other authenticated path to the default page */}
-                    <Route path="*" element={<Navigate to="/schedule" replace />} />
+                    <Route path="*" element={<Navigate to="/leads" replace />} />
                 </Route>
             </Routes>
         );
