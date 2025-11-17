@@ -8,11 +8,11 @@ import {
     CurrencyDollarIcon, LocationIcon, BedIcon, BuildingOfficeIcon, TrashIcon, MenuIcon 
 } from './icons';
 
-const STAGES: { title: LeadStatus; color: string }[] = [
-    { title: 'NEW LEAD', color: 'bg-green-500' },
-    { title: 'QUALIFYING', color: 'bg-purple-500' },
-    { title: 'SEND A PROPERTY', color: 'bg-blue-500' },
-    { title: 'APPOINTMENT BOOKED', color: 'bg-indigo-700' },
+const STAGES: { title: LeadStatus; color: string; bgColor: string; textColor: string; borderColor: string; }[] = [
+    { title: 'NEW LEAD', color: 'text-green-600', bgColor: 'bg-green-100', textColor: 'text-green-800', borderColor: 'border-green-500' },
+    { title: 'QUALIFYING', color: 'text-purple-600', bgColor: 'bg-purple-100', textColor: 'text-purple-800', borderColor: 'border-purple-500' },
+    { title: 'SEND A PROPERTY', color: 'text-blue-600', bgColor: 'bg-blue-100', textColor: 'text-blue-800', borderColor: 'border-blue-500' },
+    { title: 'APPOINTMENT BOOKED', color: 'text-indigo-600', bgColor: 'bg-indigo-100', textColor: 'text-indigo-800', borderColor: 'border-indigo-700' },
 ];
 
 const formatDate = (timestamp: firebase.firestore.Timestamp | undefined) => {
@@ -29,7 +29,7 @@ const getInitials = (name: string | null | undefined): string => {
     return name.substring(0, 2).toUpperCase();
 };
 
-const LeadCard: React.FC<{ lead: Lead; onCardClick: (lead: Lead) => void; index: number }> = ({ lead, onCardClick, index }) => (
+const LeadCard: React.FC<{ lead: Lead; onCardClick: (lead: Lead) => void; index: number; stage: typeof STAGES[0] }> = ({ lead, onCardClick, index, stage }) => (
     <div
         draggable
         onDragStart={(e) => {
@@ -40,23 +40,23 @@ const LeadCard: React.FC<{ lead: Lead; onCardClick: (lead: Lead) => void; index:
             e.currentTarget.classList.remove('dragging-card');
         }}
         onClick={() => onCardClick(lead)}
-        className="lead-card-enter bg-zinc-800 p-4 rounded-lg shadow-md cursor-pointer border border-zinc-700 hover:border-blue-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
+        className={`lead-card-enter bg-white p-3.5 rounded-md shadow-sm cursor-pointer border-l-4 ${stage.borderColor} hover:shadow-lg hover:-translate-y-1 transition-all duration-200`}
         style={{ animationDelay: `${index * 50}ms` }}
     >
         <div className="flex justify-between items-start">
-            <h4 className="font-bold text-sm text-gray-200 break-words pr-2">{lead.name || 'Unnamed Lead'}</h4>
-            <div className="w-8 h-8 rounded-full bg-zinc-700 border border-zinc-600 flex items-center justify-center text-blue-300 font-bold text-xs flex-shrink-0 ml-2">
+            <h4 className="font-semibold text-sm text-gray-800 break-words pr-2">{lead.name || 'Unnamed Lead'}</h4>
+            <div className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center text-gray-600 font-bold text-xs flex-shrink-0 ml-2">
                 {getInitials(lead.name)}
             </div>
         </div>
         <p className="text-xs text-gray-500 mt-1 truncate">{lead.phone || 'No phone number'}</p>
-        <div className="mt-4 flex justify-between items-center text-xs text-gray-400">
+        <div className="mt-3 flex justify-between items-center text-xs text-gray-500">
             <div className="flex items-center">
-                <ClockIcon className="w-4 h-4 mr-1.5 text-gray-500" />
+                <ClockIcon className="w-4 h-4 mr-1.5" />
                 <span>{formatDate(lead.createdAt)}</span>
             </div>
             {lead.budget && (
-                <div className="bg-green-900/50 text-green-300 px-2 py-0.5 rounded-full flex items-center">
+                <div className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full flex items-center font-medium">
                     <TagIcon className="w-3 h-3 mr-1" />
                     <span>${(lead.budget / 1000).toFixed(0)}k</span>
                 </div>
@@ -144,16 +144,16 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
     
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-full p-8">
+            <div className="flex justify-center items-center h-full p-8 bg-slate-100">
                 <SpinnerIcon className="w-16 h-16 animate-spin text-blue-500" />
             </div>
         );
     }
 
     return (
-        <div className="h-full flex flex-col p-4 text-white bg-zinc-950">
-            <header className="flex-shrink-0 flex items-center justify-between mb-4">
-                 <h1 className="text-2xl font-bold">Leads Board</h1>
+        <div className="h-full flex flex-col p-4 md:p-6 bg-slate-100">
+            <header className="flex-shrink-0 flex items-center justify-between mb-6">
+                 <h1 className="text-2xl font-bold text-gray-800">Leads Board</h1>
             </header>
             <div className="flex-1 flex gap-6 overflow-x-auto pb-4">
                 {STAGES.map(stage => {
@@ -164,24 +164,21 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
                             onDrop={(e) => handleDrop(e, stage.title)}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
-                            className="w-80 flex-shrink-0 flex flex-col bg-zinc-900/80 rounded-xl border border-zinc-800 transition-all duration-300"
+                            className={`w-80 flex-shrink-0 flex flex-col bg-gray-200/50 rounded-lg shadow-sm border-t-4 ${stage.borderColor} transition-colors duration-300`}
                         >
-                            <div className="flex items-center justify-between p-4 flex-shrink-0 border-b border-zinc-800">
-                                <div className="flex items-center">
-                                    <span className={`w-3 h-3 rounded-full mr-3 ${stage.color}`}></span>
-                                    <h3 className="font-semibold text-sm uppercase tracking-wider text-gray-300">{stage.title}</h3>
-                                </div>
-                                <span className="text-sm font-bold bg-zinc-700 text-gray-200 rounded-full w-6 h-6 flex items-center justify-center">{stageLeads.length}</span>
+                            <div className="flex items-center justify-between p-4 flex-shrink-0 border-b border-gray-200 sticky top-0 bg-gray-100 rounded-t-lg z-10">
+                                <h3 className={`font-bold text-sm uppercase tracking-wider ${stage.color}`}>{stage.title}</h3>
+                                <span className={`text-sm font-bold ${stage.bgColor} ${stage.textColor} rounded-full w-6 h-6 flex items-center justify-center`}>{stageLeads.length}</span>
                             </div>
                             <div className="flex-1 overflow-y-auto p-3 space-y-3">
                                 {stageLeads.map((lead, index) => (
-                                    <LeadCard key={lead.id} lead={lead} onCardClick={openPanel} index={index} />
+                                    <LeadCard key={lead.id} lead={lead} onCardClick={openPanel} index={index} stage={stage} />
                                 ))}
                             </div>
                              <div className="p-3 mt-auto flex-shrink-0">
                                 <button 
                                     onClick={() => handleAddNewLead(stage.title)}
-                                    className="w-full text-gray-400 hover:bg-zinc-800 hover:text-white p-2 rounded-lg text-sm flex items-center justify-center transition-colors"
+                                    className="w-full text-gray-500 hover:bg-gray-300 hover:text-gray-700 p-2 rounded-lg text-sm flex items-center justify-center transition-colors"
                                 >
                                     <PlusIcon className="w-4 h-4 mr-2"/> Add New Lead
                                 </button>
@@ -205,11 +202,11 @@ const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
 
 const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value: React.ReactNode }> = ({ icon, label, value }) => (
     <div>
-        <dt className="text-xs text-gray-400 font-medium flex items-center">
+        <dt className="text-xs text-gray-500 font-medium flex items-center">
             {React.cloneElement<{ className?: string }>(icon, { className: "w-4 h-4 mr-2" })}
             {label}
         </dt>
-        <dd className="mt-1 text-sm text-gray-100">{value || <span className="text-gray-500 italic">Not set</span>}</dd>
+        <dd className="mt-1 text-sm text-gray-800">{value || <span className="text-gray-400 italic">Not set</span>}</dd>
     </div>
 );
 
@@ -219,7 +216,7 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
     const [loading, setLoading] = React.useState(!!leadId);
     const [saving, setSaving] = React.useState(false);
     
-    const inputClasses = "w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2 mt-1 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors";
+    const inputClasses = "w-full bg-gray-100 border border-gray-300 rounded-lg p-2 mt-1 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors";
     const selectClasses = `${inputClasses} appearance-none`;
 
     React.useEffect(() => {
@@ -280,17 +277,17 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
     }
 
     return (
-        <div className={`fixed inset-0 bg-black/60 z-40 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`} style={{ animationDuration: '300ms' }} onClick={onClose}>
-            <div className={`fixed top-0 right-0 h-full w-full max-w-lg bg-zinc-900 shadow-2xl flex flex-col border-l border-zinc-700 ${isClosing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`} style={{ animationDuration: '300ms' }} onClick={e => e.stopPropagation()}>
-                <header className="p-4 flex items-center justify-between border-b border-zinc-700 flex-shrink-0">
-                    <h2 className="text-lg font-bold text-white">Lead Details</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white"><XIcon className="w-6 h-6"/></button>
+        <div className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`} style={{ animationDuration: '300ms' }} onClick={onClose}>
+            <div className={`fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-2xl flex flex-col border-l border-gray-200 ${isClosing ? 'animate-slide-out-right' : 'animate-slide-in-right'}`} style={{ animationDuration: '300ms' }} onClick={e => e.stopPropagation()}>
+                <header className="p-4 flex items-center justify-between border-b border-gray-200 flex-shrink-0">
+                    <h2 className="text-lg font-bold text-gray-800">Lead Details</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800"><XIcon className="w-6 h-6"/></button>
                 </header>
                 {loading ? <div className="flex-1 flex justify-center items-center"><SpinnerIcon className="w-8 h-8 animate-spin text-blue-500" /></div>
                 : (
                 <div className="flex-1 overflow-y-auto p-6">
                     {isEditing ? (
-                        <div className="space-y-4 text-sm text-gray-300">
+                        <div className="space-y-4 text-sm text-gray-600">
                             <div><label>Name</label><input type="text" name="name" value={leadData.name || ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Phone</label><input type="text" name="phone" value={leadData.phone || ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Email</label><input type="email" name="email" value={leadData.email || ''} onChange={handleChange} className={inputClasses} /></div>
@@ -308,7 +305,7 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                         <DetailItem icon={<PhoneIcon />} label="Phone" value={leadData.phone} />
                         <DetailItem icon={<EmailIcon />} label="Email" value={leadData.email} />
                         <div className="grid grid-cols-2 gap-6">
-                            <DetailItem icon={<TagIcon />} label="Status" value={<span className="font-semibold">{leadData.status}</span>} />
+                            <DetailItem icon={<TagIcon />} label="Status" value={<span className="font-semibold text-gray-900">{leadData.status}</span>} />
                             <DetailItem icon={<CurrencyDollarIcon />} label="Budget" value={leadData.budget ? `$${leadData.budget.toLocaleString()}` : null} />
                             <DetailItem icon={<LocationIcon />} label="Location" value={leadData.Location} />
                             <DetailItem icon={<BedIcon />} label="Bedrooms" value={leadData.bedrooms?.toString()} />
@@ -316,17 +313,17 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                         <DetailItem icon={<TagIcon />} label="Intent" value={<span className="capitalize">{leadData.intent}</span>} />
                         <DetailItem icon={<BuildingOfficeIcon />} label="Property Type" value={leadData.property_type} />
                         <div>
-                             <dt className="text-xs text-gray-400 font-medium">Notes</dt>
-                             <dd className="mt-2 text-sm text-gray-300 whitespace-pre-wrap p-3 bg-zinc-800 rounded-md border border-zinc-700 min-h-[60px]">{leadData.notes || <span className="text-gray-500 italic">No notes added.</span>}</dd>
+                             <dt className="text-xs text-gray-500 font-medium">Notes</dt>
+                             <dd className="mt-2 text-sm text-gray-700 whitespace-pre-wrap p-3 bg-gray-50 rounded-md border border-gray-200 min-h-[60px]">{leadData.notes || <span className="text-gray-400 italic">No notes added.</span>}</dd>
                         </div>
                     </dl>
                     )}
                 </div>
                 )}
-                <footer className="p-4 flex items-center justify-between border-t border-zinc-700 flex-shrink-0 bg-zinc-900/50">
+                <footer className="p-4 flex items-center justify-between border-t border-gray-200 flex-shrink-0 bg-gray-50">
                     <div>
                         {leadId && !isEditing && (
-                            <button onClick={handleDelete} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors">
+                            <button onClick={handleDelete} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors">
                                 <TrashIcon className="w-5 h-5"/>
                             </button>
                         )}
@@ -334,14 +331,14 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                     <div className="flex items-center space-x-2">
                         {isEditing ? (
                              <>
-                                <button onClick={() => { setIsEditing(false); if (!leadId) onClose(); }} className="px-4 py-2 text-sm rounded-md bg-zinc-700 hover:bg-zinc-600 font-semibold">Cancel</button>
-                                <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 flex items-center font-semibold">
+                                <button onClick={() => { setIsEditing(false); if (!leadId) onClose(); }} className="px-4 py-2 text-sm rounded-md bg-white hover:bg-gray-100 border border-gray-300 font-semibold text-gray-800">Cancel</button>
+                                <button onClick={handleSave} disabled={saving} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-400 flex items-center font-semibold">
                                      {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
                                     Save Changes
                                 </button>
                              </>
                         ) : (
-                             <button onClick={() => setIsEditing(true)} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 font-semibold">Edit Lead</button>
+                             <button onClick={() => setIsEditing(true)} className="px-4 py-2 text-sm rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold">Edit Lead</button>
                         )}
                     </div>
                 </footer>
