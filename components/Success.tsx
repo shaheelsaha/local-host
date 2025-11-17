@@ -4,7 +4,7 @@ import { CheckCircleIcon } from './icons';
 
 const Logo: React.FC = () => (
     <div className="flex items-center">
-        <img src="https://firebasestorage.googleapis.com/v0/b/studio-7638670629-b2831.firebasestorage.app/o/logo%2FChatGPT%20Image%20Nov%2010%2C%202025%2C%2008_36_15%20PM.png?alt=media" alt="SAHA AI Logo" className="h-8 w-auto mr-3" />
+        <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763387324/logo.png" alt="SAHA AI Logo" className="h-8 w-auto mr-3" />
         <h1 className="text-xl font-semibold tracking-tight text-gray-800">SAHA AI</h1>
     </div>
 );
