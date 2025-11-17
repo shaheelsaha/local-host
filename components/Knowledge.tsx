@@ -197,13 +197,13 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   };
 
   return (
-    <div className="p-4 md:p-8 h-full flex flex-col">
+    <div className="p-4 md:p-8 h-full flex flex-col text-white">
       <header className="flex-shrink-0 mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Knowledge</h1>
-        <p className="mt-1 text-gray-500">Your smart data center for managing property information in real-time.</p>
+        <h1 className="text-3xl font-bold text-white">Knowledge</h1>
+        <p className="mt-1 text-gray-400">Your smart data center for managing property information in real-time.</p>
       </header>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 flex-shrink-0">
+      <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 mb-6 flex-shrink-0">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="w-full md:w-auto flex-1 relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -213,11 +213,11 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
               value={filters.search}
               onChange={handleFilterChange}
               placeholder="Search by title or location..."
-              className="pl-10 pr-4 py-2 w-full bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+              className="pl-10 pr-4 py-2 w-full bg-zinc-700 border border-zinc-600 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition text-white"
             />
           </div>
           <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2">
-            <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-gray-50 border border-gray-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
+            <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-zinc-700 border border-zinc-600 text-white rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
               <option value="">All Statuses</option>
               {PROPERTY_STATUSES.map(s => (
                 <option key={s} value={s}>
@@ -225,7 +225,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 </option>
               ))}
             </select>
-            <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-gray-50 border border-gray-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
+            <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-zinc-700 border border-zinc-600 text-white rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
               <option value="">All Types</option>
               {PROPERTY_TYPES.map(t => (
                 <option key={t} value={t}>
@@ -233,7 +233,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 </option>
               ))}
             </select>
-            <select name="plan" value={filters.plan} onChange={handleFilterChange} className="bg-gray-50 border border-gray-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
+            <select name="plan" value={filters.plan} onChange={handleFilterChange} className="bg-zinc-700 border border-zinc-600 text-white rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500">
               <option value="">All Plans</option>
               {PROPERTY_PLANS.map(p => (
                 <option key={p} value={p}>
@@ -241,7 +241,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 </option>
               ))}
             </select>
-            <button onClick={resetFilters} className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg border">
+            <button onClick={resetFilters} className="px-3 py-2 text-sm text-gray-300 hover:bg-zinc-700 rounded-lg border border-zinc-600">
               Reset
             </button>
           </div>
@@ -252,9 +252,9 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto bg-white border border-gray-200 rounded-xl shadow-sm">
-        <table className="w-full text-sm text-left text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+      <div className="flex-1 overflow-auto bg-zinc-800/50 border border-zinc-700 rounded-xl shadow-sm">
+        <table className="w-full text-sm text-left text-gray-400">
+          <thead className="text-xs text-gray-400 uppercase bg-zinc-800">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Property
@@ -280,15 +280,15 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
             {loading ? (
               <tr>
                 <td colSpan={6} className="text-center p-8">
-                  <SpinnerIcon className="w-8 h-8 mx-auto animate-spin text-blue-600" />
+                  <SpinnerIcon className="w-8 h-8 mx-auto animate-spin text-blue-500" />
                 </td>
               </tr>
             ) : paginatedProperties.length > 0 ? (
               paginatedProperties.map(prop => (
-                <tr key={prop.id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">
+                <tr key={prop.id} className="border-b border-zinc-700 hover:bg-zinc-700/50">
+                  <td className="px-6 py-4 font-medium text-white">
                     <div className="font-bold">{prop.title}</div>
-                    <div className="text-xs text-gray-500">{prop.location}</div>
+                    <div className="text-xs text-gray-400">{prop.location}</div>
                   </td>
                   <td className="px-6 py-4">
                     {new Intl.NumberFormat(prop.currency === 'USD' ? 'en-US' : 'en-AE', { style: 'currency', currency: prop.currency || 'USD', minimumFractionDigits: 0 }).format(
@@ -302,7 +302,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                     <select
                       value={prop.status}
                       onChange={e => handleStatusChange(prop.id, e.target.value as PropertyStatus)}
-                      className="text-xs font-semibold p-1 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                      className="text-xs font-semibold p-1 border border-zinc-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-zinc-700 text-white appearance-none"
                     >
                       {PROPERTY_STATUSES.map(s => (
                         <option key={s} value={s}>
@@ -320,10 +320,10 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button onClick={() => handleEditProperty(prop)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded-md">
+                      <button onClick={() => handleEditProperty(prop)} className="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-zinc-700 rounded-md">
                         <EditIcon className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDeleteProperty(prop.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded-md">
+                      <button onClick={() => handleDeleteProperty(prop.id)} className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-zinc-700 rounded-md">
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
@@ -342,14 +342,14 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1 border rounded-md disabled:opacity-50 flex items-center">
+        <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
+          <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1 border border-zinc-600 rounded-md disabled:opacity-50 flex items-center hover:bg-zinc-700">
             <ChevronLeftIcon className="w-4 h-4 mr-1" /> Previous
           </button>
           <span>
             Page {currentPage} of {totalPages}
           </span>
-          <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1 border rounded-md disabled:opacity-50 flex items-center">
+          <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1 border border-zinc-600 rounded-md disabled:opacity-50 flex items-center hover:bg-zinc-700">
             Next <ChevronRightIcon className="w-4 h-4 ml-1" />
           </button>
         </div>
@@ -361,14 +361,14 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
       <div aria-live="assertive" className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-[100]">
         <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
           {toasts.map(toast => (
-            <div key={toast.id} className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+            <div key={toast.id} className="max-w-sm w-full bg-gray-800 text-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
               <div className="p-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <CheckCircleIcon className="h-6 w-6 text-green-400" aria-hidden="true" />
                   </div>
                   <div className="ml-3 w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-medium text-gray-900">{toast.message}</p>
+                    <p className="text-sm font-medium">{toast.message}</p>
                   </div>
                 </div>
               </div>
@@ -381,12 +381,12 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
 };
 
 // Helper for details list in preview card
-const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: string }> = ({ icon, label, value }) => (
-    <li className="flex items-center text-gray-800">
+const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: React.ReactNode }> = ({ icon, label, value }) => (
+    <li className="flex items-center text-gray-100">
         {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
         {React.cloneElement<{ className?: string }>(icon, { className: 'w-5 h-5 text-gray-400 mr-3 flex-shrink-0' })}
         <span className="font-medium">{label}</span>
-        {value && <span className="ml-2 text-gray-600">{value}</span>}
+        {value && <span className="ml-2 text-gray-300">{value}</span>}
     </li>
 );
 
@@ -409,36 +409,36 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
       } = property;
 
     return (
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-sm mx-auto font-sans">
+      <div className="bg-zinc-800 rounded-xl shadow-lg border border-zinc-700 w-full max-w-sm mx-auto font-sans">
         <img
             src={imageUrl || 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'}
             alt={title}
-            className="w-full h-48 object-cover rounded-t-xl"
+            className="w-full h-48 object-cover rounded-t-xl bg-zinc-700"
             onError={(e) => { e.currentTarget.src = 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'; }}
         />
         <div className="p-4">
-            <h3 className="text-base font-semibold text-gray-800 leading-tight">
+            <h3 className="text-base font-semibold text-gray-100 leading-tight">
                 {title || 'Property Title'}
             </h3>
-            <p className="text-xs text-gray-500 mt-1">propertyfinder.ae</p>
+            <p className="text-xs text-gray-400 mt-1">propertyfinder.ae</p>
         </div>
-        <div className="mx-4 mb-4 p-4 bg-gray-50 border border-gray-200/80 rounded-lg">
+        <div className="mx-4 mb-4 p-4 bg-zinc-700/50 border border-zinc-600/80 rounded-lg">
             <ul className="space-y-3 text-sm">
                 <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
-                <li className="flex items-center text-gray-800 font-medium flex-wrap">
+                <li className="flex items-center text-gray-100 font-medium flex-wrap">
                     <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                     <span>{formattedPrice}</span>
-                    <span className="text-gray-300 mx-2.5">|</span>
+                    <span className="text-zinc-600 mx-2.5">|</span>
                     <BedIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
                     <span>{bedrooms} bed</span>
-                    <span className="text-gray-300 mx-2.5">|</span>
+                    <span className="text-zinc-600 mx-2.5">|</span>
                     <BathIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
                     <span>{bathrooms} bath</span>
                 </li>
                 <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
-                <li className="flex items-center text-gray-800">
+                <li className="flex items-center text-gray-100">
                     <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                    <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs truncate">
+                    <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-xs truncate">
                         {propertyLink || 'No link provided'}
                     </a>
                 </li>
@@ -589,31 +589,33 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   if (!isOpen) return null;
 
   const livePreviewData = { ...formData, imageUrl: imagePreviewUrl || formData.imageUrl };
+  const inputClasses = "w-full mt-1 p-2 border rounded-md bg-zinc-800 border-zinc-600 text-white focus:ring-blue-500 focus:border-blue-500";
+  const selectClasses = `${inputClasses} appearance-none`;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col">
-        <header className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">{property ? 'Edit Property' : 'Add New Property'}</h2>
+      <div className="bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col text-white">
+        <header className="flex items-center justify-between p-5 border-b border-zinc-700">
+          <h2 className="text-xl font-semibold text-white">{property ? 'Edit Property' : 'Add New Property'}</h2>
           <button onClick={onClose}>
-            <XIcon className="w-6 h-6 text-gray-400 hover:text-gray-700" />
+            <XIcon className="w-6 h-6 text-gray-400 hover:text-white" />
           </button>
         </header>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
             <form ref={formRef} className="flex-1 flex flex-col overflow-hidden" noValidate>
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 text-gray-300">
                 <div>
                   <label className="text-sm font-medium">Title</label>
-                  <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                  <input type="text" name="title" value={formData.title || ''} onChange={handleChange} required className={inputClasses}/>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Location</label>
-                  <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className="w-full mt-1 p-2 border rounded-md"/>
+                  <input type="text" name="location" value={formData.location || ''} onChange={handleChange} required className={inputClasses}/>
                 </div>
                 <div>
                     <label className="text-sm font-medium">Property Image</label>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-zinc-600 border-dashed rounded-md">
                         <div className="space-y-1 text-center">
                             {imagePreviewUrl ? (
                                 <div className="relative group">
@@ -626,9 +628,9 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                                 </div>
                             ) : (
                                 <>
-                                    <UploadIcon className="mx-auto h-12 w-12 text-gray-400"/>
-                                    <div className="flex text-sm text-gray-600">
-                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <UploadIcon className="mx-auto h-12 w-12 text-gray-500"/>
+                                    <div className="flex text-sm text-gray-400">
+                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-zinc-800 rounded-md font-medium text-blue-400 hover:text-blue-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 focus-within:ring-offset-zinc-900">
                                             <span>Upload a file</span>
                                             <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" ref={fileInputRef} />
                                         </label>
@@ -642,14 +644,14 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 </div>
                  <div>
                   <label className="text-sm font-medium">Property Link</label>
-                  <input type="url" name="propertyLink" value={formData.propertyLink || ''} onChange={handleChange} placeholder="https://www.propertyfinder.ae/..." className="w-full mt-1 p-2 border rounded-md"/>
+                  <input type="url" name="propertyLink" value={formData.propertyLink || ''} onChange={handleChange} placeholder="https://www.propertyfinder.ae/..." className={inputClasses}/>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="text-sm font-medium">Price</label>
                     <div className="flex items-center mt-1">
-                        <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required min="0" className="w-full p-2 border rounded-l-md" />
-                        <select name="currency" value={formData.currency || 'AED'} onChange={handleChange} className="p-2 border-t border-b border-r rounded-r-md bg-gray-50">
+                        <input type="number" name="price" value={formData.price ?? 0} onChange={handleChange} required min="0" className={`${inputClasses} rounded-r-none`} />
+                        <select name="currency" value={formData.currency || 'AED'} onChange={handleChange} className={`${selectClasses} p-2 border-t border-b border-r rounded-r-md bg-zinc-700 border-zinc-600`}>
                             <option>AED</option>
                             <option>USD</option>
                         </select>
@@ -657,11 +659,11 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                   </div>
                   <div>
                     <label className="text-sm font-medium">Area (sqft)</label>
-                    <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                    <input type="number" name="area" value={formData.area ?? 0} onChange={handleChange} required min="0" step="1" className={inputClasses}/>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Status</label>
-                    <select name="status" value={formData.status} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                    <select name="status" value={formData.status} onChange={handleChange} className={selectClasses}>
                       {PROPERTY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
@@ -669,13 +671,13 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Property Type</label>
-                    <select name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                    <select name="propertyType" value={formData.propertyType} onChange={handleChange} className={selectClasses}>
                       {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Plan</label>
-                    <select name="plan" value={formData.plan} onChange={handleChange} className="w-full mt-1 p-2 border rounded-md bg-white">
+                    <select name="plan" value={formData.plan} onChange={handleChange} className={selectClasses}>
                       {PROPERTY_PLANS.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </div>
@@ -683,31 +685,31 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Bedrooms</label>
-                    <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                    <input type="number" name="bedrooms" value={formData.bedrooms ?? 1} onChange={handleChange} required min="0" step="1" className={inputClasses}/>
                   </div>
                   <div>
                     <label className="text-sm font-medium">Bathrooms</label>
-                    <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" step="1" className="w-full mt-1 p-2 border rounded-md"/>
+                    <input type="number" name="bathrooms" value={formData.bathrooms ?? 1} onChange={handleChange} required min="0" step="1" className={inputClasses}/>
                   </div>
                 </div>
               </div>
             </form>
-            <div className="bg-gray-50/70 p-6 hidden md:flex items-center justify-center border-l overflow-hidden">
+            <div className="bg-zinc-950 p-6 hidden md:flex items-center justify-center border-l border-zinc-700 overflow-hidden">
                 <div className="transform scale-90">
                     <PropertyPreviewCard property={livePreviewData} />
                 </div>
             </div>
         </div>
 
-        <footer className="p-4 bg-gray-50 border-t flex justify-end space-x-2 flex-shrink-0">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-white hover:bg-gray-100">
+        <footer className="p-4 bg-zinc-800 border-t border-zinc-700 flex justify-end space-x-2 flex-shrink-0">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-zinc-700 hover:bg-zinc-600 text-white border-zinc-600">
                 Cancel
             </button>
             <button
                 type="button"
                 onClick={handleSaveClick}
                 disabled={saving}
-                className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 flex items-center"
+                className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-800 flex items-center"
             >
                 {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
                 {saving ? 'Saving...' : 'Save Property'}
