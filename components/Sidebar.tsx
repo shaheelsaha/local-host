@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
             <aside className={`fixed inset-y-0 left-0 bg-zinc-900 text-white p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className="flex items-center justify-between mb-10 px-2">
                      <div className="flex items-center overflow-hidden">
-                        <img src="/assets/logo.png" alt="SAHA AI Logo" className="h-8 w-auto mr-2 flex-shrink-0" />
+                        <img src="/logo.png" alt="SAHA AI Logo" className="h-8 w-auto mr-2 flex-shrink-0" />
                         <h1 className={`text-xl font-semibold tracking-tight whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>SAHA AI</h1>
                     </div>
                     <button onClick={toggle} className="md:hidden p-1 text-gray-400 hover:text-white" aria-label="Close sidebar">
@@ -102,12 +102,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                     <div className="border-t border-zinc-800/50 pt-2">
                         <button
                             onClick={toggleCollapse}
+                            className="w-full flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200 transition-colors"
                             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                            className={`w-full flex items-center text-left py-2 rounded-lg text-sm font-medium text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200 transition-colors ${isCollapsed ? 'justify-center' : 'px-4'}`}
                         >
-                            {/* FIX: Corrected typo in Tailwind CSS class for icon rotation. */}
-                            <ChevronDoubleLeftIcon className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
-                            <span className={`ml-3 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>Collapse</span>
+                            <ChevronDoubleLeftIcon className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
                         </button>
                     </div>
                 </div>
@@ -116,5 +114,5 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
     );
 };
 
-// FIX: Added default export to make the component available for import in other files.
+// FIX: Added default export for the Sidebar component to resolve the import error.
 export default Sidebar;
