@@ -160,14 +160,14 @@ const App: React.FC = () => {
     
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50">
+            <div className="flex justify-center items-center min-h-screen bg-gray-950">
                 <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     const LoggedInLayout = () => (
-        <div className="flex h-screen bg-zinc-900 text-gray-900 overflow-hidden">
+        <div className="flex h-screen bg-gray-950 text-gray-200 overflow-hidden">
             <Sidebar
                 onLinkClick={handleSidebarNavigate}
                 isOpen={isSidebarOpen}
@@ -177,7 +177,7 @@ const App: React.FC = () => {
             />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header user={user!} onLogout={handleLogout} toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-zinc-900">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-950">
                     <Outlet />
                 </main>
             </div>

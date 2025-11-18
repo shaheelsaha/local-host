@@ -1,6 +1,5 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import ParticleNetwork from './ParticleNetwork';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { UserIcon, SparklesIcon } from './icons';
@@ -8,7 +7,7 @@ import { UserIcon, SparklesIcon } from './icons';
 const FeatureListItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <li className="flex items-start">
         <div className="flex-shrink-0 bg-gray-800 rounded-full p-1 mr-3 mt-1">
-            <UserIcon className="w-4 h-4 text-[#00FFC2]" />
+            <UserIcon className="w-4 h-4 text-blue-400" />
         </div>
         <span className="text-gray-400">{children}</span>
     </li>
@@ -25,23 +24,23 @@ const PricingCard: React.FC<{
 }> = ({ planName, price, priceDetails, description, isPopular, buttonText, buttonLink }) => {
     
     const cardClasses = isPopular
-        ? "bg-gradient-to-br from-teal-900/50 via-gray-900/50 to-gray-900/50 border-2 border-[#00FFC2]"
-        : "bg-gray-900/50 backdrop-blur-xl border border-white/10";
+        ? "bg-gradient-to-br from-blue-900/50 via-gray-900/50 to-gray-900/50 border-2 border-blue-500"
+        : "bg-gray-900 border border-gray-800";
     
     const buttonClasses = isPopular
-        ? "w-full block text-center px-8 py-3 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.teal.400/60%)]"
-        : "w-full block text-center px-8 py-3 text-base font-bold text-white bg-white/10 border-2 border-white/20 rounded-lg hover:bg-white/20 transition-colors duration-300";
+        ? "w-full block text-center px-8 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.blue.500/60%)]"
+        : "w-full block text-center px-8 py-3 text-base font-bold text-white bg-gray-800 border-2 border-gray-700 rounded-lg hover:bg-gray-700 transition-colors duration-300";
 
     return (
         <div className={`relative rounded-2xl p-8 ${cardClasses}`}>
             {isPopular && (
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-[#00FFC2] to-sky-400 text-black text-xs font-bold px-4 py-1.5 rounded-full">
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-full">
                     Most Popular
                 </div>
             )}
 
             <div className="bg-white/5 rounded-lg w-12 h-12 flex items-center justify-center mb-5">
-                 <SparklesIcon className="w-6 h-6 text-[#00FFC2]" />
+                 <SparklesIcon className="w-6 h-6 text-blue-400" />
             </div>
             
             <h3 className="text-2xl font-bold text-white">{planName}</h3>
@@ -79,8 +78,7 @@ const PricingPage: React.FC = () => {
     ];
 
     return (
-        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
-            <ParticleNetwork />
+        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
                 <main className="pt-24 pb-16">

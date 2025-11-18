@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 // FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
@@ -310,12 +304,12 @@ export const Connections: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <h1 className="text-3xl font-bold text-gray-800">Connections</h1>
-            <p className="mt-1 text-gray-500">Link your accounts to unlock the full power of SAHA AI.</p>
+            <h1 className="text-3xl font-bold text-white">Connections</h1>
+            <p className="mt-1 text-gray-400">Link your accounts to unlock the full power of SAHA AI.</p>
     
             {loading ? (
                 <div className="flex justify-center items-center h-64">
-                    <SpinnerIcon className="w-12 h-12 animate-spin text-blue-600" />
+                    <SpinnerIcon className="w-12 h-12 animate-spin text-blue-500" />
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
@@ -327,14 +321,14 @@ export const Connections: React.FC = () => {
                         return (
                             <div 
                                 key={platform.id} 
-                                className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                                className="bg-gray-900 border border-gray-800 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center`} style={{ backgroundColor: platform.color }}>
                                         <Icon className={`w-7 h-7 ${platform.iconColorClass}`} />
                                     </div>
                                     {isConnected && (
-                                        <div className="flex items-center text-xs font-medium bg-green-100 text-green-800 px-2.5 py-1 rounded-full">
+                                        <div className="flex items-center text-xs font-medium bg-green-500/10 text-green-300 px-2.5 py-1 rounded-full">
                                             <CheckCircleIcon className="w-4 h-4 mr-1.5" />
                                             Connected
                                         </div>
@@ -342,15 +336,15 @@ export const Connections: React.FC = () => {
                                 </div>
                                 
                                 <div className="mt-4">
-                                    <h3 className="font-bold text-lg text-gray-800">{platform.name}</h3>
-                                    <p className="text-sm text-gray-500 mt-1 h-10">{platform.description}</p>
+                                    <h3 className="font-bold text-lg text-white">{platform.name}</h3>
+                                    <p className="text-sm text-gray-400 mt-1 h-10">{platform.description}</p>
                                 </div>
     
                                 <div className="mt-6 flex items-center space-x-2">
                                     {isConnected ? (
                                         <button 
                                             onClick={() => handleDisconnect(platform.id)} 
-                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors flex items-center justify-center"
+                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors flex items-center justify-center"
                                         >
                                             <TrashIcon className="w-4 h-4 mr-2" />
                                             Disconnect

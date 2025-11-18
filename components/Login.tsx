@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 // import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon, XIcon } from './icons';
-import ParticleNetwork from './ParticleNetwork';
 
 interface LoginProps {}
 
@@ -93,25 +92,24 @@ const Login: React.FC<LoginProps> = () => {
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#0D1117] text-gray-200 p-4 font-sans overflow-hidden">
-            <ParticleNetwork />
+        <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-200 p-4 font-sans overflow-hidden">
             <div className="relative z-10 w-full flex flex-col items-center">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        Welcome Back to <span className="text-[#00FFC2]">SAHA AI</span>
+                        Welcome Back to <span className="text-blue-500">SAHA AI</span>
                     </h1>
                     <p className="text-gray-400 mt-4 max-w-md mx-auto">
                         Your central hub for social media mastery. Let's get you logged in.
                     </p>
                 </div>
 
-                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/30">
+                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl shadow-black/30">
                     <div className="text-center">
                         <h2 className="text-2xl font-bold text-white">Sign In</h2>
                         <p className="text-gray-400 text-sm mt-1">to continue to SAHA AI</p>
                     </div>
 
-                    {error && <p className="text-red-400 text-sm text-center bg-red-500/20 p-3 rounded-lg border border-red-500/30">{error}</p>}
+                    {error && <p className="text-red-400 text-sm text-center bg-red-500/10 p-3 rounded-lg border border-red-500/20">{error}</p>}
                     
                     <button type="button" onClick={handleGoogleSignIn} disabled={googleLoading || loading} className="w-full flex items-center justify-center py-3 px-4 rounded-lg bg-white text-gray-800 font-semibold text-base hover:bg-gray-200 transition-all duration-300 border border-gray-300 shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed">
                         {googleLoading ? (
@@ -128,9 +126,9 @@ const Login: React.FC<LoginProps> = () => {
                     </button>
 
                      <div className="relative flex items-center py-2">
-                        <div className="flex-grow border-t border-white/20"></div>
+                        <div className="flex-grow border-t border-gray-700"></div>
                         <span className="flex-shrink mx-4 text-xs text-gray-400 uppercase">Or continue with</span>
-                        <div className="flex-grow border-t border-white/20"></div>
+                        <div className="flex-grow border-t border-gray-700"></div>
                     </div>
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -146,7 +144,7 @@ const Login: React.FC<LoginProps> = () => {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                    className="pl-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                     placeholder="Enter your email"
                                 />
                             </div>
@@ -154,7 +152,7 @@ const Login: React.FC<LoginProps> = () => {
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <label htmlFor="password" className="text-sm font-medium text-gray-300 sr-only">Password</label>
-                                <button type="button" onClick={openForgotPasswordModal} className="text-sm text-[#00FFC2] hover:underline">Forgot Password?</button>
+                                <button type="button" onClick={openForgotPasswordModal} className="text-sm text-blue-400 hover:underline">Forgot Password?</button>
                             </div>
                             <div className="relative">
                                 <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
@@ -166,16 +164,16 @@ const Login: React.FC<LoginProps> = () => {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-12 pr-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                    className="pl-12 pr-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                     placeholder="Enter your password"
                                 />
-                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-[#00FFC2] transition-colors">
+                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-blue-400 transition-colors">
                                     {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-white bg-blue-600 font-bold text-base hover:bg-blue-700 transition-all duration-300 shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
                                 {loading ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -191,7 +189,7 @@ const Login: React.FC<LoginProps> = () => {
 
                     <p className="text-sm text-center text-gray-400">
                         Don't have an account?{' '}
-                        <Link to="/register" className="font-semibold text-[#00FFC2] hover:underline">
+                        <Link to="/register" className="font-semibold text-blue-400 hover:underline">
                             Sign Up
                         </Link>
                     </p>
@@ -204,7 +202,7 @@ const Login: React.FC<LoginProps> = () => {
             {/* Forgot Password Modal */}
             {isForgotPasswordOpen && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-opacity">
-                    <div className="bg-gray-900/80 border border-white/10 rounded-2xl w-full max-w-md p-8 relative shadow-2xl shadow-black/40">
+                    <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-8 relative shadow-2xl shadow-black/40">
                         <button onClick={() => setIsForgotPasswordOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
                             <XIcon className="w-6 h-6" />
                         </button>
@@ -212,7 +210,7 @@ const Login: React.FC<LoginProps> = () => {
                         <p className="text-gray-400 text-sm mb-6">Enter your email and we'll send you a link to reset your password.</p>
                         
                         {resetMessage && (
-                            <p className={`text-sm text-center p-3 rounded-lg border mb-4 ${resetMessage.type === 'success' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                            <p className={`text-sm text-center p-3 rounded-lg border mb-4 ${resetMessage.type === 'success' ? 'bg-green-500/10 text-green-300 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
                                 {resetMessage.text}
                             </p>
                         )}
@@ -227,13 +225,13 @@ const Login: React.FC<LoginProps> = () => {
                                         onChange={(e) => setResetEmail(e.target.value)}
                                         required
                                         placeholder="Enter your registered email"
-                                        className="pl-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                        className="pl-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                     />
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={resetLoading}
-                                    className="w-full mt-6 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
+                                    className="w-full mt-6 py-3 px-4 rounded-lg text-white bg-blue-600 font-bold text-base hover:bg-blue-700 transition-all duration-300 shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
                                 >
                                     {resetLoading ? (
                                         <>

@@ -5,7 +5,7 @@ import LegalPageLayout from './LegalPageLayout';
 const CookiesPage: React.FC = () => (
     <LegalPageLayout title="Cookie Policy">
         <p>
-            This Cookie Policy explains how SAHA AI (“we”, “our”, “us”) uses cookies and similar tracking technologies on our website <a href="https://sahaai.io" className="text-blue-600 hover:underline">https://sahaai.io</a>.
+            This Cookie Policy explains how SAHA AI (“we”, “our”, “us”) uses cookies and similar tracking technologies on our website <a href="https://sahaai.io">https://sahaai.io</a>.
         </p>
         <p>
             By using our website, you agree to the use of cookies as described in this policy.
@@ -25,15 +25,15 @@ const CookiesPage: React.FC = () => (
 
         <h2>2. Types of Cookies We Use</h2>
         <div className="overflow-x-auto my-4">
-            <table className="min-w-full border border-gray-200 text-sm">
-                <thead className="bg-gray-100">
+            <table className="min-w-full border border-gray-700 text-sm">
+                <thead className="bg-gray-800">
                     <tr>
-                        <th className="text-left font-semibold p-3 border-b border-gray-200">Cookie Type</th>
-                        <th className="text-left font-semibold p-3 border-b border-gray-200">Description</th>
-                        <th className="text-left font-semibold p-3 border-b border-gray-200">Required</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Cookie Type</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Description</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Required</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-700">
                     <tr>
                         <td className="p-3"><strong>Essential Cookies</strong></td>
                         <td className="p-3">Enable core site features such as login, navigation, and security.</td>
@@ -85,8 +85,8 @@ const CookiesPage: React.FC = () => (
 
         <h2>6. Contact Us</h2>
         <p>If you have questions about our Cookie Policy or data practices, contact us:</p>
-        <p>Email: <a href="mailto:shaheel@sahaai.io" className="text-blue-600 hover:underline">shaheel@sahaai.io</a></p>
-        <p>Website: <a href="https://sahaai.io" className="text-blue-600 hover:underline">https://sahaai.io</a></p>
+        <p>Email: <a href="mailto:shaheel@sahaai.io">shaheel@sahaai.io</a></p>
+        <p>Website: <a href="https://sahaai.io">https://sahaai.io</a></p>
 
     </LegalPageLayout>
 );

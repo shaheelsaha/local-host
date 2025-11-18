@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { GoogleGenAI } from '@google/genai';
@@ -136,7 +130,7 @@ const TimePicker: React.FC<{
 
     return (
          <div className="flex items-center space-x-2">
-            <div className="flex items-center bg-gray-100 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 px-1">
+            <div className="flex items-center bg-gray-800 border border-gray-700 rounded-lg focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 px-1">
                 <input
                     type="text"
                     value={time.hour}
@@ -155,9 +149,9 @@ const TimePicker: React.FC<{
                     className="w-10 text-center bg-transparent outline-none py-1.5 sm:text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
             </div>
-            <div className="flex items-center bg-gray-200 rounded-lg p-0.5">
-                <button type="button" onClick={() => handlePeriodChange('AM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'AM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-300'}`}>AM</button>
-                <button type="button" onClick={() => handlePeriodChange('PM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'PM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-300'}`}>PM</button>
+            <div className="flex items-center bg-gray-700 rounded-lg p-0.5">
+                <button type="button" onClick={() => handlePeriodChange('AM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'AM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-300 hover:bg-gray-600'}`}>AM</button>
+                <button type="button" onClick={() => handlePeriodChange('PM')} disabled={disabled} className={`px-2 py-1 text-xs font-semibold rounded-md transition-colors ${time.period === 'PM' ? 'bg-blue-600 text-white shadow-sm' : 'bg-transparent text-gray-300 hover:bg-gray-600'}`}>PM</button>
             </div>
         </div>
     );
@@ -341,23 +335,23 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
 
     return (
         <div className={`fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            <div className={`bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
-                <header className="flex items-center justify-between p-5 border-b border-gray-200 flex-shrink-0">
-                    <h2 className="text-xl font-semibold text-gray-800">{isPublished ? 'View Published Post' : 'Share to social media'}</h2>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <div className={`bg-gray-900 text-gray-200 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transition-all duration-300 ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+                <header className="flex items-center justify-between p-5 border-b border-gray-800 flex-shrink-0">
+                    <h2 className="text-xl font-semibold text-white">{isPublished ? 'View Published Post' : 'Share to social media'}</h2>
+                    <button onClick={handleClose} className="text-gray-400 hover:text-white transition-colors">
                         <XIcon className="w-6 h-6" />
                     </button>
                 </header>
 
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmission('scheduled'); }} className="flex-1 overflow-y-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2">
-                        <div className="p-6 md:order-2 bg-gray-50/70">
+                        <div className="p-6 md:order-2 bg-gray-950">
                             {mediaPreview ? (
                                 <div>
-                                    <div className={`relative w-full bg-gray-200 rounded-lg flex items-center justify-center transition-all duration-300 ${contentType === 'reel' ? 'aspect-[9/16] max-w-[280px] mx-auto' : 'aspect-square'}`}>
+                                    <div className={`relative w-full bg-black rounded-lg flex items-center justify-center transition-all duration-300 ${contentType === 'reel' ? 'aspect-[9/16] max-w-[280px] mx-auto' : 'aspect-square'}`}>
                                         <div className={`w-full h-full overflow-hidden ${contentType === 'reel' ? 'rounded-xl shadow-inner' : ''}`}>
                                             {mediaPreview.type === 'video' 
-                                                ? <video src={mediaPreview.url} controls className="w-full h-full object-contain bg-gray-900"></video>
+                                                ? <video src={mediaPreview.url} controls className="w-full h-full object-contain bg-black"></video>
                                                 : <img src={mediaPreview.url} alt="preview" className="w-full h-full object-contain"/>
                                             }
                                         </div>
@@ -372,9 +366,9 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                     </div>
                                 </div>
                             ) : (
-                                <label htmlFor="modal-file-upload-main" className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50/30 transition-colors">
-                                     <UploadIcon className="w-12 h-12 text-gray-400 mb-4" />
-                                     <h3 className="font-semibold text-gray-700">Upload your media</h3>
+                                <label htmlFor="modal-file-upload-main" className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-colors">
+                                     <UploadIcon className="w-12 h-12 text-gray-500 mb-4" />
+                                     <h3 className="font-semibold text-gray-300">Upload your media</h3>
                                      <p className="text-sm text-gray-500 mt-1">Drag & drop a file or click to browse.</p>
                                      <span className="mt-4 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700">
                                         Browse file
@@ -383,7 +377,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                 </label>
                             )}
                         </div>
-                        <div className="p-6 space-y-6 md:order-1 md:border-r md:border-gray-200">
+                        <div className="p-6 space-y-6 md:order-1 md:border-r md:border-gray-800">
                             {/* Platform Selector */}
                             <div>
                                 <div className="grid grid-cols-4 gap-3">
@@ -396,7 +390,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                         const isSelected = selectedPlatforms.includes(platformKey);
                                         
                                         const iconStyle: React.CSSProperties = {};
-                                        let iconClasses = "w-8 h-8 transition-colors duration-200";
+                                        let iconClasses = "w-8 h-8 transition-colors duration-200 text-gray-200";
 
                                         if (isSelected && isConnected) {
                                             if (platformKey !== SocialPlatform.INSTAGRAM) {
@@ -415,14 +409,14 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                 title={!isConnected ? `Connect ${platformKey} on the Connections page` : `Click to publish to ${platformKey}`}
                                                 className={`p-3 border rounded-lg flex items-center justify-center transition-all duration-200 h-16 transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
                                                     ${isSelected 
-                                                        ? 'border-blue-500 bg-blue-50/80 shadow-inner' 
-                                                        : 'border-gray-200 bg-white'
+                                                        ? 'border-blue-500 bg-blue-500/10 shadow-inner' 
+                                                        : 'border-gray-700 bg-gray-800'
                                                     }
                                                     ${isConnected 
                                                         ? 'hover:border-blue-400 hover:scale-105 active:scale-100 cursor-pointer' 
                                                         : 'opacity-60 cursor-not-allowed'
                                                     }
-                                                    ${isPublished ? 'cursor-not-allowed hover:border-gray-200' : ''}
+                                                    ${isPublished ? 'cursor-not-allowed hover:border-gray-700' : ''}
                                                 `}
                                             >
                                                 <Icon className={iconClasses} style={iconStyle} />
@@ -435,34 +429,34 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
 
                             {/* Content Type Selector */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
-                                <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
-                                    <button type="button" onClick={() => setContentType('image')} disabled={isPublished || (isContentTypeLocked && contentType !== 'image')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'image' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Image</button>
-                                    <button type="button" onClick={() => setContentType('reel')} disabled={isPublished || (isContentTypeLocked && contentType !== 'reel')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'reel' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Reel</button>
-                                    <button type="button" onClick={() => setContentType('video')} disabled={isPublished || (isContentTypeLocked && contentType !== 'video')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'video' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:bg-gray-200'}`}>Video</button>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Content Type</label>
+                                <div className="flex items-center space-x-2 bg-gray-800 rounded-lg p-1">
+                                    <button type="button" onClick={() => setContentType('image')} disabled={isPublished || (isContentTypeLocked && contentType !== 'image')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'image' ? 'bg-gray-700 text-gray-50 shadow-sm' : 'text-gray-400 hover:bg-gray-700'}`}>Image</button>
+                                    <button type="button" onClick={() => setContentType('reel')} disabled={isPublished || (isContentTypeLocked && contentType !== 'reel')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'reel' ? 'bg-gray-700 text-gray-50 shadow-sm' : 'text-gray-400 hover:bg-gray-700'}`}>Reel</button>
+                                    <button type="button" onClick={() => setContentType('video')} disabled={isPublished || (isContentTypeLocked && contentType !== 'video')} className={`w-full px-3 py-1.5 text-sm font-semibold rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${contentType === 'video' ? 'bg-gray-700 text-gray-50 shadow-sm' : 'text-gray-400 hover:bg-gray-700'}`}>Video</button>
                                 </div>
                             </div>
 
                             {/* Caption */}
                             <div>
-                                <label htmlFor="caption" className="block text-sm font-medium text-gray-700 mb-1">Caption</label>
-                                <textarea id="caption" value={caption} onChange={e => setCaption(e.target.value)} rows={5} readOnly={isPublished} className="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:bg-gray-200 disabled:cursor-not-allowed" placeholder="What's on your mind?"></textarea>
+                                <label htmlFor="caption" className="block text-sm font-medium text-gray-300 mb-1">Caption</label>
+                                <textarea id="caption" value={caption} onChange={e => setCaption(e.target.value)} rows={5} readOnly={isPublished} className="mt-1 block w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:bg-gray-800/50 disabled:cursor-not-allowed" placeholder="What's on your mind?"></textarea>
                                 {errors.caption && <p className="text-red-500 text-xs mt-1">{errors.caption}</p>}
                             </div>
                             
                             {/* Auto Commenting Toggle */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Automation</label>
-                                <div className="flex items-center justify-between bg-gray-50 border border-gray-300 rounded-lg p-3">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Automation</label>
+                                <div className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg p-3">
                                     <div>
-                                        <h4 className="font-semibold text-gray-800">Auto Commenting</h4>
-                                        <p className="text-xs text-gray-500">Automatically reply to comments using AI.</p>
+                                        <h4 className="font-semibold text-gray-200">Auto Commenting</h4>
+                                        <p className="text-xs text-gray-400">Automatically reply to comments using AI.</p>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => setAutoCommenting(prev => !prev)}
                                         disabled={isPublished}
-                                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-200'}`}
+                                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${autoCommenting ? 'bg-blue-600' : 'bg-gray-600'}`}
                                         role="switch"
                                         aria-checked={autoCommenting}
                                     >
@@ -482,16 +476,16 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                checked={publishMode === 'schedule'}
                                                onChange={() => setPublishMode('schedule')}
                                                disabled={isPublished}
-                                               className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                                        <span className="ml-2 text-gray-700 font-medium">Schedule</span>
+                                               className="h-4 w-4 text-blue-500 border-gray-600 focus:ring-blue-500 bg-gray-800" />
+                                        <span className="ml-2 text-gray-300 font-medium">Schedule</span>
                                     </label>
                                      <label className="flex items-center text-sm cursor-pointer">
                                         <input type="radio" name="publishMode" value="now"
                                                checked={publishMode === 'now'}
                                                onChange={() => setPublishMode('now')}
                                                disabled={isPublished}
-                                               className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                                        <span className="ml-2 text-gray-700 font-medium">Publish now</span>
+                                               className="h-4 w-4 text-blue-500 border-gray-600 focus:ring-blue-500 bg-gray-800" />
+                                        <span className="ml-2 text-gray-300 font-medium">Publish now</span>
                                          <InfoIcon className="w-4 h-4 text-gray-400 ml-1" title="Post will be published within the next minute."/>
                                     </label>
                                 </div>
@@ -513,7 +507,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                         setScheduledAt(newDate);
                                                     }}
                                                     disabled={isPublished}
-                                                    className="pl-10 pr-3 py-2.5 w-full bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:cursor-not-allowed"
+                                                    className="pl-10 pr-3 py-2.5 w-full bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm disabled:cursor-not-allowed"
                                                 />
                                             </div>
                                         </div>
@@ -530,14 +524,14 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                     </div>
                 </form>
 
-                 <footer className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end p-4 border-t border-gray-200 flex-shrink-0 space-y-2 space-y-reverse sm:space-y-0 sm:space-x-3 bg-gray-50 rounded-b-xl">
+                 <footer className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end p-4 border-t border-gray-800 flex-shrink-0 space-y-2 space-y-reverse sm:space-y-0 sm:space-x-3 bg-gray-800 rounded-b-xl">
                     {isPublished ? (
-                        <button type="button" onClick={handleClose} className="w-full sm:w-auto px-5 py-2 text-sm font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-900">Close</button>
+                        <button type="button" onClick={handleClose} className="w-full sm:w-auto px-5 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600">Close</button>
                     ) : (
                         <>
-                            <button type="button" onClick={() => handleSubmission('draft')} disabled={isUploading} className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50">Save as Draft</button>
-                            <button type="button" className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50" disabled>Preview</button>
-                            <button type="submit" form="post-editor-form" onClick={(e) => { e.preventDefault(); handleSubmission('scheduled'); }} disabled={isUploading} className="w-full sm:w-auto px-5 py-2 text-sm font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-900 disabled:bg-gray-400 flex items-center justify-center min-w-[100px]">
+                            <button type="button" onClick={() => handleSubmission('draft')} disabled={isUploading} className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-lg hover:bg-gray-600 disabled:opacity-50">Save as Draft</button>
+                            <button type="button" className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-lg hover:bg-gray-600 disabled:opacity-50" disabled>Preview</button>
+                            <button type="submit" form="post-editor-form" onClick={(e) => { e.preventDefault(); handleSubmission('scheduled'); }} disabled={isUploading} className="w-full sm:w-auto px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 flex items-center justify-center min-w-[100px]">
                                 {isUploading ? 'Saving...' : (publishMode === 'now' ? 'Publish' : 'Schedule')}
                             </button>
                         </>
@@ -768,13 +762,13 @@ const Schedule: React.FC = () => {
         <div className="p-4 md:p-6 lg:p-8 h-full flex flex-col">
             <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 flex-shrink-0">
                 <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-                    <h1 className="text-2xl font-bold text-gray-800">
+                    <h1 className="text-2xl font-bold text-white">
                        {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
                     </h1>
                     <div className="flex items-center space-x-1">
-                        <button onClick={() => changeWeek(-1)} className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500"><ChevronLeftIcon className="w-5 h-5" /></button>
-                        <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1.5 text-sm font-semibold border border-gray-300 rounded-md hover:bg-gray-100">Today</button>
-                        <button onClick={() => changeWeek(1)} className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500"><ChevronRightIcon className="w-5 h-5" /></button>
+                        <button onClick={() => changeWeek(-1)} className="p-1.5 rounded-md hover:bg-gray-800 text-gray-400"><ChevronLeftIcon className="w-5 h-5" /></button>
+                        <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1.5 text-sm font-semibold border border-gray-700 rounded-md hover:bg-gray-800">Today</button>
+                        <button onClick={() => changeWeek(1)} className="p-1.5 rounded-md hover:bg-gray-800 text-gray-400"><ChevronRightIcon className="w-5 h-5" /></button>
                     </div>
                 </div>
                 <div className="flex items-center space-x-2 w-full sm:w-auto">
@@ -785,18 +779,18 @@ const Schedule: React.FC = () => {
                 </div>
             </header>
             
-            <div className="flex-1 overflow-auto border border-gray-200 rounded-xl bg-white shadow-sm">
+            <div className="flex-1 overflow-auto border border-gray-800 rounded-xl bg-gray-900 shadow-sm">
                 {/* Mobile View */}
                 <div className="md:hidden">
-                    <div className="flex justify-around items-center border-b sticky top-0 bg-white z-10">
+                    <div className="flex justify-around items-center border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
                         {weekDays.map(day => (
                             <button
                                 key={day.toISOString()}
                                 onClick={() => setSelectedDay(day)}
-                                className={`text-center py-2 px-1 w-full transition-colors duration-200 ${day.toDateString() === selectedDay.toDateString() ? 'border-b-2 border-blue-600' : 'border-b-2 border-transparent'}`}
+                                className={`text-center py-2 px-1 w-full transition-colors duration-200 ${day.toDateString() === selectedDay.toDateString() ? 'border-b-2 border-blue-500' : 'border-b-2 border-transparent'}`}
                             >
-                                <span className="text-xs text-gray-500">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                                <span className={`font-bold block text-lg mt-1 ${new Date().toDateString() === day.toDateString() ? 'bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto' : 'text-gray-700'}`}>{day.getDate()}</span>
+                                <span className="text-xs text-gray-400">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                                <span className={`font-bold block text-lg mt-1 ${new Date().toDateString() === day.toDateString() ? 'bg-blue-600 text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto' : 'text-gray-200'}`}>{day.getDate()}</span>
                             </button>
                         ))}
                     </div>
@@ -810,14 +804,14 @@ const Schedule: React.FC = () => {
                              if (dayPosts.length === 0) return null;
 
                              return (
-                                 <div key={hour} className="flex items-start py-2 border-b last:border-b-0">
+                                 <div key={hour} className="flex items-start py-2 border-b last:border-b-0 border-gray-800">
                                      <span className="text-xs text-gray-500 w-16 pt-1.5">{time}</span>
                                      <div className="flex-1 space-y-2">
                                          {dayPosts.map(post => (
-                                            <div key={post.id} onClick={() => handleEditPostClick(post)} className="bg-gray-50 p-2 rounded-md border flex space-x-3 items-start">
+                                            <div key={post.id} onClick={() => handleEditPostClick(post)} className="bg-gray-800 p-2 rounded-md border border-gray-700 flex space-x-3 items-start">
                                                 <div className="flex-1">
-                                                    <p className="font-semibold text-sm text-gray-800">{post.caption || 'No Caption'}</p>
-                                                    <div className="flex items-center text-xs text-gray-500 mt-1 capitalize">{post.status}</div>
+                                                    <p className="font-semibold text-sm text-gray-200">{post.caption || 'No Caption'}</p>
+                                                    <div className="flex items-center text-xs text-gray-400 mt-1 capitalize">{post.status}</div>
                                                 </div>
                                                 {post.mediaUrls.length > 0 && (
                                                     <img src={post.mediaUrls[0]} alt="Post media" className="w-12 h-12 object-cover rounded"/>
@@ -830,9 +824,9 @@ const Schedule: React.FC = () => {
                         })}
                          {posts.filter(p => new Date(p.scheduledAt).toDateString() === selectedDay.toDateString()).length === 0 && (
                             <div className="text-center py-16 text-gray-500">
-                                <CalendarIcon className="w-12 h-12 mx-auto text-gray-300 mb-2"/>
+                                <CalendarIcon className="w-12 h-12 mx-auto text-gray-700 mb-2"/>
                                 <p>No posts scheduled for this day.</p>
-                                <button onClick={() => handleCreatePostClick(selectedDay)} className="mt-4 text-sm font-semibold text-blue-600 hover:underline">
+                                <button onClick={() => handleCreatePostClick(selectedDay)} className="mt-4 text-sm font-semibold text-blue-400 hover:underline">
                                     Schedule a post
                                 </button>
                             </div>
@@ -843,30 +837,30 @@ const Schedule: React.FC = () => {
                 {/* Desktop View */}
                 <div className="hidden md:grid grid-cols-[auto_1fr] min-w-[800px]">
                     {/* Time Gutter */}
-                    <div className="col-start-1 row-start-1 sticky top-0 bg-white z-10">
-                        <div className="h-14 border-b border-r border-gray-200"></div>
+                    <div className="col-start-1 row-start-1 sticky top-0 bg-gray-900 z-10">
+                        <div className="h-14 border-b border-r border-gray-800"></div>
                     </div>
                     {/* Header */}
-                    <div className="col-start-2 row-start-1 grid grid-cols-7 sticky top-0 bg-white z-10">
+                    <div className="col-start-2 row-start-1 grid grid-cols-7 sticky top-0 bg-gray-900 z-10">
                         {weekDays.map(day => (
-                            <div key={day.toISOString()} className="h-14 border-b border-gray-200 flex flex-col items-center justify-center">
-                                <span className="text-xs text-gray-500 uppercase tracking-wider">{day.toLocaleString('default', { weekday: 'short' })}</span>
-                                <span className={`text-xl font-semibold mt-1 ${new Date().toDateString() === day.toDateString() ? 'bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center' : 'text-gray-700'}`}>{day.getDate()}</span>
+                            <div key={day.toISOString()} className="h-14 border-b border-gray-800 flex flex-col items-center justify-center">
+                                <span className="text-xs text-gray-400 uppercase tracking-wider">{day.toLocaleString('default', { weekday: 'short' })}</span>
+                                <span className={`text-xl font-semibold mt-1 ${new Date().toDateString() === day.toDateString() ? 'bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center' : 'text-gray-200'}`}>{day.getDate()}</span>
                             </div>
                         ))}
                     </div>
 
                     {/* Grid */}
-                    <div className="col-start-1 row-start-2 border-r border-gray-200 text-right">
+                    <div className="col-start-1 row-start-2 border-r border-gray-800 text-right">
                         {timeSlots.map(time => (
-                            <div key={time} className="h-24 flex justify-end pr-2 pt-1 border-t border-gray-100 first:border-t-0">
-                                <span className="text-xs text-gray-400">{time}</span>
+                            <div key={time} className="h-24 flex justify-end pr-2 pt-1 border-t border-gray-800/50 first:border-t-0">
+                                <span className="text-xs text-gray-500">{time}</span>
                             </div>
                         ))}
                     </div>
                     <div className="col-start-2 row-start-2 grid grid-cols-7">
                         {weekDays.map(day => (
-                            <div key={day.toISOString()} className="border-l border-gray-200">
+                            <div key={day.toISOString()} className="border-l border-gray-800">
                                 {timeSlots.map((_, hour) => {
                                     const slotDate = new Date(day);
                                     slotDate.setHours(hour, 0, 0, 0);
@@ -874,22 +868,22 @@ const Schedule: React.FC = () => {
                                     const dayPosts = postsByDayAndHour[key] || [];
 
                                     return (
-                                        <div key={hour} className="h-24 border-t border-gray-200 p-1 group relative">
+                                        <div key={hour} className="h-24 border-t border-gray-800 p-1 group relative">
                                             {dayPosts.length > 0 ? (
                                                 <div className="space-y-1">
                                                 {dayPosts.map(post => {
                                                     const platform = post.platforms[0];
                                                     const PlatformIcon = platformDetails[platform]?.icon || FileIcon;
                                                     const statusStyles = {
-                                                        scheduled: 'bg-blue-50 border-blue-200 text-blue-800 hover:border-blue-400',
-                                                        published: 'bg-green-50 border-green-200 text-green-800 hover:border-green-400',
-                                                        failed: 'bg-red-50 border-red-200 text-red-800 hover:border-red-400',
-                                                        draft: 'bg-gray-100 border-gray-200 text-gray-700 hover:border-gray-400',
+                                                        scheduled: 'bg-blue-500/10 border-blue-500/20 text-blue-300 hover:border-blue-400',
+                                                        published: 'bg-green-500/10 border-green-500/20 text-green-300 hover:border-green-400',
+                                                        failed: 'bg-red-500/10 border-red-500/20 text-red-300 hover:border-red-400',
+                                                        draft: 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500',
                                                     };
                                                     const statusIcons = {
-                                                        published: <CheckCircleIcon className="w-3.5 h-3.5 mr-1.5 text-green-600"/>,
-                                                        failed: <AlertTriangleIcon className="w-3.5 h-3.5 mr-1.5 text-red-600"/>,
-                                                        scheduled: <PlatformIcon className="w-3.5 h-3.5 mr-1.5 text-blue-600"/>,
+                                                        published: <CheckCircleIcon className="w-3.5 h-3.5 mr-1.5 text-green-400"/>,
+                                                        failed: <AlertTriangleIcon className="w-3.5 h-3.5 mr-1.5 text-red-400"/>,
+                                                        scheduled: <PlatformIcon className="w-3.5 h-3.5 mr-1.5 text-blue-400"/>,
                                                         draft: <EditIcon className="w-3.5 h-3.5 mr-1.5 text-gray-500"/>,
                                                     };
 
@@ -900,19 +894,19 @@ const Schedule: React.FC = () => {
                                                                     {statusIcons[post.status]}
                                                                     <span className="font-semibold truncate">{post.caption || (post.status === 'draft' ? 'Draft' : 'No Caption')}</span>
                                                                 </div>
-                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/50 backdrop-blur-sm rounded-full p-0.5">
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-200 rounded-full"><EditIcon className="w-3 h-3 text-gray-600"/></button>
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-gray-200 rounded-full"><TrashIcon className="w-3 h-3 text-gray-600"/></button>
+                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900/50 backdrop-blur-sm rounded-full p-0.5">
+                                                                    <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-700 rounded-full"><EditIcon className="w-3 h-3 text-gray-300"/></button>
+                                                                    <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-gray-700 rounded-full"><TrashIcon className="w-3 h-3 text-gray-300"/></button>
                                                                 </div>
                                                             </div>
-                                                            <p className="truncate pl-5 text-gray-600">{post.caption}</p>
+                                                            <p className="truncate pl-5 text-gray-400">{post.caption}</p>
                                                         </div>
                                                     );
                                                 })}
                                                 </div>
                                             ) : (
-                                                 <button onClick={() => handleCreatePostClick(slotDate)} className="w-full h-full rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50/80 flex items-center justify-center">
-                                                     <PlusIcon className="w-5 h-5 text-gray-400" />
+                                                 <button onClick={() => handleCreatePostClick(slotDate)} className="w-full h-full rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-800/50 flex items-center justify-center">
+                                                     <PlusIcon className="w-5 h-5 text-gray-500" />
                                                  </button>
                                             )}
                                         </div>
@@ -922,8 +916,8 @@ const Schedule: React.FC = () => {
                         ))}
                     </div>
                 </div>
-                 {isLoading && <div className="absolute inset-0 bg-white bg-opacity-70 flex justify-center items-center"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div></div>}
-                 {error && <div className="absolute inset-0 bg-white bg-opacity-70 flex justify-center items-center text-red-500">{error}</div>}
+                 {isLoading && <div className="absolute inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center"><div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div></div>}
+                 {error && <div className="absolute inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center text-red-500">{error}</div>}
             </div>
             
             <PostEditorModal 

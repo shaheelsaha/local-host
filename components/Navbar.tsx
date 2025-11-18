@@ -40,7 +40,7 @@
         };
 
         return (
-            <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-black/30 backdrop-blur-lg shadow-lg border-b border-white/10' : 'bg-transparent'}`}>
+            <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-gray-950/80 backdrop-blur-lg shadow-lg border-b border-gray-800' : 'bg-transparent'}`}>
                 <div className="container mx-auto flex justify-between items-center p-4">
                     <Link to="/"><Logo /></Link>
                     <nav className="hidden md:flex items-center space-x-6">
@@ -49,13 +49,13 @@
                         ))}
                     </nav>
                     <div className="flex items-center space-x-2 sm:space-x-4">
-                        <Link to="/login" className="px-4 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-lg transition-colors">
+                        <Link to="/login" className="px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 rounded-lg transition-colors">
                             Sign In
                         </Link>
-                        <Link to="/register" className="hidden sm:block px-4 py-2 text-sm font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-colors shadow-[0_0_15px_theme(colors.teal.400/50%)]">
+                        <Link to="/register" className="hidden sm:block px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-[0_0_15px_theme(colors.blue.500/50%)]">
                             Sign Up
                         </Link>
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-white hover:bg-white/10 rounded-lg md:hidden" aria-label="Toggle menu">
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-white hover:bg-gray-800 rounded-lg md:hidden" aria-label="Toggle menu">
                             {isMenuOpen ? <XIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
                         </button>
                     </div>
@@ -68,8 +68,8 @@
                             <NavLinkItem key={link.name} {...link} className="text-lg font-medium text-gray-200 hover:text-white" onClick={() => setIsMenuOpen(false)} />
                             ))}
                         </nav>
-                        <div className="mt-6 border-t border-white/10 pt-4">
-                            <Link to="/register" className="w-full mt-4 px-4 py-3 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-colors shadow-[0_0_15px_theme(colors.teal.400/50%)] sm:hidden text-center block">
+                        <div className="mt-6 border-t border-gray-800 pt-4">
+                            <Link to="/register" className="w-full mt-4 px-4 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-[0_0_15px_theme(colors.blue.500/50%)] sm:hidden text-center block">
                                 Sign Up
                             </Link>
                         </div>

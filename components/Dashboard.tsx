@@ -9,10 +9,10 @@ import { AnalyticsIcon, SpinnerIcon, FileIcon, HeartIcon, TrendingUpIcon } from 
 
 // A reusable component for displaying key stats
 const StatCard: React.FC<{ icon: React.ReactElement, title: string, value: string, change?: string, changeType?: 'increase' | 'decrease' }> = ({ icon, title, value, change, changeType }) => (
-    <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
         <div className="flex items-center justify-between">
             <div className="text-sm font-medium text-gray-400">{title}</div>
-            <div className="p-2 bg-zinc-700 rounded-lg">
+            <div className="p-2 bg-gray-800 rounded-lg">
                 {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
                 {React.cloneElement<{ className?: string }>(icon, { className: 'w-5 h-5 text-gray-300' })}
             </div>
@@ -73,13 +73,13 @@ const Dashboard: React.FC = () => {
     if (!data) {
         return (
             <div className="container mx-auto p-4 md:p-8">
-                 <div className="bg-zinc-800/50 border border-zinc-700 rounded-2xl p-6 sm:p-12 text-center flex flex-col items-center justify-center">
-                    <AnalyticsIcon className="w-16 h-16 text-zinc-600 mb-4" />
+                 <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-12 text-center flex flex-col items-center justify-center">
+                    <AnalyticsIcon className="w-16 h-16 text-gray-600 mb-4" />
                     <h2 className="text-2xl font-semibold text-white">Your Dashboard is Almost Ready!</h2>
                     <p className="mt-2 max-w-2xl text-gray-400">
                         To visualize your data from BigQuery, you need to set up a workflow in **n8n** to sync the data to your app's database.
                     </p>
-                    <div className="mt-6 text-left bg-zinc-800 border border-zinc-700 rounded-lg p-6 w-full max-w-2xl">
+                    <div className="mt-6 text-left bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-2xl">
                         <h3 className="font-semibold text-gray-300 mb-3">n8n Workflow Setup:</h3>
                         <ol className="list-decimal list-inside text-sm text-gray-400 space-y-2">
                             <li>Create a workflow that runs on a schedule (e.g., daily).</li>
@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
                             <li>Set the Document ID in the Firestore node to your User ID.</li>
                             <li>Ensure the output JSON matches this structure:</li>
                         </ol>
-                        <pre className="text-xs bg-black/50 border border-zinc-600 text-white p-4 rounded-md mt-4 overflow-x-auto">
+                        <pre className="text-xs bg-gray-950 border border-gray-700 text-white p-4 rounded-md mt-4 overflow-x-auto">
                             <code>
 {`{
   "totalPosts": 152,
@@ -141,28 +141,28 @@ const Dashboard: React.FC = () => {
             
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                <div className="lg:col-span-3 bg-zinc-800/50 border border-zinc-700 rounded-xl p-6 shadow-sm">
+                <div className="lg:col-span-3 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
                     <h3 className="font-semibold text-white mb-4">Engagement Over Time</h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={data.engagementOverTime} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
-                            <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#a1a1aa' }} stroke="#52525b" />
-                            <YAxis tick={{ fontSize: 12, fill: '#a1a1aa' }} stroke="#52525b" />
-                            <Tooltip contentStyle={{ backgroundColor: '#27272a', border: '1px solid #404040', borderRadius: '0.5rem' }} itemStyle={{ color: '#e4e4e7' }} labelStyle={{ color: '#a1a1aa' }} />
-                            <Legend wrapperStyle={{fontSize: "14px", color: '#a1a1aa'}}/>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                            <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#9ca3af' }} stroke="#4b5563" />
+                            <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} stroke="#4b5563" />
+                            <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '0.5rem' }} itemStyle={{ color: '#e4e4e7' }} labelStyle={{ color: '#a1a1aa' }} />
+                            <Legend wrapperStyle={{fontSize: "14px", color: '#9ca3af'}}/>
                             <Line type="monotone" dataKey="value" name="Engagement" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4, fill: '#3b82f6' }} activeDot={{ r: 6, fill: '#3b82f6' }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
-                 <div className="lg:col-span-2 bg-zinc-800/50 border border-zinc-700 rounded-xl p-6 shadow-sm">
+                 <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
                      <h3 className="font-semibold text-white mb-4">Posts by Platform</h3>
                     <ResponsiveContainer width="100%" height={300}>
                          <BarChart data={data.postsByPlatform} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
-                            <XAxis type="number" tick={{ fontSize: 12, fill: '#a1a1aa' }} stroke="#52525b" />
-                            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#a1a1aa' }} stroke="#52525b" width={80} />
-                            <Tooltip contentStyle={{ backgroundColor: '#27272a', border: '1px solid #404040', borderRadius: '0.5rem' }} itemStyle={{ color: '#e4e4e7' }} labelStyle={{ color: '#a1a1aa' }} cursor={{fill: 'rgba(128,128,128,0.1)'}}/>
-                            <Legend wrapperStyle={{fontSize: "14px", color: '#a1a1aa'}}/>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                            <XAxis type="number" tick={{ fontSize: 12, fill: '#9ca3af' }} stroke="#4b5563" />
+                            <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} stroke="#4b5563" width={80} />
+                            <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '0.5rem' }} itemStyle={{ color: '#e4e4e7' }} labelStyle={{ color: '#a1a1aa' }} cursor={{fill: 'rgba(128,128,128,0.1)'}}/>
+                            <Legend wrapperStyle={{fontSize: "14px", color: '#9ca3af'}}/>
                             <Bar dataKey="value" name="Posts" fill="#3b82f6" barSize={20} />
                         </BarChart>
                     </ResponsiveContainer>

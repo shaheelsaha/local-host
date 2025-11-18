@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 // FIX: Refactor Firebase calls to v8 compat syntax.
@@ -22,7 +16,7 @@ const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [loading, setLoading] = React.useState(false);
 
-    const userAvatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email || 'U')}&background=EBF4FF&color=4299E1&bold=true&rounded=true`;
+    const userAvatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email || 'U')}&background=1f2937&color=60a5fa&bold=true&rounded=true`;
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,16 +67,16 @@ const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <h1 className="text-3xl font-bold text-gray-800">Account Settings</h1>
-            <p className="mt-1 text-gray-500">Manage your profile and password information.</p>
+            <h1 className="text-3xl font-bold text-white">Account Settings</h1>
+            <p className="mt-1 text-gray-400">Manage your profile and password information.</p>
             
             <div className="mt-8 max-w-3xl">
-                <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl shadow-sm">
+                <form onSubmit={handleSave} className="bg-gray-900 border border-gray-800 rounded-2xl shadow-sm">
                     <div className="p-6 sm:p-8 space-y-6">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
                             <img src={userAvatar} alt="Profile" className="h-20 w-20 rounded-full object-cover" />
                             <div>
-                                <button type="button" className="px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50" disabled>
+                                <button type="button" className="px-4 py-2 text-sm font-semibold text-blue-300 bg-blue-500/10 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50" disabled>
                                     Change Photo
                                 </button>
                                 <p className="text-xs text-gray-500 mt-2">JPG, GIF or PNG. 1MB max. (Feature coming soon)</p>
@@ -91,34 +85,34 @@ const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} className="mt-1 block w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"/>
+                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-300">Full Name</label>
+                                <input type="text" id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} className="mt-1 block w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"/>
                             </div>
                              <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="email" value={user.email || ''} disabled className="mt-1 block w-full px-4 py-2.5 bg-gray-200 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed"/>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email Address</label>
+                                <input type="email" id="email" value={user.email || ''} disabled className="mt-1 block w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"/>
                             </div>
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-200 p-6 sm:p-8">
-                         <h3 className="text-lg font-semibold text-gray-900 mb-1">Change Password</h3>
-                         <p className="text-sm text-gray-500 mb-4">Update your password for enhanced security.</p>
+                    <div className="border-t border-gray-800 p-6 sm:p-8">
+                         <h3 className="text-lg font-semibold text-white mb-1">Change Password</h3>
+                         <p className="text-sm text-gray-400 mb-4">Update your password for enhanced security.</p>
                          <div className="max-w-sm">
-                            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
-                            <input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Leave blank to keep current" className="mt-1 block w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"/>
+                            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300">New Password</label>
+                            <input type="password" id="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Leave blank to keep current" className="mt-1 block w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"/>
                         </div>
                     </div>
 
                     {message && (
                         <div className="px-6 sm:px-8 pb-4">
-                            <div className={`p-4 border rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-800 border-green-200' : 'bg-red-50 text-red-800 border-red-200'}`}>
+                            <div className={`p-4 border rounded-lg text-sm ${message.type === 'success' ? 'bg-green-500/10 text-green-300 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
                                {message.text}
                             </div>
                         </div>
                     )}
 
-                    <div className="flex justify-end p-6 bg-gray-50/70 border-t border-gray-200 rounded-b-2xl">
+                    <div className="flex justify-end p-6 bg-gray-900/50 border-t border-gray-800 rounded-b-2xl">
                         <button type="submit" disabled={loading} className="px-6 py-2.5 rounded-lg text-white bg-blue-600 font-semibold text-sm hover:bg-blue-700 transition-all shadow-sm shadow-blue-500/20 disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center">
                             {loading && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
                             {loading ? 'Saving...' : 'Save Changes'}

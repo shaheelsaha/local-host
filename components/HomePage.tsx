@@ -1,7 +1,6 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import ParticleNetwork from './ParticleNetwork';
 // FIX: Corrected import to reflect that Navbar is a default export.
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -21,8 +20,8 @@ import {
 interface HomePageProps {}
 
 const FeatureCard: React.FC<{ icon: React.ReactElement; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 h-full">
-        <div className="bg-[#00FFC2]/10 text-[#00FFC2] rounded-lg w-12 h-12 flex items-center justify-center mb-4">
+    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 transition-all duration-300 hover:border-gray-700 hover:-translate-y-1 h-full">
+        <div className="bg-blue-500/10 text-blue-400 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
         <h3 className="font-bold text-lg text-white mb-2">{title}</h3>
@@ -32,7 +31,7 @@ const FeatureCard: React.FC<{ icon: React.ReactElement; title: string; descripti
 
 const HowItWorksStep: React.FC<{ step: number; title: string; description: string }> = ({ step, title, description }) => (
     <div className="flex flex-col items-center text-center md:flex-row md:text-left md:items-start space-y-4 md:space-y-0 md:space-x-4">
-        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-900/50 border border-white/10 rounded-full font-bold text-lg text-[#00FFC2]">
+        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-full font-bold text-lg text-blue-400">
             {step}
         </div>
         <div>
@@ -43,7 +42,7 @@ const HowItWorksStep: React.FC<{ step: number; title: string; description: strin
 );
 
 const TestimonialCard: React.FC<{ quote: string; name: string; role: string; avatar: string }> = ({ quote, name, role, avatar }) => (
-    <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 h-full flex flex-col justify-between">
+    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 h-full flex flex-col justify-between">
         <p className="text-gray-300 italic">"{quote}"</p>
         <div className="flex items-center mt-6">
             <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover mr-4"/>
@@ -79,8 +78,7 @@ const SocialProofLogos: React.FC = () => {
 
 const HomePage: React.FC<HomePageProps> = () => {
     return (
-        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
-            <ParticleNetwork />
+        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
 
@@ -89,18 +87,18 @@ const HomePage: React.FC<HomePageProps> = () => {
                     <section className="min-h-screen flex items-center justify-center pt-24 pb-16 text-center">
                         <div className="container mx-auto px-4">
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tighter leading-tight mb-6 animate-fade-in-down">
-                                Spend your time <span className="bg-gradient-to-r from-[#00FFC2] to-sky-400 bg-clip-text text-transparent">closing deals</span>, not chasing unqualified leads.
+                                Spend your time <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">closing deals</span>, not chasing unqualified leads.
                                 <br />
-                                Let our AI do the <span className="bg-gradient-to-r from-[#00FFC2] to-sky-400 bg-clip-text text-transparent">filtering for you</span>.
+                                Let our AI do the <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">filtering for you</span>.
                             </h1>
                             <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10 animate-fade-in-up delay-100">
                                 SAHA AI automatically qualifies leads, handles replies and follow-ups, and updates your CRM without any manual work.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in-up delay-200">
-                                <Link to="/register" className="w-full sm:w-auto px-8 py-4 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.teal.400/60%)]">
+                                <Link to="/register" className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.blue.500/60%)]">
                                     Get Started for Free
                                 </Link>
-                                <button className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-transparent border-2 border-white/20 rounded-lg hover:bg-white/10 transition-colors duration-300">
+                                <button className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-transparent border-2 border-gray-700 rounded-lg hover:bg-gray-800 transition-colors duration-300">
                                     View Demo
                                 </button>
                             </div>
@@ -166,10 +164,10 @@ const HomePage: React.FC<HomePageProps> = () => {
                                 Start for free, then upgrade as you grow. No hidden fees, cancel anytime.
                             </p>
                             <div className="max-w-4xl mx-auto">
-                                <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center">
+                                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center">
                                     <h3 className="text-2xl font-bold text-white mb-2">Flexible Pricing for Teams of All Sizes</h3>
                                     <p className="text-gray-400 mb-6">From solo creators to large agencies, we have a plan that fits your needs.</p>
-                                     <Link to="/pricing" className="font-bold text-white bg-transparent border-2 border-[#00FFC2] rounded-lg px-6 py-3 hover:bg-[#00FFC2] hover:text-black transition-colors duration-300">
+                                     <Link to="/pricing" className="font-bold text-white bg-transparent border-2 border-blue-500 rounded-lg px-6 py-3 hover:bg-blue-500 hover:text-white transition-colors duration-300">
                                         Compare Plans
                                     </Link>
                                 </div>
@@ -203,12 +201,12 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* Final CTA */}
                     <section className="py-16 md:py-24">
                          <div className="container mx-auto px-4 text-center">
-                             <div className="max-w-3xl mx-auto bg-gradient-to-r from-teal-500/20 to-blue-500/20 rounded-3xl p-6 sm:p-10 border border-white/10">
+                             <div className="max-w-3xl mx-auto bg-gray-900 rounded-3xl p-6 sm:p-10 border border-gray-800">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to automate your social media?</h2>
                                 <p className="text-gray-300 mb-8">
                                     Start using SAHA AI today — it takes less than 60 seconds to sign up.
                                 </p>
-                                 <Link to="/register" className="px-8 py-4 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.teal.400/60%)]">
+                                 <Link to="/register" className="px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.blue.500/60%)]">
                                     Sign Up Free
                                  </Link>
                              </div>

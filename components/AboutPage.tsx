@@ -1,30 +1,28 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import ParticleNetwork from './ParticleNetwork';
 // FIX: Corrected import to reflect that Navbar is a default export.
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 const TeamMemberCard: React.FC<{ name: string; role: string; avatar: string; bio: string }> = ({ name, role, avatar, bio }) => (
-    <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center transition-all duration-300 hover:border-white/20 hover:-translate-y-1">
+    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-gray-700 hover:-translate-y-1">
         <img src={avatar} alt={name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-700" />
         <h3 className="text-xl font-bold text-white">{name}</h3>
-        <p className="text-[#00FFC2] mb-3">{role}</p>
+        <p className="text-blue-400 mb-3">{role}</p>
         <p className="text-sm text-gray-400">{bio}</p>
     </div>
 );
 
 const AboutPage: React.FC = () => {
     return (
-        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
-            <ParticleNetwork />
+        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
                 <main className="pt-24 pb-16">
                     <div className="container mx-auto px-4">
                         <section className="text-center mb-16 md:mb-24">
                             <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 animate-fade-in-down">
-                                About <span className="bg-gradient-to-r from-[#00FFC2] to-sky-400 bg-clip-text text-transparent">SAHA AI</span>
+                                About <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">SAHA AI</span>
                             </h1>
                             <p className="text-lg text-gray-400 max-w-3xl mx-auto animate-fade-in-up delay-100">
                                 We're on a mission to revolutionize how businesses engage with their customers on social media.

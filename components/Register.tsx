@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 // import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { UserIcon, EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from './icons';
-import ParticleNetwork from './ParticleNetwork';
 
 interface RegisterProps {}
 
@@ -72,25 +71,24 @@ const Register: React.FC<RegisterProps> = () => {
     };
     
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#0D1117] text-gray-200 p-4 font-sans overflow-hidden">
-             <ParticleNetwork />
+        <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-200 p-4 font-sans overflow-hidden">
              <div className="relative z-10 w-full flex flex-col items-center">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        Create Your <span className="text-[#00FFC2]">SAHA AI</span> Account
+                        Create Your <span className="text-blue-500">SAHA AI</span> Account
                     </h1>
                     <p className="text-gray-400 mt-4 max-w-md mx-auto">
                         Join us and unlock the future of social media management.
                     </p>
                 </div>
 
-                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/30">
+                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl shadow-black/30">
                      <div className="text-center">
                         <h2 className="text-2xl font-bold text-white">Sign Up</h2>
                         <p className="text-gray-400 text-sm mt-1">It's quick and easy</p>
                     </div>
 
-                    {error && <p className="text-red-400 text-sm text-center bg-red-500/20 p-3 rounded-lg border border-red-500/30">{error}</p>}
+                    {error && <p className="text-red-400 text-sm text-center bg-red-500/10 p-3 rounded-lg border border-red-500/20">{error}</p>}
                     
                      <button type="button" onClick={handleGoogleSignUp} disabled={googleLoading || loading} className="w-full flex items-center justify-center py-3 px-4 rounded-lg bg-white text-gray-800 font-semibold text-base hover:bg-gray-200 transition-all duration-300 border border-gray-300 shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed">
                         {googleLoading ? (
@@ -107,9 +105,9 @@ const Register: React.FC<RegisterProps> = () => {
                     </button>
 
                      <div className="relative flex items-center py-2">
-                        <div className="flex-grow border-t border-white/20"></div>
+                        <div className="flex-grow border-t border-gray-700"></div>
                         <span className="flex-shrink mx-4 text-xs text-gray-400 uppercase">Or continue with</span>
-                        <div className="flex-grow border-t border-white/20"></div>
+                        <div className="flex-grow border-t border-gray-700"></div>
                     </div>
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -120,7 +118,7 @@ const Register: React.FC<RegisterProps> = () => {
                                 <input id="name" name="name" type="text" autoComplete="name" required
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="pl-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                className="pl-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                 placeholder="Enter your full name" />
                             </div>
                         </div>
@@ -131,7 +129,7 @@ const Register: React.FC<RegisterProps> = () => {
                                 <input id="email" name="email" type="email" autoComplete="email" required 
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="pl-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                className="pl-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                 placeholder="Enter your email" />
                             </div>
                         </div>
@@ -147,16 +145,16 @@ const Register: React.FC<RegisterProps> = () => {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-12 pr-12 w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                    className="pl-12 pr-12 w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                     placeholder="Create a password (min. 6 characters)"
                                 />
-                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-[#00FFC2] transition-colors">
+                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-blue-400 transition-colors">
                                     {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-white bg-blue-600 font-bold text-base hover:bg-blue-700 transition-all duration-300 shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
                                 {loading ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -171,7 +169,7 @@ const Register: React.FC<RegisterProps> = () => {
                     </form>
                     <p className="text-sm text-center text-gray-400">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-semibold text-[#00FFC2] hover:underline">
+                        <Link to="/login" className="font-semibold text-blue-400 hover:underline">
                             Sign In
                         </Link>
                     </p>

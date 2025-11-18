@@ -1,13 +1,12 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import ParticleNetwork from './ParticleNetwork';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { EmailIcon, SpinnerIcon, CheckCircleIcon, TwitterIcon, InstagramIcon, LinkedInIcon, PhoneIcon, LocationIcon } from './icons';
 
 const ContactInfoItem: React.FC<{ icon: React.ReactElement; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
     <div className="flex items-start">
-        <div className="flex-shrink-0 bg-gray-900/50 border border-white/10 rounded-lg p-3 text-[#00FFC2]">
+        <div className="flex-shrink-0 bg-gray-900 border border-gray-800 rounded-lg p-3 text-blue-400">
             {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue. */}
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
@@ -57,8 +56,7 @@ const ContactPage: React.FC = () => {
     };
     
     return (
-        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
-            <ParticleNetwork />
+        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
                 <main className="pt-24 pb-16">
@@ -74,17 +72,17 @@ const ContactPage: React.FC = () => {
                             </div>
                             <div className="grid md:grid-cols-2 gap-12 items-start">
                                 {/* Contact Form */}
-                                <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 animate-fade-in-up">
+                                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 animate-fade-in-up">
                                     {submissionStatus === 'success' ? (
                                         <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px]">
-                                            <CheckCircleIcon className="w-16 h-16 text-[#00FFC2] mb-4"/>
+                                            <CheckCircleIcon className="w-16 h-16 text-green-400 mb-4"/>
                                             <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
                                             <p className="text-gray-400">Thanks for reaching out. We'll get back to you as soon as possible.</p>
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSubmit} className="space-y-6">
                                             {error && (
-                                                <div className="p-3 text-sm text-red-400 bg-red-500/20 border border-red-500/30 rounded-lg">
+                                                <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg">
                                                     {error}
                                                 </div>
                                             )}
@@ -98,7 +96,7 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. John Smith"
-                                                    className="w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
@@ -111,7 +109,7 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. example@gmail.com"
-                                                    className="w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
@@ -124,14 +122,14 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="Let us know how we can help"
-                                                    className="w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
+                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 ></textarea>
                                             </div>
                                             <div>
                                                 <button
                                                     type="submit"
                                                     disabled={submissionStatus === 'submitting'}
-                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_theme(colors.teal.400/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
+                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
                                                 >
                                                     {submissionStatus === 'submitting' ? (
                                                         <>
@@ -148,23 +146,23 @@ const ContactPage: React.FC = () => {
                                 {/* Contact Information */}
                                 <div className="space-y-8 animate-fade-in-up delay-100 mt-8 md:mt-0">
                                     <ContactInfoItem icon={<EmailIcon />} title="Email Us">
-                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-[#00FFC2] transition-colors">shaheel@sahaai.io</a>
+                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-blue-400 transition-colors">shaheel@sahaai.io</a>
                                         <p className="text-sm text-gray-500">General inquiries & support</p>
                                     </ContactInfoItem>
                                      <ContactInfoItem icon={<PhoneIcon />} title="Call Us">
-                                        <a href="tel:+971544575282" className="hover:text-[#00FFC2] transition-colors">+971 54 457 5282</a>
+                                        <a href="tel:+971544575282" className="hover:text-blue-400 transition-colors">+971 54 457 5282</a>
                                     </ContactInfoItem>
                                     
                                     <div>
                                         <h4 className="text-lg font-semibold text-white mb-4">Follow Us</h4>
                                         <div className="flex space-x-4">
-                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
                                                 <TwitterIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
                                                 <LinkedInIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
                                                 <InstagramIcon className="w-5 h-5"/>
                                             </a>
                                         </div>

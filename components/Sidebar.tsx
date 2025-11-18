@@ -28,8 +28,8 @@ const NavLink: React.FC<{
                 isCollapsed ? 'px-2 justify-center' : 'px-4'
             } ${
                 isActive
-                ? 'bg-zinc-800 text-white'
-                : 'text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200'
+                ? 'bg-gray-800 text-white'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-gray-50'
             }`}
         >
             {/* Fix: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue. */}
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                 onClick={toggle}
                 aria-hidden="true"
             ></div>
-            <aside className={`fixed inset-y-0 left-0 bg-zinc-900 text-white p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
+            <aside className={`fixed inset-y-0 left-0 bg-gray-900 text-gray-200 p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 border-r border-gray-800 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className="flex items-center justify-between mb-10 px-2">
                      <div className="flex items-center overflow-hidden">
                         <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-20 w-auto mr-2 flex-shrink-0" />
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                             <SparklesIcon className="w-5 h-5"/>
                         </button>
                     ) : (
-                        <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl p-5 text-center relative overflow-hidden">
+                        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-5 text-center relative overflow-hidden">
                             <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full"></div>
                             <div className="absolute -bottom-8 -left-2 w-24 h-24 bg-white/10 rounded-full"></div>
                             <div className="relative z-10">
@@ -94,16 +94,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                                 </div>
                                 <h3 className="font-bold text-white text-md">Upgrade to Pro</h3>
                                 <p className="text-xs text-blue-100/80 mt-1 mb-4">Unlock all features and get unlimited access.</p>
-                                <button className="w-full bg-white text-blue-700 font-bold text-sm py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105">
+                                <button className="w-full bg-white text-blue-800 font-bold text-sm py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105">
                                     Upgrade Now
                                 </button>
                             </div>
                         </div>
                     )}
-                    <div className="border-t border-zinc-800/50 pt-2">
+                    <div className="border-t border-gray-800 pt-2">
                         <button
                             onClick={toggleCollapse}
-                            className="w-full flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-zinc-800/60 hover:text-gray-200 transition-colors"
+                            className="w-full flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors"
                             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         >
                             <ChevronDoubleLeftIcon className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />

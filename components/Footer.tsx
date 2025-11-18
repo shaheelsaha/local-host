@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 const Footer: React.FC = () => (
-    <footer className="py-10 border-t border-white/10">
+    <footer className="py-10 border-t border-gray-800">
         <div className="container mx-auto px-4 text-gray-400">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
                 <div className="col-span-2 sm:col-span-3 md:col-span-2">
@@ -46,7 +46,7 @@ const Footer: React.FC = () => (
                     </ul>
                 </div>
             </div>
-            <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-sm">
+            <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center text-sm">
                 <p className="text-gray-500">&copy; {new Date().getFullYear()} SAHA AI. All Rights Reserved.</p>
                 <div className="flex space-x-6 mt-4 sm:mt-0">
                     <a href="/terms" className="hover:text-white transition-colors">Terms</a>
