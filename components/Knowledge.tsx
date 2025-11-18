@@ -21,6 +21,9 @@ import {
   LocationIcon,
   BedIcon,
   BathIcon,
+  CurrencyDollarIcon,
+  AreaIcon,
+  LinkIcon,
   UploadIcon
 } from './icons';
 
@@ -377,6 +380,16 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
   );
 };
 
+// Helper for details list in preview card
+const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: React.ReactNode }> = ({ icon, label, value }) => (
+    <li className="flex items-center text-gray-100">
+        {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
+        {React.cloneElement<{ className?: string }>(icon, { className: 'w-5 h-5 text-gray-400 mr-3 flex-shrink-0' })}
+        <span className="font-medium">{label}</span>
+        {value && <span className="ml-2 text-gray-300">{value}</span>}
+    </li>
+);
+
 const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ property }) => {
     const formattedPrice = new Intl.NumberFormat(property.currency === 'USD' ? 'en-US' : 'en-AE', {
       style: 'currency',
@@ -392,45 +405,48 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         bathrooms = 0,
         area = 0,
         imageUrl,
+        propertyLink,
       } = property;
 
     return (
-      <div className="bg-zinc-800 rounded-2xl overflow-hidden shadow-lg border border-zinc-700 w-full max-w-sm mx-auto font-sans">
-        <div className="aspect-square bg-zinc-700">
-            <img
-                src={imageUrl || 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'}
-                alt={title}
-                className="w-full h-full object-cover"
-                onError={(e) => { e.currentTarget.src = 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'; }}
-            />
-        </div>
-        <div className="p-4 space-y-2">
-            <h3 className="font-semibold text-white truncate text-base leading-tight">
+      <div className="bg-zinc-800 rounded-xl shadow-lg border border-zinc-700 w-full max-w-sm mx-auto font-sans">
+        <img
+            src={imageUrl || 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'}
+            alt={title}
+            className="w-full h-48 object-cover rounded-t-xl bg-zinc-700"
+            onError={(e) => { e.currentTarget.src = 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'; }}
+        />
+        <div className="p-4">
+            <h3 className="text-base font-semibold text-gray-100 leading-tight">
                 {title || 'Property Title'}
             </h3>
-            
-            <div className="flex justify-between items-center pt-1">
-                <p className="text-xl font-bold text-white">{formattedPrice}</p>
-                <div className="flex items-center space-x-3 text-sm text-gray-300">
-                    <div className="flex items-center" title={`${bedrooms} bedrooms`}>
-                        <BedIcon className="w-4 h-4 mr-1 text-gray-400"/>
-                        <span>{bedrooms}</span>
-                    </div>
-                    <div className="flex items-center" title={`${bathrooms} bathrooms`}>
-                        <BathIcon className="w-4 h-4 mr-1 text-gray-400"/>
-                        <span>{bathrooms}</span>
-                    </div>
-                </div>
-            </div>
-             <p className="flex items-center text-xs text-gray-400 pt-1">
-                <LocationIcon className="w-3 h-3 mr-1.5 flex-shrink-0" />
-                <span className="truncate">{location}</span>
-            </p>
+            <p className="text-xs text-gray-400 mt-1">propertyfinder.ae</p>
+        </div>
+        <div className="mx-4 mb-4 p-4 bg-zinc-700/50 border border-zinc-600/80 rounded-lg">
+            <ul className="space-y-3 text-sm">
+                <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
+                <li className="flex items-center text-gray-100 font-medium flex-wrap">
+                    <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                    <span>{formattedPrice}</span>
+                    <span className="text-zinc-600 mx-2.5">|</span>
+                    <BedIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                    <span>{bedrooms} bed</span>
+                    <span className="text-zinc-600 mx-2.5">|</span>
+                    <BathIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                    <span>{bathrooms} bath</span>
+                </li>
+                <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
+                <li className="flex items-center text-gray-100">
+                    <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                    <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-xs truncate">
+                        {propertyLink || 'No link provided'}
+                    </a>
+                </li>
+            </ul>
         </div>
       </div>
     );
 };
-
 
 interface PropertyEditorModalProps {
   isOpen: boolean;
