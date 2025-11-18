@@ -304,8 +304,8 @@ export const Connections: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <h1 className="text-3xl font-bold text-white">Connections</h1>
-            <p className="mt-1 text-gray-400">Link your accounts to unlock the full power of SAHA AI.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Connections</h1>
+            <p className="mt-1 text-gray-500 dark:text-gray-400">Link your accounts to unlock the full power of SAHA AI.</p>
     
             {loading ? (
                 <div className="flex justify-center items-center h-64">
@@ -321,14 +321,14 @@ export const Connections: React.FC = () => {
                         return (
                             <div 
                                 key={platform.id} 
-                                className="bg-gray-900 border border-gray-800 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center`} style={{ backgroundColor: platform.color }}>
                                         <Icon className={`w-7 h-7 ${platform.iconColorClass}`} />
                                     </div>
                                     {isConnected && (
-                                        <div className="flex items-center text-xs font-medium bg-green-500/10 text-green-300 px-2.5 py-1 rounded-full">
+                                        <div className="flex items-center text-xs font-medium bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-full">
                                             <CheckCircleIcon className="w-4 h-4 mr-1.5" />
                                             Connected
                                         </div>
@@ -336,15 +336,15 @@ export const Connections: React.FC = () => {
                                 </div>
                                 
                                 <div className="mt-4">
-                                    <h3 className="font-bold text-lg text-white">{platform.name}</h3>
-                                    <p className="text-sm text-gray-400 mt-1 h-10">{platform.description}</p>
+                                    <h3 className="font-bold text-lg text-gray-900 dark:text-white">{platform.name}</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 h-10">{platform.description}</p>
                                 </div>
     
                                 <div className="mt-6 flex items-center space-x-2">
                                     {isConnected ? (
                                         <button 
                                             onClick={() => handleDisconnect(platform.id)} 
-                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-colors flex items-center justify-center"
+                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center justify-center"
                                         >
                                             <TrashIcon className="w-4 h-4 mr-2" />
                                             Disconnect

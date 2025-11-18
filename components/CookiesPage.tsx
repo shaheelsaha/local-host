@@ -25,31 +25,31 @@ const CookiesPage: React.FC = () => (
 
         <h2>2. Types of Cookies We Use</h2>
         <div className="overflow-x-auto my-4">
-            <table className="min-w-full border border-gray-700 text-sm">
-                <thead className="bg-gray-800">
+            <table className="min-w-full border border-gray-200 dark:border-gray-700 text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Cookie Type</th>
-                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Description</th>
-                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Required</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Cookie Type</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Description</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Required</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
-                    <tr>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr className="dark:text-gray-400">
                         <td className="p-3"><strong>Essential Cookies</strong></td>
                         <td className="p-3">Enable core site features such as login, navigation, and security.</td>
                         <td className="p-3"><strong>Always On</strong></td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3"><strong>Analytics Cookies</strong></td>
                         <td className="p-3">Help us understand how users interact with our website (e.g., page visits, clicks).</td>
                         <td className="p-3">Optional</td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3"><strong>Marketing Cookies</strong></td>
                         <td className="p-3">Used to deliver ads and measure campaign effectiveness across social platforms.</td>
                         <td className="p-3">Optional</td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3"><strong>Functional Cookies</strong></td>
                         <td className="p-3">Remember your preferences (language, account settings, etc.).</td>
                         <td className="p-3">Optional</td>

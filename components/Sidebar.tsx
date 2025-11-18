@@ -1,4 +1,3 @@
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
@@ -28,8 +27,8 @@ const NavLink: React.FC<{
                 isCollapsed ? 'px-2 justify-center' : 'px-4'
             } ${
                 isActive
-                ? 'bg-gray-800 text-white'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-gray-50'
+                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-50'
             }`}
         >
             {/* Fix: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue. */}
@@ -48,19 +47,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                 onClick={toggle}
                 aria-hidden="true"
             ></div>
-            <aside className={`fixed inset-y-0 left-0 bg-gray-900 text-gray-200 p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 border-r border-gray-800 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
+            <aside className={`fixed inset-y-0 left-0 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-4 flex flex-col z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 border-r border-gray-200 dark:border-gray-800 ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}>
                 <div className="flex items-center justify-between mb-10 px-2">
                      <div className="flex items-center overflow-hidden">
                         <img src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763392782/logo.png" alt="SAHA AI Logo" className="h-20 w-auto mr-2 flex-shrink-0" />
                         <h1 className={`text-xl font-semibold tracking-tight whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>SAHA AI</h1>
                     </div>
-                    <button onClick={toggle} className="md:hidden p-1 text-gray-400 hover:text-white" aria-label="Close sidebar">
+                    <button onClick={toggle} className="md:hidden p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" aria-label="Close sidebar">
                         <XIcon className="w-6 h-6"/>
                     </button>
                 </div>
 
                 <nav className="flex-1 space-y-2">
-                    <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
+                    <p className={`text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
                         <span className={isCollapsed ? 'sr-only' : 'inline'}>Menu</span>
                     </p>
                     <NavLink to="/leads" onClick={onLinkClick} icon={<DashboardIcon />} label="Leads Board" isCollapsed={isCollapsed} />
@@ -69,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                     <NavLink to="/knowledge" onClick={onLinkClick} icon={<BookOpenIcon />} label="Knowledge Base" isCollapsed={isCollapsed}/>
                     
                     <div className="pt-6 space-y-2">
-                        <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
+                        <p className={`text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
                            <span className={isCollapsed ? 'sr-only' : 'inline'}>Configuration</span>
                         </p>
                         <NavLink to="/connections" onClick={onLinkClick} icon={<ConnectionsIcon />} label="Connections" isCollapsed={isCollapsed}/>
@@ -81,11 +80,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
 
                 <div className="flex flex-col space-y-2">
                     {isCollapsed ? (
-                        <button className="w-10 h-10 mx-auto flex items-center justify-center bg-blue-600/50 hover:bg-blue-600 rounded-full text-white transition-colors" title="Upgrade to Pro">
+                        <button className="w-10 h-10 mx-auto flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-full text-white transition-colors" title="Upgrade to Pro">
                             <SparklesIcon className="w-5 h-5"/>
                         </button>
                     ) : (
-                        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-5 text-center relative overflow-hidden">
+                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-800 rounded-xl p-5 text-center relative overflow-hidden">
                             <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full"></div>
                             <div className="absolute -bottom-8 -left-2 w-24 h-24 bg-white/10 rounded-full"></div>
                             <div className="relative z-10">
@@ -100,10 +99,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                             </div>
                         </div>
                     )}
-                    <div className="border-t border-gray-800 pt-2">
+                    <div className="border-t border-gray-200 dark:border-gray-800 pt-2">
                         <button
                             onClick={toggleCollapse}
-                            className="w-full flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors"
+                            className="w-full flex items-center justify-center p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
                             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         >
                             <ChevronDoubleLeftIcon className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />

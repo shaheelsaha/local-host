@@ -5,41 +5,41 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 
 const TeamMemberCard: React.FC<{ name: string; role: string; avatar: string; bio: string }> = ({ name, role, avatar, bio }) => (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-gray-700 hover:-translate-y-1">
-        <img src={avatar} alt={name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-700" />
-        <h3 className="text-xl font-bold text-white">{name}</h3>
-        <p className="text-blue-400 mb-3">{role}</p>
-        <p className="text-sm text-gray-400">{bio}</p>
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-700 hover:-translate-y-1">
+        <img src={avatar} alt={name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-gray-200 dark:border-gray-700" />
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{name}</h3>
+        <p className="text-blue-600 dark:text-blue-400 mb-3">{role}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{bio}</p>
     </div>
 );
 
 const AboutPage: React.FC = () => {
     return (
-        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
+        <div className="relative bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
                 <main className="pt-24 pb-16">
                     <div className="container mx-auto px-4">
                         <section className="text-center mb-16 md:mb-24">
-                            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 animate-fade-in-down">
-                                About <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">SAHA AI</span>
+                            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 animate-fade-in-down">
+                                About <span className="bg-gradient-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">SAHA AI</span>
                             </h1>
-                            <p className="text-lg text-gray-400 max-w-3xl mx-auto animate-fade-in-up delay-100">
+                            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto animate-fade-in-up delay-100">
                                 We're on a mission to revolutionize how businesses engage with their customers on social media.
                             </p>
                         </section>
 
                         <section className="max-w-4xl mx-auto mb-16 md:mb-24">
-                            <p className="text-lg text-gray-300 mb-6 leading-relaxed">
+                            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
                                 SAHA AI was born from a simple observation: businesses spend too much time on repetitive tasks and not enough time building genuine connections. Lead qualification, follow-ups, and data entry were bogging down sales and marketing teams, preventing them from focusing on what truly matters—closing deals and delighting customers.
                             </p>
-                            <p className="text-lg text-gray-300 leading-relaxed">
+                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                                 We envisioned a smarter way. By harnessing the power of artificial intelligence, we created a platform that acts as a co-pilot for your social media efforts. SAHA AI automates the mundane, allowing you to scale your engagement, qualify leads with precision, and grow your business faster than ever before.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-12">
                                 Meet the Creators
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">

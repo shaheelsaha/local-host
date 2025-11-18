@@ -6,13 +6,13 @@ import { EmailIcon, SpinnerIcon, CheckCircleIcon, TwitterIcon, InstagramIcon, Li
 
 const ContactInfoItem: React.FC<{ icon: React.ReactElement; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
     <div className="flex items-start">
-        <div className="flex-shrink-0 bg-gray-900 border border-gray-800 rounded-lg p-3 text-blue-400">
+        <div className="flex-shrink-0 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-3 text-blue-600 dark:text-blue-400">
             {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue. */}
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
         <div className="ml-4">
-            <h4 className="text-lg font-semibold text-white">{title}</h4>
-            <div className="text-gray-400 mt-1">{children}</div>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h4>
+            <div className="text-gray-600 dark:text-gray-400 mt-1">{children}</div>
         </div>
     </div>
 );
@@ -56,38 +56,38 @@ const ContactPage: React.FC = () => {
     };
     
     return (
-        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
+        <div className="relative bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
                 <main className="pt-24 pb-16">
                     <section className="container mx-auto px-4 py-16">
                         <div className="max-w-5xl mx-auto">
                             <div className="text-center mb-16">
-                                <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 animate-fade-in-down">
+                                <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 animate-fade-in-down">
                                     Get In Touch
                                 </h1>
-                                <p className="text-lg text-gray-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
+                                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
                                     Have a question or want to work together? Drop us a line! We're excited to hear from you.
                                 </p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-12 items-start">
                                 {/* Contact Form */}
-                                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 animate-fade-in-up">
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 animate-fade-in-up">
                                     {submissionStatus === 'success' ? (
                                         <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px]">
-                                            <CheckCircleIcon className="w-16 h-16 text-green-400 mb-4"/>
-                                            <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-                                            <p className="text-gray-400">Thanks for reaching out. We'll get back to you as soon as possible.</p>
+                                            <CheckCircleIcon className="w-16 h-16 text-green-500 dark:text-green-400 mb-4"/>
+                                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Message Sent!</h3>
+                                            <p className="text-gray-600 dark:text-gray-400">Thanks for reaching out. We'll get back to you as soon as possible.</p>
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSubmit} className="space-y-6">
                                             {error && (
-                                                <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg">
+                                                <div className="p-3 text-sm text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg">
                                                     {error}
                                                 </div>
                                             )}
                                             <div>
-                                                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name</label>
                                                 <input
                                                     type="text"
                                                     id="name"
@@ -96,11 +96,11 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. John Smith"
-                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-3 px-4 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
-                                                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Email address</label>
+                                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email address</label>
                                                 <input
                                                     type="email"
                                                     id="email"
@@ -109,11 +109,11 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. example@gmail.com"
-                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-3 px-4 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
-                                                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">Message</label>
+                                                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
                                                 <textarea
                                                     id="message"
                                                     name="message"
@@ -122,14 +122,14 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="Let us know how we can help"
-                                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-3 px-4 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition duration-300"
                                                 ></textarea>
                                             </div>
                                             <div>
                                                 <button
                                                     type="submit"
                                                     disabled={submissionStatus === 'submitting'}
-                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
+                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg shadow-blue-500/30 dark:shadow-[0_0_20px_theme(colors.blue.500/50%)] disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:text-gray-200 dark:disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
                                                 >
                                                     {submissionStatus === 'submitting' ? (
                                                         <>
@@ -146,23 +146,23 @@ const ContactPage: React.FC = () => {
                                 {/* Contact Information */}
                                 <div className="space-y-8 animate-fade-in-up delay-100 mt-8 md:mt-0">
                                     <ContactInfoItem icon={<EmailIcon />} title="Email Us">
-                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-blue-400 transition-colors">shaheel@sahaai.io</a>
-                                        <p className="text-sm text-gray-500">General inquiries & support</p>
+                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">shaheel@sahaai.io</a>
+                                        <p className="text-sm text-gray-500 dark:text-gray-500">General inquiries & support</p>
                                     </ContactInfoItem>
                                      <ContactInfoItem icon={<PhoneIcon />} title="Call Us">
-                                        <a href="tel:+971544575282" className="hover:text-blue-400 transition-colors">+971 54 457 5282</a>
+                                        <a href="tel:+971544575282" className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">+971 54 457 5282</a>
                                     </ContactInfoItem>
                                     
                                     <div>
-                                        <h4 className="text-lg font-semibold text-white mb-4">Follow Us</h4>
+                                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h4>
                                         <div className="flex space-x-4">
-                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
                                                 <TwitterIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
                                                 <LinkedInIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-gray-900 border border-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
                                                 <InstagramIcon className="w-5 h-5"/>
                                             </a>
                                         </div>

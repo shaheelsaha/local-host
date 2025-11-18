@@ -14,7 +14,7 @@ const PrivacyPage: React.FC = () => (
         <h2>1. Information We Collect</h2>
         <p>We may collect the following information:</p>
         
-        <p className="font-semibold mt-4 mb-2 text-gray-100">a. Personal Information</p>
+        <p className="font-semibold mt-4 mb-2 text-gray-800 dark:text-gray-100">a. Personal Information</p>
         <p>Information you provide directly, such as:</p>
         <ul>
             <li>Name</li>
@@ -24,7 +24,7 @@ const PrivacyPage: React.FC = () => (
             <li>Any data you submit through forms or inputs</li>
         </ul>
 
-        <p className="font-semibold mt-4 mb-2 text-gray-100">b. Usage Data</p>
+        <p className="font-semibold mt-4 mb-2 text-gray-800 dark:text-gray-100">b. Usage Data</p>
         <p>Automatically collected data, such as:</p>
         <ul>
             <li>IP address</li>
@@ -33,7 +33,7 @@ const PrivacyPage: React.FC = () => (
             <li>Time and date of visits</li>
         </ul>
 
-        <p className="font-semibold mt-4 mb-2 text-gray-100">c. Cookies & Tracking</p>
+        <p className="font-semibold mt-4 mb-2 text-gray-800 dark:text-gray-100">c. Cookies & Tracking</p>
         <p>
             We use cookies to improve site performance and user experience. For more details, see our Cookie Policy at: <a href="/cookies">https://sahaai.io/cookie-policy</a>
         </p>
@@ -53,27 +53,27 @@ const PrivacyPage: React.FC = () => (
         <h2>3. Sharing of Information</h2>
         <p>We may share information with:</p>
         <div className="overflow-x-auto my-4">
-            <table className="min-w-full border border-gray-700 text-sm">
-                <thead className="bg-gray-800">
+            <table className="min-w-full border border-gray-200 dark:border-gray-700 text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Type</th>
-                        <th className="text-left font-semibold p-3 border-b border-gray-700 text-gray-100">Purpose</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Type</th>
+                        <th className="text-left font-semibold p-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">Purpose</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
-                    <tr>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr className="dark:text-gray-400">
                         <td className="p-3">Service providers</td>
                         <td className="p-3">Hosting, maintenance, customer support</td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3">Analytics platforms</td>
                         <td className="p-3">Understanding user activity and improving performance</td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3">Marketing platforms</td>
                         <td className="p-3">If marketing/retargeting is enabled</td>
                     </tr>
-                    <tr>
+                    <tr className="dark:text-gray-400">
                         <td className="p-3">Legal authorities</td>
                         <td className="p-3">Only if required by law</td>
                     </tr>

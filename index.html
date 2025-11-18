@@ -8,24 +8,48 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Flicker-prevention script.
+      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+
+      // Configure Tailwind for class-based dark mode
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
     <style>
       body {
         font-family: 'Inter', sans-serif;
       }
       /* Custom scrollbar for a cleaner look */
+      :root {
+        --scrollbar-track: #f1f5f9; /* gray-100 */
+        --scrollbar-thumb: #94a3b8; /* gray-400 */
+        --scrollbar-thumb-hover: #64748b; /* gray-500 */
+      }
+      html.dark {
+          --scrollbar-track: #1f2937; /* gray-800 */
+          --scrollbar-thumb: #4b5563; /* gray-600 */
+          --scrollbar-thumb-hover: #6b7280; /* gray-500 */
+      }
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #1f2937; /* gray-800 */
+        background: var(--scrollbar-track);
       }
       ::-webkit-scrollbar-thumb {
-        background: #4b5563; /* gray-600 */
+        background: var(--scrollbar-thumb);
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #6b7280; /* gray-500 */
+        background: var(--scrollbar-thumb-hover);
       }
       
       /* Animation Keyframes for HomePage */
@@ -107,10 +131,15 @@
       /* Drag and Drop styles */
       .dragging-card {
         opacity: 0.9;
-        background: #1f2937; /* gray-800 */
         transform: rotate(3deg) scale(1.05) !important;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         cursor: grabbing;
+      }
+      html:not(.dark) .dragging-card {
+        background: #f8fafc; /* slate-50 */
+      }
+      html.dark .dragging-card {
+        background: #1f2937; /* gray-800 */
       }
 
       .drag-over-column {
@@ -136,7 +165,7 @@
 }
 </script>
 </head>
-<body class="bg-gray-950 text-gray-200 antialiased">
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-200 antialiased">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

@@ -20,35 +20,35 @@ import {
 interface HomePageProps {}
 
 const FeatureCard: React.FC<{ icon: React.ReactElement; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 transition-all duration-300 hover:border-gray-700 hover:-translate-y-1 h-full">
-        <div className="bg-blue-500/10 text-blue-400 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-700 hover:-translate-y-1 h-full">
+        <div className="bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
-        <h3 className="font-bold text-lg text-white mb-2">{title}</h3>
-        <p className="text-gray-400 text-sm">{description}</p>
+        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{title}</h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
     </div>
 );
 
 const HowItWorksStep: React.FC<{ step: number; title: string; description: string }> = ({ step, title, description }) => (
     <div className="flex flex-col items-center text-center md:flex-row md:text-left md:items-start space-y-4 md:space-y-0 md:space-x-4">
-        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-900 border border-gray-800 rounded-full font-bold text-lg text-blue-400">
+        <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-full font-bold text-lg text-blue-600 dark:text-blue-400">
             {step}
         </div>
         <div>
-            <h4 className="font-bold text-lg text-white mb-1">{title}</h4>
-            <p className="text-gray-400 text-sm">{description}</p>
+            <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-1">{title}</h4>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
         </div>
     </div>
 );
 
 const TestimonialCard: React.FC<{ quote: string; name: string; role: string; avatar: string }> = ({ quote, name, role, avatar }) => (
-    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 h-full flex flex-col justify-between">
-        <p className="text-gray-300 italic">"{quote}"</p>
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 h-full flex flex-col justify-between">
+        <p className="text-gray-700 dark:text-gray-300 italic">"{quote}"</p>
         <div className="flex items-center mt-6">
             <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover mr-4"/>
             <div>
-                <p className="font-bold text-white">{name}</p>
-                <p className="text-sm text-gray-400">{role}</p>
+                <p className="font-bold text-gray-900 dark:text-white">{name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{role}</p>
             </div>
         </div>
     </div>
@@ -66,10 +66,10 @@ const SocialProofLogos: React.FC = () => {
 
     return (
         <div className="mt-12">
-            <p className="text-center text-sm text-gray-500 font-medium mb-6">USED BY PROFESSIONALS AT:</p>
-            <div className="flex justify-center items-center space-x-6 sm:space-x-8 md:space-x-12 opacity-60 grayscale flex-wrap">
+            <p className="text-center text-sm text-gray-500 dark:text-gray-500 font-medium mb-6">USED BY PROFESSIONALS AT:</p>
+            <div className="flex justify-center items-center space-x-6 sm:space-x-8 md:space-x-12 opacity-60 dark:opacity-60 grayscale flex-wrap">
                 {icons.map(({ Icon, name }) => (
-                    <Icon key={name} className="h-6 md:h-7 text-gray-400" title={name}/>
+                    <Icon key={name} className="h-6 md:h-7 text-gray-500 dark:text-gray-400" title={name}/>
                 ))}
             </div>
         </div>
@@ -78,7 +78,7 @@ const SocialProofLogos: React.FC = () => {
 
 const HomePage: React.FC<HomePageProps> = () => {
     return (
-        <div className="relative bg-gray-950 text-gray-200 font-sans overflow-x-hidden">
+        <div className="relative bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 font-sans overflow-x-hidden">
             <div className="relative z-10">
                 <Navbar />
 
@@ -86,19 +86,19 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* Hero Section */}
                     <section className="min-h-screen flex items-center justify-center pt-24 pb-16 text-center">
                         <div className="container mx-auto px-4">
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tighter leading-tight mb-6 animate-fade-in-down">
-                                Spend your time <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">closing deals</span>, not chasing unqualified leads.
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tighter leading-tight mb-6 animate-fade-in-down">
+                                Spend your time <span className="bg-gradient-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">closing deals</span>, not chasing unqualified leads.
                                 <br />
-                                Let our AI do the <span className="bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">filtering for you</span>.
+                                Let our AI do the <span className="bg-gradient-to-r from-blue-500 to-sky-500 bg-clip-text text-transparent">filtering for you</span>.
                             </h1>
-                            <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10 animate-fade-in-up delay-100">
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-10 animate-fade-in-up delay-100">
                                 SAHA AI automatically qualifies leads, handles replies and follow-ups, and updates your CRM without any manual work.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in-up delay-200">
-                                <Link to="/register" className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.blue.500/60%)]">
+                                <Link to="/register" className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-lg shadow-blue-500/30 dark:shadow-[0_0_20px_theme(colors.blue.500/60%)]">
                                     Get Started for Free
                                 </Link>
-                                <button className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-transparent border-2 border-gray-700 rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                                <button className="w-full sm:w-auto px-8 py-4 text-base font-bold text-gray-800 dark:text-white bg-transparent border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300">
                                     View Demo
                                 </button>
                             </div>
@@ -109,11 +109,11 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
                     
                     {/* Core Features Section */}
-                    <section id="features" className="py-16 md:py-24 bg-black/20">
+                    <section id="features" className="py-16 md:py-24 bg-gray-50 dark:bg-black/20">
                         <div className="container mx-auto px-4">
                              <div className="text-center mb-12">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">Your Social Media Co-Pilot</h2>
-                                <p className="text-gray-400 mt-3 max-w-xl mx-auto">
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Social Media Co-Pilot</h2>
+                                <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-xl mx-auto">
                                     SAHA AI is packed with features to save you time and supercharge your growth.
                                 </p>
                             </div>
@@ -146,7 +146,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     <section id="how-it-works" className="py-16 md:py-24">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">Get Started in 3 Simple Steps</h2>
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Get Started in 3 Simple Steps</h2>
                             </div>
                             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
                                 <HowItWorksStep step={1} title="Connect Accounts" description="Securely link your social media profiles from Meta, LinkedIn, and more in seconds."/>
@@ -157,17 +157,17 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
                     
                     {/* Pricing Section */}
-                    <section id="pricing" className="py-16 md:py-24 bg-black/20">
+                    <section id="pricing" className="py-16 md:py-24 bg-gray-50 dark:bg-black/20">
                         <div className="container mx-auto px-4 text-center">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white">Choose a Plan That's Right for You</h2>
-                            <p className="text-gray-400 mt-3 max-w-xl mx-auto mb-12">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Choose a Plan That's Right for You</h2>
+                            <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-xl mx-auto mb-12">
                                 Start for free, then upgrade as you grow. No hidden fees, cancel anytime.
                             </p>
                             <div className="max-w-4xl mx-auto">
-                                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 text-center">
-                                    <h3 className="text-2xl font-bold text-white mb-2">Flexible Pricing for Teams of All Sizes</h3>
-                                    <p className="text-gray-400 mb-6">From solo creators to large agencies, we have a plan that fits your needs.</p>
-                                     <Link to="/pricing" className="font-bold text-white bg-transparent border-2 border-blue-500 rounded-lg px-6 py-3 hover:bg-blue-500 hover:text-white transition-colors duration-300">
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 text-center">
+                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Flexible Pricing for Teams of All Sizes</h3>
+                                    <p className="text-gray-600 dark:text-gray-400 mb-6">From solo creators to large agencies, we have a plan that fits your needs.</p>
+                                     <Link to="/pricing" className="font-bold text-blue-600 dark:text-white bg-transparent border-2 border-blue-500 rounded-lg px-6 py-3 hover:bg-blue-500 hover:text-white transition-colors duration-300">
                                         Compare Plans
                                     </Link>
                                 </div>
@@ -179,7 +179,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     <section id="testimonials" className="py-16 md:py-24">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">Loved by Creators and Businesses</h2>
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Loved by Creators and Businesses</h2>
                             </div>
                             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <TestimonialCard 
@@ -201,12 +201,12 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* Final CTA */}
                     <section className="py-16 md:py-24">
                          <div className="container mx-auto px-4 text-center">
-                             <div className="max-w-3xl mx-auto bg-gray-900 rounded-3xl p-6 sm:p-10 border border-gray-800">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to automate your social media?</h2>
-                                <p className="text-gray-300 mb-8">
+                             <div className="max-w-3xl mx-auto bg-gray-100 dark:bg-gray-900 rounded-3xl p-6 sm:p-10 border border-gray-200 dark:border-gray-800">
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Ready to automate your social media?</h2>
+                                <p className="text-gray-700 dark:text-gray-300 mb-8">
                                     Start using SAHA AI today — it takes less than 60 seconds to sign up.
                                 </p>
-                                 <Link to="/register" className="px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.blue.500/60%)]">
+                                 <Link to="/register" className="px-8 py-4 text-base font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-transform hover:scale-105 duration-300 shadow-lg shadow-blue-500/30 dark:shadow-[0_0_20px_theme(colors.blue.500/60%)]">
                                     Sign Up Free
                                  </Link>
                              </div>

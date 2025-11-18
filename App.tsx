@@ -38,6 +38,19 @@ const App: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
     const scheduledPostsRef = React.useRef<Post[]>([]);
+    const [theme, setTheme] = React.useState<'light' | 'dark'>(
+        () => (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
+    );
+
+    React.useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
 
     const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
     const toggleSidebarCollapse = () => setIsSidebarCollapsed(prev => !prev);
@@ -160,14 +173,14 @@ const App: React.FC = () => {
     
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-950">
+            <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-950">
                 <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     const LoggedInLayout = () => (
-        <div className="flex h-screen bg-gray-950 text-gray-200 overflow-hidden">
+        <div className="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-200 overflow-hidden">
             <Sidebar
                 onLinkClick={handleSidebarNavigate}
                 isOpen={isSidebarOpen}
@@ -177,7 +190,7 @@ const App: React.FC = () => {
             />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header user={user!} onLogout={handleLogout} toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-950">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-950">
                     <Outlet />
                 </main>
             </div>
@@ -210,11 +223,11 @@ const App: React.FC = () => {
             <Routes>
                 <Route element={<LoggedInLayout />}>
                     <Route index element={<Navigate to="/leads" replace />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard theme={theme} />} />
                     <Route path="/leads" element={<LeadsBoard user={user} />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/knowledge" element={<Knowledge user={user} />} />
-                    <Route path="/settings" element={<Settings user={user} />} />
+                    <Route path="/settings" element={<Settings user={user} theme={theme} setTheme={setTheme} />} />
                     <Route path="/connections" element={<Connections />} />
                     <Route path="/command" element={<Command user={user} />} />
                     <Route path="/persona" element={<Persona user={user} />} />
